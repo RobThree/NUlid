@@ -125,19 +125,17 @@ Based on / inspired by [alizain/ulid](https://github.com/alizain/ulid).
 Below measurements are based on a Intel(R) Xeon(R) CPU E3-1225 v3 @ 3.20GHz:
 
 ```
-Guid.NewGuid():                                                    10.582.985/sec
-Ulid.NewUlid(SimpleUlidRng):                                        4.666.571/sec
-Ulid.NewUlid(CSUlidRng):                                            2.831.033/sec
-Guid.Parse(string):                                                 1.223.488/sec
-Ulid.Parse(string):                                                   373.782/sec
-Guid.ToString():                                                    3.535.573/sec
-Ulid.ToString():                                                    2.026.495/sec
-new Guid(byte[]):                                                   5.881.114/sec
-new Ulid(byte[]):                                                   4.731.260/sec
-Guid.ToByteArray():                                                 8.765.287/sec
-Ulid.ToByteArray():                                                 1.307.555/sec
-Ulid.ToGuid():                                                      1.285.171/sec
-new Ulid(Guid):                                                     5.901.798/sec
+Guid.NewGuid():                                                    10.968.520/sec
+Ulid.NewUlid(SimpleUlidRng):                                        5.355.601/sec
+Ulid.NewUlid(CSUlidRng):                                            3.306.954/sec
+Guid.Parse(string):                                                 1.302.345/sec
+Ulid.Parse(string):                                                 1.498.890/sec
+Guid.ToString():                                                    3.790.084/sec
+Ulid.ToString():                                                    2.272.227/sec
+new Guid(byte[]):                                                   6.334.916/sec
+new Ulid(byte[]):                                                   5.484.964/sec
+Guid.ToByteArray():                                                 9.534.734/sec
+Ulid.ToByteArray():                                                 2.919.258/sec
+Ulid.ToGuid():                                                      2.863.527/sec
+new Ulid(Guid):                                                     7.434.209/sec
 ```
-
-Note that these numbers will probably improve in the near future since there's enough room for optimization left.

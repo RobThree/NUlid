@@ -1,5 +1,5 @@
 # NUlid
-.Net ULID implementation
+.Net [ULID](https://github.com/alizain/ulid/blob/master/README.md) implementation
 
 This is, currently, a work-in-progress. See [alizain/ulid](https://github.com/alizain/ulid) for more information.
 

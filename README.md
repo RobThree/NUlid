@@ -10,3 +10,4 @@ This is, currently, a work-in-progress. See [alizain/ulid](https://github.com/al
 - [ ] ReadME.md
 - [ ] Logo
 - [ ] NuGet package
+- [ ] CI / AppVeyor

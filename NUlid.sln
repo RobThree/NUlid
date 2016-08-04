@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUlid", "NUlid\NUlid.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUlid.Tests", "NUlid.Tests\NUlid.Tests.csproj", "{D015C9AA-287B-4115-A87F-8050D5A47C94}"
 EndProject
-Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Ulid.Documentation", "Ulid.Documentation\Ulid.Documentation.shfbproj", "{8BB80D6B-7BB6-46FC-9242-98DC7AB17A44}"
+Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "NUlid.Documentation", "NUlid.Documentation\NUlid.Documentation.shfbproj", "{8BB80D6B-7BB6-46FC-9242-98DC7AB17A44}"
 	ProjectSection(ProjectDependencies) = postProject
 		{14221C1D-0BCD-4D37-B7FC-051CA5624993} = {14221C1D-0BCD-4D37-B7FC-051CA5624993}
 	EndProjectSection

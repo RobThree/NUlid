@@ -11,7 +11,7 @@
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
     <AssemblyName>Ulid.Documentation</AssemblyName>
     <RootNamespace>Ulid.Documentation</RootNamespace>
-    <Name>Ulid.Documentation</Name>
+    <Name>NUlid.Documentation</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
     <OutputPath>.\Help\</OutputPath>
@@ -47,8 +47,9 @@
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="NUlid (Group)" isGroup="True" isDocumented="True" xmlns="">&lt;para&gt;TODO&lt;/para&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="NUlid" isDocumented="True" xmlns="">&lt;para&gt;TODO&lt;/para&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="NUlid.Rng" isDocumented="True" xmlns="">&lt;para&gt;TODO&lt;/para&gt;</NamespaceSummaryItem></NamespaceSummaries>
+      <NamespaceSummaryItem name="NUlid" isDocumented="True" xmlns="">&lt;para&gt;TODO&lt;/para&gt;</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="NUlid.Rng" isDocumented="True" xmlns="">&lt;para&gt;TODO&lt;/para&gt;</NamespaceSummaryItem>
+    </NamespaceSummaries>
     <ProjectSummary>&amp;lt%3bpara&amp;gt%3bTODO&amp;lt%3b/para&amp;gt%3b</ProjectSummary>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform

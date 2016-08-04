@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>NUlid</id>
+    <title>NUlid</title>
+    <version>0.9.0-rc</version>
+    <authors>RobIII</authors>
+    <owners>RobIII</owners>
+    <projectUrl>https://github.com/RobThree/NUlid</projectUrl>
+    <iconUrl>XXX</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://raw.githubusercontent.com/RobThree/NUlid/master/LICENSE</licenseUrl>
+    <description>.Net ULID implementation</description>
+    <copyright>(C) 2016 Devcorner.nl</copyright>
+    <summary>
+      A .Net ULID implementation
+    </summary>
+    <releaseNotes>
+      * Beta
+    </releaseNotes>
+    <tags>Universally Unique Lexicographically Sortable Identifier ULID UUID GUID</tags>
+  </metadata>
+  <files>
+    <file src="NUlid\bin\Release\NUlid.dll" target="lib\net46" />
+    <file src="NUlid\bin\Release\NUlid.XML" target="lib\net46" />
+    <file src="NUlid.Documentation\Help\Ulid.Documentation.chm" target="content" />
+  </files>
+</package>

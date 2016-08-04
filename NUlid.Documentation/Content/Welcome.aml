@@ -1,55 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
 <topic id="e46f2558-fc83-4540-9762-6f494f768376" revisionNumber="1">
-	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
-		<introduction>
-			<para>This is a sample conceptual topic.  You can use this as a starting point for adding more conceptual
-content to your help project.</para>
-		</introduction>
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>
+        A .Net <externalLink>
+          <linkText>ULID</linkText>
+          <linkUri>https://github.com/alizain/ulid/blob/master/README.md</linkUri>
+        </externalLink> implementation
+      </para>
+    </introduction>
 
-		<section>
-			<title>Getting Started</title>
-			<content>
-				<para>To get started, add a documentation source to the project (a Visual Studio solution, project, or
-assembly and XML comments file).  See the <legacyBold>Getting Started</legacyBold> topics in the Sandcastle Help
-File Builder's help file for more information.  The following default items are included in this project:</para>
+    <section>
+      <title>Why</title>
+      <content>
+        <para>
+          A ULID (<legacyBold>Universally Unique Lexicographically Sortable Identifier</legacyBold>) is an alternative
+          to a GUID / UUID. A GUID/UUID can be suboptimal for many uses-cases because:
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              It isn't the most character efficient way of encoding 128 bits
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              It provides no other information than randomness
+            </para>
+          </listItem>
+        </list>
+        <para>
+          A ULID however:
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              Is compatible with UUID/GUID's
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              1.21e+24 unique ULIDs per millisecond (1,208,925,819,614,629,174,706,176 to be exact)
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              Lexicographically sortable
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              Canonically encoded as a 26 character string, as opposed to the 36 character UUID
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              Uses Crockford's base32 for better efficiency and readability (5 bits per character)
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              Case insensitive
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              No special characters (URL safe)
+            </para>
+          </listItem>
+        </list>
+      </content>
+    </section>
 
-				<list class="bullet">
-					<listItem>
-						<para><localUri>ContentLayout.content</localUri> - Use the content layout file to manage the
-conceptual content in the project and define its layout in the table of contents.</para>
-					</listItem>
+    <section>
+      <title>Specification</title>
+      <content>
+        <para>Below is the current specification of ULID as implemented in this library:</para>
+        <code language="none">
+          <![CDATA[
+ 01AN4Z07BY 79KA1307SR9X4MV3
+|----------|----------------|
+ Timestamp     Randomness
+  10 chars      16 chars
+   48bits        80bits
+   base32        base32
+         ]]>
+        </code>
+      </content>
+    </section>
 
-					<listItem>
-						<para>The <localUri>.\media</localUri> folder - Place images in this folder that you will reference
-from conceptual content using <codeInline>medialLink</codeInline> or <codeInline>mediaLinkInline</codeInline>
-elements.  If you will not have any images in the file, you may remove this folder.</para>
-					</listItem>
+    <section>
+      <title>Timestamp</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <para>48 bit integer</para>
+          </listItem>
+          <listItem>
+            <para>UNIX-time in milliseconds</para>
+          </listItem>
+          <listItem>
+            <para>
+              Won't run out of space till the year 10895 AD (this .Net specific ULID implementation limits this to <codeEntityReference>F:System.DateTimeOffset.MaxValue</codeEntityReference>).
+            </para>
+          </listItem>
+        </list>
+      </content>
+    </section>
 
-					<listItem>
-						<para>The <localUri>.\icons</localUri> folder - This contains a default logo for the help file.  You
-may replace it or remove it and the folder if not wanted.  If removed or if you change the file name, update
-the <ui>Transform Args</ui> project properties page by removing or changing the filename in the
-<codeInline>logoFile</codeInline> transform argument.  Note that unlike images referenced from conceptual topics,
-the logo file should have its <legacyBold>BuildAction</legacyBold> property set to <codeInline>Content</codeInline>.</para>
-					</listItem>
+    <section>
+      <title>Randomness</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <para>80 (Whenever possible: Cryptographically secure) Random bits</para>
+          </listItem>
+        </list>
+      </content>
+    </section>
 
-					<listItem>
-						<para>The <localUri>.\Content</localUri> folder - Use this to store your conceptual topics.  You may
-name the files and organize them however you like.  One suggestion is to lay the files out on disk as you have
-them in the content layout file as shown in this project but the choice is yours.  Files can be added via the
-Solution Explorer or from within the content layout file editor.  Files must appear in the content layout file
-in order to be compiled into the help file.</para>
-					</listItem>
-				</list>
+    <section>
+      <title>Encoding</title>
+      <content>
+        <para>
+          <externalLink>
+            <linkText>Crockford's Base32</linkText>
+            <linkUri>http://www.crockford.com/wrmg/base32.html</linkUri>
+          </externalLink> is used as shown. This alphabet excludes the letters <literal>I</literal>, <literal>L</literal>,
+          <literal>O</literal>, and <literal>U</literal> to avoid confusion and abuse.
+        </para>
+        <para>
+          <codeInline>0123456789ABCDEFGHJKMNPQRSTVWXYZ</codeInline>
+        </para>
+      </content>
+    </section>
 
-				<para>See the <legacyBold>Conceptual Content</legacyBold> topics in the Sandcastle Help File Builder's
-help file for more information.  See the <legacyBold> Sandcastle MAML Guide</legacyBold> for details on Microsoft
-Assistance Markup Language (MAML) which is used to create these topics.</para>
-			</content>
-		</section>
+    <section>
+      <title>Binary Layout and Byte Order</title>
+      <content>
+        <para>
+          The components are encoded as 16 octets. Each component is encoded with the Most Significant Byte first (network byte order).
+        </para>
+        <code language="none">
+          <![CDATA[
+0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      32_bit_uint_time_low                     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     16_bit_uint_time_high     |       16_bit_uint_random      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       32_bit_uint_random                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       32_bit_uint_random                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+         ]]>
+        </code>
+      </content>
+    </section>
 
-		<relatedTopics>
-			<link xlink:href="55d108d0-b9ef-495d-8303-73b4ec638e70" />
-		</relatedTopics>
-	</developerConceptualDocument>
+    <section>
+      <title>String Representation</title>
+      <content>
+        <para>A ULID is represented as:</para>
+        <para>
+          <codeInline>ttttttttttrrrrrrrrrrrrrrrr</codeInline>
+        </para>
+        <para>
+          Where:
+        </para>
+        <definitionTable>
+          <definedTerm>t</definedTerm>
+          <definition>
+            <para>is Timestamp</para>
+          </definition>
+          <definedTerm>r</definedTerm>
+          <definition>
+            <para>is Randomness</para>
+          </definition>
+        </definitionTable>
+      </content>
+    </section>
+
+    <section>
+      <title>Prior Art</title>
+      <content>
+        <para>
+          Based on / inspired by <externalLink>
+            <linkText>alizain/ulid</linkText>
+            <linkUri>https://github.com/alizain/ulid</linkUri>
+          </externalLink>.
+        </para>
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="55d108d0-b9ef-495d-8303-73b4ec638e70" />
+    </relatedTopics>
+  </developerConceptualDocument>
 </topic>

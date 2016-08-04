@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
-  <Topic id="e46f2558-fc83-4540-9762-6f494f768376" visible="True" isDefault="true" isSelected="true" title="Welcome to the [TODO: Add project name]">
+  <Topic id="e46f2558-fc83-4540-9762-6f494f768376" visible="True" isDefault="true" title="Welcome to the NUlid library">
     <HelpKeywords>
       <HelpKeyword index="K" term="Welcome" />
     </HelpKeywords>
@@ -9,7 +9,7 @@
     <HelpKeywords>
       <HelpKeyword index="K" term="version, history" />
     </HelpKeywords>
-    <Topic id="faff8d4c-29c2-46ec-843d-ead1ec8d3834" visible="True" title="Version 1.0.0.0">
+    <Topic id="faff8d4c-29c2-46ec-843d-ead1ec8d3834" visible="True" isSelected="true" title="Version 1.0.0.0">
       <HelpKeywords>
         <HelpKeyword index="K" term="version, 1.0.0.0" />
       </HelpKeywords>

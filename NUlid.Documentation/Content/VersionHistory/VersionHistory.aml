@@ -1,33 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <topic id="55d108d0-b9ef-495d-8303-73b4ec638e70" revisionNumber="1">
-	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
-		<introduction>
-			<para>The topics in this section describe the various changes made to the [TODO: Project Title] over the
-life of the project.</para>
-		</introduction>
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>The topics in this section describe the various changes made to the NUlid library over the life of the project.</para>
+    </introduction>
 
-		<section>
-			<title>Version History</title>
-			<content>
-				<para>Select a version below to see a description of its changes.</para>
+    <section>
+      <title>Version History</title>
+      <content>
+        <para>Select a version below to see a description of its changes.</para>
 
-				<list class="bullet">
-					<listItem>
-						<para><link xlink:href="faff8d4c-29c2-46ec-843d-ead1ec8d3834" /></para>
-					</listItem>
+        <list class="bullet">
+          <listItem>
+            <para>
+              <link xlink:href="faff8d4c-29c2-46ec-843d-ead1ec8d3834" />
+            </para>
+          </listItem>
+        </list>
 
-					<listItem>
-						<para>[TODO: Add links to each specific version page]</para>
-					</listItem>
+      </content>
+    </section>
 
-				</list>
+    <relatedTopics>
+      <link xlink:href="e46f2558-fc83-4540-9762-6f494f768376" />
+    </relatedTopics>
 
-			</content>
-		</section>
-
-		<relatedTopics>
-			<link xlink:href="e46f2558-fc83-4540-9762-6f494f768376" />
-		</relatedTopics>
-
-	</developerConceptualDocument>
+  </developerConceptualDocument>
 </topic>

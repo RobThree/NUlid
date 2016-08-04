@@ -1,4 +1,4 @@
-# NUlid
+# ![Logo](https://raw.githubusercontent.com/RobThree/NUlid/master/logo.png) NUlid
 .Net [ULID](https://github.com/alizain/ulid/blob/master/README.md) implementation
 
 [![Build status](https://ci.appveyor.com/api/projects/status/y4vvtyfi9qwvjclm?svg=true)](https://ci.appveyor.com/project/RobIII/nulid)

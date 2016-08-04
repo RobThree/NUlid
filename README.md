@@ -47,11 +47,10 @@ Below is the current specification of ULID as implemented in this repository.
 **Timestamp**
 - 48 bit integer
 - UNIX-time in milliseconds
-- Won't run out of space till the year 10895 AD (this .Net specific NUlid implementation limits this to [DateTimeOffset.MaxValue](https://msdn.microsoft.com/en-us/library/system.datetimeoffset.maxvalue.aspx).
+- Won't run out of space till the year 10895 AD (this .Net specific Ulid implementation limits this to [DateTimeOffset.MaxValue](https://msdn.microsoft.com/en-us/library/system.datetimeoffset.maxvalue.aspx)).
 
 **Randomness**
-- 80 bits
-- (Whenever possible: Cryptographically secure) Random bits
+- 80 (Whenever possible: Cryptographically secure) Random bits
 
 ### Encoding
 

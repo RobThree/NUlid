@@ -7,7 +7,7 @@
     <authors>RobIII</authors>
     <owners>RobIII</owners>
     <projectUrl>https://github.com/RobThree/NUlid</projectUrl>
-    <iconUrl>XXX</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/RobThree/NUlid/master/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>https://raw.githubusercontent.com/RobThree/NUlid/master/LICENSE</licenseUrl>
     <description>.Net ULID implementation</description>

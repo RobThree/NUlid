@@ -301,9 +301,16 @@ namespace NUlid.Tests
 
         [TestMethod]
         [ExpectedException(typeof(FormatException))]
-        public void Ulid_Parse_ThrowsFormatException_OnInvalidString()
+        public void Ulid_Parse_ThrowsFormatException_OnInvalidString1()
         {
             Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E','O')); // O is not in BASE32 alphabet
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormatException))]
+        public void Ulid_Parse_ThrowsFormatException_OnInvalidString2()
+        {
+            Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', '{')); // Test char after last index in C2B32 array
         }
 
         [TestMethod]

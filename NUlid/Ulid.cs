@@ -12,6 +12,9 @@ namespace NUlid
     {
         // Base32 "alphabet"
         private const string BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+        // Char to index lookup array for massive speedup since we can find a char's index in O(1). We use 255 as 'sentinel' value for invalid indexes.
+        private static readonly byte[] C2B32 = new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 255, 18, 19, 255, 20, 21, 255, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 255, 18, 19, 255, 20, 21, 255, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31 };
+        private static readonly int C2B32LEN = C2B32.Length;
 
         // Internal structure for data
         private readonly byte[] tdata;
@@ -193,33 +196,30 @@ namespace NUlid
             throw new InvalidOperationException("Invalid length");
         }
 
-        private static byte[] FromBase32(string value)
+        private static byte[] FromBase32(string v)
         {
-            // Determine indexes of chars
-            var ix = value.Select(c => BASE32.IndexOf(c)).ToArray();
-
             // Hand-optimized unrolled loops ahead
             unchecked
             {
-                if (ix.Length == 10)
+                if (v.Length == 10)
                 {
                     return new byte[]
                     {
-                    /* 0 */ (byte)((ix[0] << 5) | ix[1]),                           /* 1 */ (byte)((ix[2] << 3) | (ix[3] >> 2)),
-                    /* 2 */ (byte)((ix[3] << 6) | (ix[4] << 1) | (ix[5] >> 4)),     /* 3 */ (byte)((ix[5] << 4) | (ix[6] >> 1)),
-                    /* 4 */ (byte)((ix[6] << 7) | (ix[7] << 2) | (ix[8] >> 3)),     /* 5 */ (byte)((ix[8] << 5) | ix[9]),
+                    /* 0 */ (byte)((C2B32[v[0]] << 5) | C2B32[v[1]]),                                   /* 1 */ (byte)((C2B32[v[2]] << 3) | (C2B32[v[3]] >> 2)),
+                    /* 2 */ (byte)((C2B32[v[3]] << 6) | (C2B32[v[4]] << 1) | (C2B32[v[5]] >> 4)),       /* 3 */ (byte)((C2B32[v[5]] << 4) | (C2B32[v[6]] >> 1)),
+                    /* 4 */ (byte)((C2B32[v[6]] << 7) | (C2B32[v[7]] << 2) | (C2B32[v[8]] >> 3)),       /* 5 */ (byte)((C2B32[v[8]] << 5) | C2B32[v[9]]),
                     };
                 }
 
-                if (ix.Length == 16)
+                if (v.Length == 16)
                 {
                     return new byte[]
                     {
-                    /* 0 */ (byte)((ix[0] << 3) | (ix[1] >> 2)),                    /* 1 */ (byte)((ix[1] << 6) | (ix[2] << 1) | (ix[3] >> 4)),
-                    /* 2 */ (byte)((ix[3] << 4) | (ix[4] >> 1)),                    /* 3 */ (byte)((ix[4] << 7) | (ix[5] << 2) | (ix[6] >> 3)),
-                    /* 4 */ (byte)((ix[6] << 5) | ix[7]),                           /* 5 */ (byte)((ix[8] << 3) | ix[9] >> 2),
-                    /* 6 */ (byte)((ix[9] << 6) | (ix[10] << 1) | (ix[11] >> 4)),   /* 7 */ (byte)((ix[11] << 4) | (ix[12] >> 1)),
-                    /* 8 */ (byte)((ix[12] << 7) | (ix[13] << 2) | (ix[14] >> 3)),  /* 9 */ (byte)((ix[14] << 5) | ix[15]),
+                    /* 0 */ (byte)((C2B32[v[0]] << 3) | (C2B32[v[1]] >> 2)),                            /* 1 */ (byte)((C2B32[v[1]] << 6) | (C2B32[v[2]] << 1) | (C2B32[v[3]] >> 4)),
+                    /* 2 */ (byte)((C2B32[v[3]] << 4) | (C2B32[v[4]] >> 1)),                            /* 3 */ (byte)((C2B32[v[4]] << 7) | (C2B32[v[5]] << 2) | (C2B32[v[6]] >> 3)),
+                    /* 4 */ (byte)((C2B32[v[6]] << 5) | C2B32[v[7]]),                                   /* 5 */ (byte)((C2B32[v[8]] << 3) | C2B32[v[9]] >> 2),
+                    /* 6 */ (byte)((C2B32[v[9]] << 6) | (C2B32[v[10]] << 1) | (C2B32[v[11]] >> 4)),     /* 7 */ (byte)((C2B32[v[11]] << 4) | (C2B32[v[12]] >> 1)),
+                    /* 8 */ (byte)((C2B32[v[12]] << 7) | (C2B32[v[13]] << 2) | (C2B32[v[14]] >> 3)),    /* 9 */ (byte)((C2B32[v[14]] << 5) | C2B32[v[15]]),
                     };
                 }
             }
@@ -240,11 +240,14 @@ namespace NUlid
             if (string.IsNullOrEmpty(s))
                 throw new ArgumentNullException(nameof(s));
 
-            var u = s.ToUpperInvariant();
-            if (u.Length != 26 || u.Any(c => BASE32.IndexOf(c) < 0))
+            if (s.Length != 26)
                 throw new FormatException("Invalid Base32 string");
-            
-            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(u.Substring(0, 10))), FromBase32(u.Substring(10, 16)));
+            // Check if all chars are allowed by doing a lookup for each and seeing if we have an index <= 32 for it
+            for (var i = 0; i < 26; i++)
+                if (s[i] >= C2B32LEN || C2B32[s[i]] > 31)
+                    throw new FormatException("Invalid Base32 string");
+
+            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(s.Substring(0, 10))), FromBase32(s.Substring(10, 16)));
         }
 
         /// <summary>

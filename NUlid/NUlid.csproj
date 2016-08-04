@@ -31,6 +31,11 @@
     <DocumentationFile>bin\Release\NUlid.XML</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release with documentation|AnyCPU'">
+    <OutputPath>bin\Release with documentation\</OutputPath>
+    <DocumentationFile>bin\Release with documentation\NUlid.XML</DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />

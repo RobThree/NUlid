@@ -44,7 +44,8 @@
     <ProjectSummary>&amp;lt%3bpara&amp;gt%3bThis library provides a ULID struct that represents a ULID %28Universally Unique Lexicographically Sortable Identifier%29 and contains types, classes and interfaces for using ULID&amp;#39%3bs in your project.&amp;lt%3b/para&amp;gt%3b</ProjectSummary>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="NUlid" isDocumented="True">&lt;para&gt;The Nulid namespace contains the ULID struct that represents a ULID and contains methods for handling, parsing and otherwise using ULID's.&lt;/para&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="NUlid.Rng" isDocumented="True">&lt;para&gt;The Nulid.Rng namespace contains an interface and two basic RNG's (Random Number Generators) for use with ULID's.&lt;/para&gt;</NamespaceSummaryItem></NamespaceSummaries>
+      <NamespaceSummaryItem name="NUlid.Rng" isDocumented="True">&lt;para&gt;The Nulid.Rng namespace contains an interface and two basic RNG's (Random Number Generators) for use with ULID's.&lt;/para&gt;</NamespaceSummaryItem>
+    </NamespaceSummaries>
     <FeedbackEMailLinkText>Rob Janssen</FeedbackEMailLinkText>
     <FeedbackEMailAddress>rob%40devcorner.nl</FeedbackEMailAddress>
     <CopyrightText>Copyright &amp;#169%3b 2016 Devcorner.nl</CopyrightText>
@@ -96,5 +97,8 @@
     <PostBuildEvent>
     </PostBuildEvent>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release with documentation' ">
+    <OutputPath>bin\Release with documentation\</OutputPath>
   </PropertyGroup>
 </Project>

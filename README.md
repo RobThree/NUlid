@@ -141,3 +141,5 @@ Ulid.ToGuid():                    2.863.527/sec
 new Ulid(Guid):                   7.434.209/sec
 ```
 \* [fvilers/ulid.net](https://github.com/fvilers/ulid.net) (not included in repository, for reference only)
+
+![Performance comparison](https://raw.githubusercontent.com/RobThree/NUlid/master/NUlid.Performance/results/comparison-v1.1.png)

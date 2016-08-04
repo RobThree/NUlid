@@ -19,6 +19,14 @@ namespace NUlid.Tests
         private const string KNOWNMINRANDOM_STRING = "0000000000000000";
         private const string KNOWNMAXRANDOM_STRING = "ZZZZZZZZZZZZZZZZ";
 
+        private static DateTimeOffset StripMicroSeconds(DateTimeOffset t)
+        {
+            // We can't use DateTimeOffsets to compare since the resolution of a ulid is milliseconds, and DateTimeOffset
+            // has microseconds and more. So we drop that part by converting to UnixTimeMilliseconds and then back to
+            // a DateTimeOffset.
+            return DateTimeOffset.FromUnixTimeMilliseconds(t.ToUnixTimeMilliseconds());
+        }
+
         [TestMethod]
         public void NewUlid_Creates_NewUlid()
         {
@@ -38,10 +46,7 @@ namespace NUlid.Tests
         [TestMethod]
         public void NewUlid_Uses_SpecifiedTime()
         {
-            // We can't "simply" use DateTimeOffset.UtcNow since the resolution of a ulid is milliseconds, and UtcNow
-            // has microseconds and more. So we drop that part by converting to UnixTimeMilliseconds and then back to
-            // a DateTimeOffset.
-            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+            var time = StripMicroSeconds(DateTimeOffset.UtcNow);
             var target = Ulid.NewUlid(time);
             Assert.AreEqual(time, target.Time);
         }
@@ -157,7 +162,7 @@ namespace NUlid.Tests
         public void Ulid_HandlesMaxTimeCorrectly()
         {
             var target = new Ulid(KNOWNMAXTIMESTAMP_STRING + KNOWNMAXRANDOM_STRING);
-            Assert.AreEqual(target.Time, DateTimeOffset.FromUnixTimeMilliseconds(DateTimeOffset.MaxValue.ToUnixTimeMilliseconds())); //We need to loose after the milliseconds, hence the fromuxtimems(touxtimems)
+            Assert.AreEqual(target.Time, StripMicroSeconds(DateTimeOffset.MaxValue));
         }
 
         [TestMethod]

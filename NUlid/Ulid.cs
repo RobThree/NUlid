@@ -292,7 +292,11 @@ namespace NUlid
         /// <returns>A 16-element byte array.</returns>
         public byte[] ToByteArray()
         {
-            return tdata.Concat(rdata).ToArray();
+            return new[] {
+                tdata[0], tdata[1], tdata[2], tdata[3], tdata[4], tdata[5],
+                rdata[0], rdata[1], rdata[2], rdata[3], rdata[4],
+                rdata[5], rdata[6], rdata[7], rdata[8], rdata[9]
+            };
         }
 
         /// <summary>
@@ -364,8 +368,8 @@ namespace NUlid
                 return this.Time.CompareTo(other.Time);
             for (int i = 0; i < 10; i++)
             {
-                if (this.Random[i] != other.Random[i])
-                    return this.Random[i].CompareTo(other.Random[i]);
+                if (rdata[i] != other.rdata[i])
+                    return rdata[i].CompareTo(other.rdata[i]);
             }
             return 0;
         }
@@ -418,7 +422,12 @@ namespace NUlid
         /// <returns>true if x and y are equal; otherwise, false.</returns>
         public static bool operator ==(Ulid x, Ulid y)
         {
-            return (x.Time == y.Time) && x.Random.SequenceEqual(y.Random);
+            if (x.Time != y.Time)
+                return false;
+            for (var i = 0; i < 10; i++)
+                if (x.rdata[i] != y.rdata[i])
+                    return false;
+            return true;
         }
 
         /// <summary>
@@ -443,8 +452,8 @@ namespace NUlid
                 int hash = (int)2166136261;
                 // Suitable nullity checks etc, of course :)
                 hash = (hash * 16777619) ^ Time.GetHashCode();
-                for (int i = 0; i < Random.Length; i++)
-                    hash = (hash * 16777619) ^ Random[i];
+                for (int i = 0; i < 10; i++)
+                    hash = (hash * 16777619) ^ rdata[i];
                 return hash;
             }
         }

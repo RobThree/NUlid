@@ -3,7 +3,7 @@
   <metadata>
     <id>NUlid</id>
     <title>NUlid</title>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <authors>RobIII</authors>
     <owners>RobIII</owners>
     <projectUrl>https://github.com/RobThree/NUlid</projectUrl>
@@ -16,7 +16,7 @@
       A .Net ULID implementation
     </summary>
     <releaseNotes>
-      Initial release
+      Performance improvements
     </releaseNotes>
     <tags>Universally Unique Lexicographically Sortable Identifier ULID UUID GUID</tags>
   </metadata>

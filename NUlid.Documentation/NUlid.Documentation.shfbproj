@@ -30,7 +30,7 @@
       <DocumentationSource sourceFile="..\NUlid\bin\Release\NUlid.dll" xmlns="" />
       <DocumentationSource sourceFile="..\NUlid\bin\Release\NUlid.xml" xmlns="" />
     </DocumentationSources>
-    <HelpFileVersion>1.0.0.0</HelpFileVersion>
+    <HelpFileVersion>1.1.0.0</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>
     <NamespaceGrouping>True</NamespaceGrouping>
     <SyntaxFilters>Standard</SyntaxFilters>
@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\VersionHistory\v1.0.0.0.aml" />
+    <None Include="Content\VersionHistory\v1.1.0.0.aml" />
     <None Include="Content\VersionHistory\VersionHistory.aml" />
     <None Include="Content\Welcome.aml" />
   </ItemGroup>

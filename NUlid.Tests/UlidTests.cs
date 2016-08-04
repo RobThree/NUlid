@@ -51,8 +51,11 @@ namespace NUlid.Tests
         {
             var g = Guid.NewGuid();
             var u = new Ulid(g);
+            var t = new Ulid(Guid.Empty);
 
             Assert.AreEqual(g, u.ToGuid());
+            Assert.AreEqual(Ulid.Empty, t);
+            Assert.AreEqual(Guid.Empty, t.ToGuid());
         }
 
         [TestMethod]

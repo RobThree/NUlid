@@ -5,7 +5,7 @@ This is, currently, a work-in-progress. See [alizain/ulid](https://github.com/al
 
 ## TODO:
 
-- [ ] Some unittests, code coverage
+- [X] Some unittests, code coverage
 - [ ] Finalize documentation / welcome page / version history etc.
 - [ ] ReadME.md
 - [ ] Logo

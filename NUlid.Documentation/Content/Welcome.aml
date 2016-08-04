@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<topic id="7b448624-ecc4-4c86-b4fd-d76ed2de25ba" revisionNumber="1">
+<topic id="e46f2558-fc83-4540-9762-6f494f768376" revisionNumber="1">
 	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
 		<introduction>
 			<para>This is a sample conceptual topic.  You can use this as a starting point for adding more conceptual
@@ -49,7 +49,7 @@ Assistance Markup Language (MAML) which is used to create these topics.</para>
 		</section>
 
 		<relatedTopics>
-			<link xlink:href="82e5ead0-4b91-45bf-8039-b3a8dca6da1e" />
+			<link xlink:href="55d108d0-b9ef-495d-8303-73b4ec638e70" />
 		</relatedTopics>
 	</developerConceptualDocument>
 </topic>

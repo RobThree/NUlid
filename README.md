@@ -122,7 +122,7 @@ Based on / inspired by [alizain/ulid](https://github.com/alizain/ulid).
 
 ## Performance
 
-Below measurements are based on a Intel(R) Xeon(R) CPU E3-1225 v3 @ 3.20GHz:
+Below measurements are based on an Intel(R) Xeon(R) CPU E3-1225 v3 @ 3.20GHz:
 
 ```
 Guid.NewGuid():                  10.968.520/sec

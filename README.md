@@ -27,7 +27,31 @@ Or simply use the [Nuget](https://www.nuget.org/) package manager GUI in Visual 
 
 ### Usage
 
-TODO
+Creating a ULID:
+
+```c#
+// Create a ULID
+var myulid = Ulid.NewUlid();
+// Print ULID
+Console.WriteLine(myulid);
+```
+Output:
+
+`01ASB2XFCZJY7WHZ2FNRTMQJCT`
+
+Parsing a ULID:
+
+```c#
+// Parse ULID:
+var myulid = Ulid.Parse("01ASB2XFCZJY7WHZ2FNRTMQJCT");
+// Print time-part of ULID:
+Console.WriteLine(myulid.Time);
+```
+Output:
+
+`4-8-2016 15:31:59 +00:00`
+
+You can also convert from/to GUID/UUID's, get the byte-representation of a ULID, create a ULID with specific timestamp and you can even specify an [`IUlidRng`](NUlid/Rng/IUlidRng.cs) to use for generating the randomness (by default NUlid uses the (slower, but cryptographically secure) [`CSUlidRng`](NUlid/Rng/CSUlidRng.cs) but a (faster) [`SimpleUlidRng`](NUlid/Rng/SimpleUlidRng.cs) is also provided). The ULID is implemented as a `struct` with (operator) overloads for (in)equality, comparison etc. built-in and is, generally, very much like .Net's native `Guid` struct. An extensive helpfile is provided in the Nuget package and [the testsuite](NUlid.Tests) also serves as a (simple) demonstration of NUlid's features.
 
 ## Specification
 
@@ -101,24 +125,19 @@ Based on / inspired by [alizain/ulid](https://github.com/alizain/ulid).
 Below measurements are based on a Intel(R) Xeon(R) CPU E3-1225 v3 @ 3.20GHz:
 
 ```
-Guid.NewGuid():                                                    10.349.203/sec
-Ulid.NewUlid():                                                     2.885.784/sec
-Guid.Parse(string):                                                 1.245.751/sec
-Ulid.Parse(string):                                                   385.934/sec
-Guid.ToString():                                                    3.618.368/sec
-Ulid.ToString():                                                    2.105.983/sec
-new Guid(byte[]):                                                   6.168.259/sec
-new Ulid(byte[]):                                                   4.852.037/sec
-Guid.ToByteArray():                                                 9.083.221/sec
-Ulid.ToByteArray():                                                 1.352.928/sec
-Ulid.ToGuid():                                                      1.340.061/sec
-new Ulid(Guid):                                                     6.096.758/sec
+Guid.NewGuid():                                                    10.582.985/sec
+Ulid.NewUlid(SimpleUlidRng):                                        4.666.571/sec
+Ulid.NewUlid(CSUlidRng):                                            2.831.033/sec
+Guid.Parse(string):                                                 1.223.488/sec
+Ulid.Parse(string):                                                   373.782/sec
+Guid.ToString():                                                    3.535.573/sec
+Ulid.ToString():                                                    2.026.495/sec
+new Guid(byte[]):                                                   5.881.114/sec
+new Ulid(byte[]):                                                   4.731.260/sec
+Guid.ToByteArray():                                                 8.765.287/sec
+Ulid.ToByteArray():                                                 1.307.555/sec
+Ulid.ToGuid():                                                      1.285.171/sec
+new Ulid(Guid):                                                     5.901.798/sec
 ```
 
 Note that these numbers will probably improve in the near future since there's enough room for optimization left.
-
-## TODO:
-
-- [ ] Finalize documentation -> Welcome page -> usage/quickstart
-- [ ] ReadMe.md -> usage/quickstart
-- [ ] Final NuGet package (currently RC status)

@@ -1,6 +1,5 @@
 ﻿using NUlid.Rng;
 using System;
-using System.Linq;
 
 namespace NUlid
 {
@@ -17,8 +16,7 @@ namespace NUlid
         private static readonly int C2B32LEN = C2B32.Length;
 
         // Internal structure for data
-        private readonly byte[] tdata;
-        private readonly byte[] rdata;
+        private readonly byte[] data;
 
         // Default RNG to use when no RNG is specified
         private static readonly IUlidRng DEFAULTRNG = new CSUlidRng();
@@ -28,12 +26,12 @@ namespace NUlid
         /// <summary>
         /// Represents the smallest possible value of <see cref="Ulid"/>. This field is read-only.
         /// </summary>
-        public static readonly Ulid MinValue = new Ulid(EPOCH, Array.AsReadOnly(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }).ToArray());
+        public static readonly Ulid MinValue = new Ulid(EPOCH, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 
         /// <summary>
         /// Represents the largest possible value of <see cref="Ulid"/>. This field is read-only.
         /// </summary>
-        public static readonly Ulid MaxValue = new Ulid(DateTimeOffset.MaxValue, Array.AsReadOnly(new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 }).ToArray());
+        public static readonly Ulid MaxValue = new Ulid(DateTimeOffset.MaxValue, new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 });
 
         /// <summary>
         /// A read-only instance of the <see cref="Ulid"/> structure whose value is all zeros.
@@ -43,12 +41,12 @@ namespace NUlid
         /// <summary>
         /// Gets the "time part" of the <see cref="Ulid"/>.
         /// </summary>
-        public DateTimeOffset Time { get { return ByteArrayToDateTimeOffset(tdata); } }
+        public DateTimeOffset Time { get { return ByteArrayToDateTimeOffset(data); } }
 
         /// <summary>
         /// Gets the "random part" of the <see cref="Ulid"/>.
         /// </summary>
-        public byte[] Random { get { return Array.AsReadOnly(rdata).ToArray(); } }
+        public byte[] Random { get { return new[] { data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15] }; } }
 
         /// <summary>
         /// Creates and returns a new <see cref="Ulid"/> based on the current (UTC) time and default
@@ -108,10 +106,8 @@ namespace NUlid
             if (bytes.Length != 16)
                 throw new ArgumentException("An array of 16 elements is required", nameof(bytes));
 
-            tdata = new byte[6];
-            rdata = new byte[10];
-            Array.Copy(bytes, tdata, 6);
-            Array.Copy(bytes, 6, rdata, 0, 10);
+            data = new byte[16];
+            Array.Copy(bytes, data, 16);
         }
 
         /// <summary>
@@ -141,11 +137,10 @@ namespace NUlid
             if (randomPart.Length != 10)
                 throw new InvalidOperationException("randomPart must be 10 bytes");
 
-            tdata = new byte[6];
-            rdata = new byte[10];
+            data = new byte[16];
 
-            Array.Copy(DateTimeOffsetToByteArray(timePart), tdata, 6);
-            Array.Copy(randomPart, rdata, 10);
+            Array.Copy(DateTimeOffsetToByteArray(timePart), data, 6);
+            Array.Copy(randomPart, 0, data, 6, 10);
         }
 
         #region Helper functions
@@ -283,7 +278,8 @@ namespace NUlid
         /// <returns>The <see cref="Ulid"/> in string-representation.</returns>
         public override string ToString()
         {
-            return ToBase32(tdata) + ToBase32(rdata);
+            return ToBase32(new[] { data[0], data[1], data[2], data[3], data[4], data[5] })
+                + ToBase32(new[] { data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15] });
         }
 
         /// <summary>
@@ -292,11 +288,9 @@ namespace NUlid
         /// <returns>A 16-element byte array.</returns>
         public byte[] ToByteArray()
         {
-            return new[] {
-                tdata[0], tdata[1], tdata[2], tdata[3], tdata[4], tdata[5],
-                rdata[0], rdata[1], rdata[2], rdata[3], rdata[4],
-                rdata[5], rdata[6], rdata[7], rdata[8], rdata[9]
-            };
+            var ret = new byte[16];
+            Array.Copy(data, ret, 16);
+            return ret;
         }
 
         /// <summary>
@@ -364,12 +358,10 @@ namespace NUlid
         /// </returns>
         public int CompareTo(Ulid other)
         {
-            if (this.Time != other.Time)
-                return this.Time.CompareTo(other.Time);
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 16; i++)
             {
-                if (rdata[i] != other.rdata[i])
-                    return rdata[i].CompareTo(other.rdata[i]);
+                if (data[i] != other.data[i])
+                    return data[i].CompareTo(other.data[i]);
             }
             return 0;
         }
@@ -422,10 +414,8 @@ namespace NUlid
         /// <returns>true if x and y are equal; otherwise, false.</returns>
         public static bool operator ==(Ulid x, Ulid y)
         {
-            if (x.Time != y.Time)
-                return false;
-            for (var i = 0; i < 10; i++)
-                if (x.rdata[i] != y.rdata[i])
+            for (var i = 0; i < 16; i++)
+                if (x.data[i] != y.data[i])
                     return false;
             return true;
         }
@@ -449,11 +439,9 @@ namespace NUlid
         {
             unchecked // Overflow is fine, just wrap
             {
-                int hash = (int)2166136261;
-                // Suitable nullity checks etc, of course :)
-                hash = (hash * 16777619) ^ Time.GetHashCode();
-                for (int i = 0; i < 10; i++)
-                    hash = (hash * 16777619) ^ rdata[i];
+                var hash = (int)2166136261;
+                for (var i = 0; i < 16; i++)
+                    hash = (hash * 16777619) ^ data[i];
                 return hash;
             }
         }

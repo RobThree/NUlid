@@ -159,6 +159,23 @@ namespace NUlid.Tests
         }
 
         [TestMethod]
+        public void Ulid_RandomIs_Immutable()
+        {
+            Ulid.MinValue.Random[0] = 42;
+            Assert.AreEqual(0, Ulid.MinValue.Random[0]);
+
+            Ulid.MaxValue.Random[0] = 42;
+            Assert.AreEqual(255, Ulid.MaxValue.Random[0]);
+
+            Ulid.Empty.Random[0] = 42;
+            Assert.AreEqual(0, Ulid.Empty.Random[0]);
+
+            var u = Ulid.NewUlid(new FakeUlidRng());
+            u.Random[0] = 42;
+            Assert.AreEqual(107, u.Random[0]);
+        }
+
+        [TestMethod]
         public void Ulid_HandlesMaxTimeCorrectly()
         {
             var target = new Ulid(KNOWNMAXTIMESTAMP_STRING + KNOWNMAXRANDOM_STRING);
@@ -303,7 +320,7 @@ namespace NUlid.Tests
         [ExpectedException(typeof(FormatException))]
         public void Ulid_Parse_ThrowsFormatException_OnInvalidString1()
         {
-            Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E','O')); // O is not in BASE32 alphabet
+            Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', 'O')); // O is not in BASE32 alphabet
         }
 
         [TestMethod]

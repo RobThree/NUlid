@@ -9,7 +9,7 @@ This is, currently, a work-in-progress. See [alizain/ulid](https://github.com/al
 
 - [X] Some unittests, code coverage
 - [ ] Finalize documentation / welcome page / version history etc.
-- [ ] ReadME.md
-- [ ] Logo
-- [ ] NuGet package
+- [ ] ReadMe.md
+- [X] Logo
+- [ ] Final NuGet package (currently RC status)
 - [X] CI / AppVeyor

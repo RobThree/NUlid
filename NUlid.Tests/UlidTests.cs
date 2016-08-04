@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NUlid.Tests
@@ -78,6 +79,119 @@ namespace NUlid.Tests
 
             Assert.IsTrue(target.Random.SequenceEqual(ulid.Random));
             Assert.AreEqual(ulid.Time, target.Time);
+        }
+
+        [TestMethod]
+        public void Ulid_EqualsOperator_WorksCorrectly()
+        {
+            var a = Ulid.NewUlid();
+            var b = new Ulid(a.ToByteArray());
+
+            Assert.IsTrue(a == b);
+        }
+
+        [TestMethod]
+        public void Ulid_NotEqualsOperator_WorksCorrectly()
+        {
+            var a = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176385), new FakeUlidRng());
+            var b = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176386), new FakeUlidRng());
+
+            Assert.IsTrue(a != b);
+        }
+
+        [TestMethod]
+        public void Ulid_Equals_WorksCorrectly()
+        {
+            var a = Ulid.NewUlid();
+            var b = new Ulid(a.ToByteArray());
+
+            Assert.IsTrue(a.Equals(b));
+            Assert.IsTrue(a.Equals(a));
+            Assert.IsFalse(a.Equals(Ulid.Empty));
+        }
+
+        [TestMethod]
+        public void Ulid_ObjectEquals_WorksCorrectly()
+        {
+            var a = Ulid.NewUlid();
+            var b = new Ulid(a.ToByteArray());
+
+            Assert.IsTrue(a.Equals((object)b));
+            Assert.IsTrue(a.Equals((object)a));
+            Assert.IsFalse(a.Equals((object)Ulid.Empty));
+            Assert.IsFalse(a.Equals(null));
+            Assert.IsFalse(a.Equals(new object()));
+        }
+
+        [TestMethod]
+        public void Ulid_CompareTo_WorksCorrectly()
+        {
+            var a = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176385), new FakeUlidRng());
+            var b = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176385), new FakeUlidRng());
+
+            var c = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176384), new FakeUlidRng());
+            var d = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176386), new FakeUlidRng());
+
+            Assert.AreEqual(0, a.CompareTo(b));
+            Assert.AreEqual(1, a.CompareTo(c));
+            Assert.AreEqual(-1, a.CompareTo(d));
+
+            var rmin = a.ToByteArray(); rmin[15]--;
+            var rplus = a.ToByteArray(); rplus[15]++;
+
+            var e = new Ulid(rmin);
+            var f = new Ulid(rplus);
+
+            Assert.AreEqual(1, a.CompareTo(e));
+            Assert.AreEqual(-1, a.CompareTo(f));
+        }
+
+        [TestMethod]
+        public void Ulid_ObjectCompareTo_WorksCorrectly()
+        {
+            var a = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176385), new FakeUlidRng());
+            var b = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176385), new FakeUlidRng());
+
+            var c = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176384), new FakeUlidRng());
+            var d = Ulid.NewUlid(DateTimeOffset.FromUnixTimeMilliseconds(1469918176386), new FakeUlidRng());
+
+            Assert.AreEqual(0, a.CompareTo((object)b));
+            Assert.AreEqual(1, a.CompareTo((object)c));
+            Assert.AreEqual(-1, a.CompareTo((object)d));
+            Assert.AreEqual(1, a.CompareTo(null));
+
+            var rmin = a.ToByteArray(); rmin[15]--;
+            var rplus = a.ToByteArray(); rplus[15]++;
+
+            var e = new Ulid(rmin);
+            var f = new Ulid(rplus);
+
+            Assert.AreEqual(1, a.CompareTo((object)e));
+            Assert.AreEqual(-1, a.CompareTo((object)f));
+        }
+
+        [TestMethod]
+        public void Ulid_GetHashCode_WorksCorrectly()
+        {
+            var rng = new FakeUlidRng();
+            var ts = DateTimeOffset.FromUnixTimeMilliseconds(1469918176385);
+            var hashcodes = new List<int>()
+            {
+                Ulid.MinValue.GetHashCode(),
+                Ulid.MaxValue.GetHashCode(),
+                Ulid.NewUlid().GetHashCode(),
+            };
+            hashcodes.AddRange(Enumerable.Range(0, 1000).Select(i => Ulid.NewUlid(ts.AddMilliseconds(i)).GetHashCode()));
+            hashcodes.AddRange(Enumerable.Range(0, 1000).Select(i => Ulid.NewUlid(ts.AddMilliseconds(i), rng).GetHashCode()));
+
+            Assert.AreEqual(3 + 1000 + 1000, hashcodes.Distinct().Count());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void Ulid_ObjectCompareTo_Throws()
+        {
+            Ulid.NewUlid().CompareTo(new object());
         }
     }
 

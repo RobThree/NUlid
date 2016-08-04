@@ -10,9 +10,6 @@ namespace NUlid
     /// </summary>
     public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable
     {
-        //TODO: Document exceptions (especially in constructors/parse)
-
-
         // Base32 "alphabet"
         private const string BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
@@ -26,14 +23,19 @@ namespace NUlid
         private static readonly DateTimeOffset EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
-        /// A read-only instance of the <see cref="Ulid"/> structure whose value is all zeros.
+        /// Represents the smallest possible value of <see cref="Ulid"/>. This field is read-only.
         /// </summary>
-        public static readonly Ulid Empty = new Ulid(EPOCH, Array.AsReadOnly(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }).ToArray());
+        public static readonly Ulid MinValue = new Ulid(EPOCH, Array.AsReadOnly(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }).ToArray());
 
         /// <summary>
         /// Represents the largest possible value of <see cref="Ulid"/>. This field is read-only.
         /// </summary>
         public static readonly Ulid MaxValue = new Ulid(DateTimeOffset.MaxValue, Array.AsReadOnly(new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 }).ToArray());
+
+        /// <summary>
+        /// A read-only instance of the <see cref="Ulid"/> structure whose value is all zeros.
+        /// </summary>
+        public static readonly Ulid Empty = MinValue;
 
         /// <summary>
         /// Gets the "time part" of the <see cref="Ulid"/>.
@@ -97,6 +99,7 @@ namespace NUlid
         /// <param name="bytes">
         /// A 16-element byte array containing values with which to initialize the <see cref="Ulid"/>.
         /// </param>
+        /// <exception cref="ArgumentException">bytes argument is anything but 16 bytes.</exception>
         public Ulid(byte[] bytes)
         {
             if (bytes.Length != 16)
@@ -146,13 +149,12 @@ namespace NUlid
         private static byte[] DateTimeOffsetToByteArray(DateTimeOffset value)
         {
             var mb = BitConverter.GetBytes(value.ToUnixTimeMilliseconds());
-            var x = new[] { mb[5], mb[4], mb[3], mb[2], mb[1], mb[0] };
-            return x;
+            return new[] { mb[5], mb[4], mb[3], mb[2], mb[1], mb[0] };                                  // Drop byte 6 & 7
         }
 
         private static DateTimeOffset ByteArrayToDateTimeOffset(byte[] value)
         {
-            var tmp = new byte[] { value[5], value[4], value[3], value[2], value[1], value[0], 0, 0 };
+            var tmp = new byte[] { value[5], value[4], value[3], value[2], value[1], value[0], 0, 0 };  // Pad with 2 "lost" bytes
             return DateTimeOffset.FromUnixTimeMilliseconds(BitConverter.ToInt64(tmp, 0));
         }
 
@@ -242,10 +244,7 @@ namespace NUlid
             if (u.Length != 26 || u.Any(c => BASE32.IndexOf(c) < 0))
                 throw new FormatException("Invalid Base32 string");
             
-            var t = FromBase32(u.Substring(0, 10));
-            var r = FromBase32(u.Substring(10, 16));
-
-            return new Ulid(t.Concat(r).ToArray());
+            return new Ulid(FromBase32(u.Substring(0, 10)).Concat(FromBase32(u.Substring(10, 16))).ToArray());
         }
 
         /// <summary>
@@ -310,8 +309,6 @@ namespace NUlid
         /// <returns>true if other is equal to this instance; otherwise, false.</returns>
         public bool Equals(Ulid other)
         {
-            if (ReferenceEquals(other, this))
-                return true;
             return this == other;
         }
 
@@ -337,7 +334,7 @@ namespace NUlid
         /// <param name="other">A <see cref="Ulid"/> to compare to this instance.</param>
         /// <returns>
         ///     <para>
-        ///     A signed number indicating the relative values of this instance and value.
+        ///     A signed number indicating the relative values of this instance and other.
         ///     </para>
         ///     <list type="table">
         ///         <listheader>
@@ -346,15 +343,15 @@ namespace NUlid
         ///         </listheader>
         ///         <item>
         ///             <term>A negative integer</term>
-        ///             <term>This instance is less than value.</term>
+        ///             <term>This instance is less than other.</term>
         ///         </item>
         ///         <item>
         ///             <term>Zero</term>
-        ///             <term>This instance is equal to value.</term>
+        ///             <term>This instance is equal to other.</term>
         ///         </item>
         ///         <item>
         ///             <term>A positive integer</term>
-        ///             <term>This instance is greater than value.</term>
+        ///             <term>This instance is greater than other.</term>
         ///         </item>
         ///     </list>
         /// </returns>
@@ -362,7 +359,7 @@ namespace NUlid
         {
             if (this.Time != other.Time)
                 return this.Time.CompareTo(other.Time);
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < 10; i++)
             {
                 if (this.Random[i] != other.Random[i])
                     return this.Random[i].CompareTo(other.Random[i]);
@@ -385,15 +382,15 @@ namespace NUlid
         ///         </listheader>
         ///         <item>
         ///             <term>A negative integer</term>
-        ///             <term>This instance is less than value.</term>
+        ///             <term>This instance is less than other.</term>
         ///         </item>
         ///         <item>
         ///             <term>Zero</term>
-        ///             <term>This instance is equal to value.</term>
+        ///             <term>This instance is equal to other.</term>
         ///         </item>
         ///         <item>
         ///             <term>A positive integer</term>
-        ///             <term>This instance is greater than value.</term>
+        ///             <term>This instance is greater than other.</term>
         ///         </item>
         ///     </list>
         /// </returns>

@@ -244,7 +244,7 @@ namespace NUlid
             if (u.Length != 26 || u.Any(c => BASE32.IndexOf(c) < 0))
                 throw new FormatException("Invalid Base32 string");
             
-            return new Ulid(FromBase32(u.Substring(0, 10)).Concat(FromBase32(u.Substring(10, 16))).ToArray());
+            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(u.Substring(0, 10))), FromBase32(u.Substring(10, 16)));
         }
 
         /// <summary>
@@ -254,10 +254,10 @@ namespace NUlid
         /// <param name="s">A string containing the value to convert.</param>
         /// <param name="result">
         /// When this method returns, contains a <see cref="Ulid"/> equivalent of the <see cref="Ulid"/> contained in
-        /// s, if the conversion succeeded, or null if the conversion failed. The conversion fails if the s parameter
-        /// is null or <see cref="System.String.Empty"/>, is not of the correct format, or represents an invalid ulid
-        /// otherwise. This parameter is passed uninitialized; any value originally supplied in result will be 
-        /// overwritten.
+        /// s, if the conversion succeeded, or <see cref="Empty"/> if the conversion failed. The conversion fails if
+        /// the s parameter is null or <see cref="System.String.Empty"/>, is not of the correct format, or represents
+        /// an invalid ulid otherwise. This parameter is passed uninitialized; any value originally supplied in result
+        /// will be overwritten.
         /// </param>
         /// <returns>true if s was converted successfully; otherwise, false.</returns>
         public static bool TryParse(string s, out Ulid result)

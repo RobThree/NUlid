@@ -173,6 +173,12 @@ namespace NUlid.Tests
             var u = Ulid.NewUlid(new FakeUlidRng());
             u.Random[0] = 42;
             Assert.AreEqual(107, u.Random[0]);
+
+            // Make sure when we pass an array into the constructor we cannot modify the source array (constructor copies, doesn't use reference)
+            var x = Ulid.MaxValue.ToByteArray();
+            var t = new Ulid(x);
+            x[6] = 0;
+            Assert.AreEqual(255, t.Random[0]);
         }
 
         [TestMethod]

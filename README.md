@@ -1,16 +1,16 @@
 # ![Logo](https://raw.githubusercontent.com/RobThree/NUlid/master/logo.png) NUlid
-.Net [ULID](https://github.com/alizain/ulid/blob/master/README.md) implementation
+A .Net [ULID](https://github.com/alizain/ulid/blob/master/README.md) implementation
 
 ## Universally Unique Lexicographically Sortable Identifier
 
-A GUID/UUID can be suboptimal for many uses-cases because:
+A GUID/UUID can be suboptimal for many use-cases because:
 
 - It isn't the most character efficient way of encoding 128 bits
 - It provides no other information than randomness
 
-Instead, herein is proposed ULID:
+A ULID however:
 
-- 128-bit compatibility with UUID
+- Is compatible with UUID/GUID's
 - 1.21e+24 unique ULIDs per millisecond (1,208,925,819,614,629,174,706,176 to be exact)
 - Lexicographically sortable
 - Canonically encoded as a 26 character string, as opposed to the 36 character UUID
@@ -82,11 +82,11 @@ The components are encoded as 16 octets. Each component is encoded with the Most
 
 ```
 ttttttttttrrrrrrrrrrrrrrrr
-
-where
-t is Timestamp
-r is Randomness
 ```
+
+Where:
+`t` is Timestamp
+`r` is Randomness
 
 ## Prior Art
 
@@ -119,9 +119,6 @@ Note that these numbers will probably improve in the near future since there's e
 
 ## TODO:
 
-- [X] Some unittests, code coverage
-- [ ] Finalize documentation / welcome page / version history etc.
-- [ ] ReadMe.md
-- [X] Logo
+- [ ] Finalize documentation -> Welcome page -> usage/quickstart
+- [ ] ReadMe.md -> usage/quickstart
 - [ ] Final NuGet package (currently RC status)
-- [X] CI / AppVeyor

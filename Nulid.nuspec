@@ -3,7 +3,7 @@
   <metadata>
     <id>NUlid</id>
     <title>NUlid</title>
-    <version>0.9.0-rc</version>
+    <version>1.0.0</version>
     <authors>RobIII</authors>
     <owners>RobIII</owners>
     <projectUrl>https://github.com/RobThree/NUlid</projectUrl>
@@ -16,13 +16,13 @@
       A .Net ULID implementation
     </summary>
     <releaseNotes>
-      * Beta
+      Initial release
     </releaseNotes>
     <tags>Universally Unique Lexicographically Sortable Identifier ULID UUID GUID</tags>
   </metadata>
   <files>
     <file src="NUlid\bin\Release\NUlid.dll" target="lib\net46" />
     <file src="NUlid\bin\Release\NUlid.XML" target="lib\net46" />
-    <file src="NUlid.Documentation\Help\Ulid.Documentation.chm" target="content" />
+    <file src="NUlid.Documentation\Help\NUlid.Documentation.chm" target="content" />
   </files>
 </package>

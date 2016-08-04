@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NUlid.Rng;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -24,11 +25,23 @@ namespace NUlid.Performance
             Time<object>(
                 (p, it) =>
                 {
+                    var simplerng = new SimpleUlidRng();
                     for (int i = 0; i < it; i++)
-                        Ulid.NewUlid();
+                        Ulid.NewUlid(simplerng);
                 }, 
                 iterations,
-                "Ulid.NewUlid():                                               {0,15:N0}/sec"
+                "Ulid.NewUlid(SimpleUlidRng):                                  {0,15:N0}/sec"
+            );
+
+            Time<object>(
+                (p, it) =>
+                {
+                    var csrng = new CSUlidRng();
+                    for (int i = 0; i < it; i++)
+                        Ulid.NewUlid(csrng);
+                },
+                iterations,
+                "Ulid.NewUlid(CSUlidRng):                                      {0,15:N0}/sec"
             );
 
             Time(

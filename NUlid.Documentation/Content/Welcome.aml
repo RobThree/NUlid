@@ -15,7 +15,7 @@
       <content>
         <para>
           A ULID (<legacyBold>Universally Unique Lexicographically Sortable Identifier</legacyBold>) is an alternative
-          to a GUID / UUID. A GUID/UUID can be suboptimal for many uses-cases because:
+          to a GUID / UUID. A GUID/UUID can be suboptimal for many use-cases because:
         </para>
         <list class="bullet">
           <listItem>
@@ -69,6 +69,50 @@
             </para>
           </listItem>
         </list>
+      </content>
+    </section>
+
+    <section>
+      <title>Usage</title>
+      <content>
+        <para>Creating a ULID:</para>
+        <code language="c#">
+          <![CDATA[
+// Create a ULID
+var myulid = Ulid.NewUlid();
+// Print ULID
+Console.WriteLine(myulid);
+          ]]>
+        </code>
+        <para>Output:</para>
+        <para>
+          <codeInline>01ASB2XFCZJY7WHZ2FNRTMQJCT</codeInline>
+        </para>
+        <para>Parsing a ULID:</para>
+        <code language="c#">
+          <![CDATA[
+// Parse ULID:
+var myulid = Ulid.Parse("01ASB2XFCZJY7WHZ2FNRTMQJCT");
+// Print time-part of ULID:
+Console.WriteLine(myulid.Time);
+          ]]>
+        </code>
+        <para>Output:</para>
+        <para>
+          <codeInline>4-8-2016 15:31:59 +00:00</codeInline>
+        </para>
+        <para>
+          You can also convert from/to <codeEntityReference>T:System.Guid</codeEntityReference>/UUID's, get the byte-representation of a ULID, 
+          create a ULID with specific timestamp and you can even specify an <codeEntityReference>T:NUlid.Rng.IUlidRng</codeEntityReference> to
+          use for generating the randomness (by default NUlid uses the (slower, but cryptographically secure)
+          <codeEntityReference>T:NUlid.Rng.CSUlidRng</codeEntityReference> but a (faster)
+          <codeEntityReference>T:NUlid.Rng.SimpleUlidRng</codeEntityReference> is also provided). The ULID is implemented as a struct with
+          (operator) overloads for (in)equality, comparison etc. built-in and is, generally, very much like .Net's native
+          <codeEntityReference>T:System.Guid</codeEntityReference> struct. The <externalLink>
+            <linkText>testsuite</linkText>
+            <linkUri>https://github.com/RobThree/NUlid/blob/master/NUlid.Tests</linkUri>
+          </externalLink> also serves as a (simple) demonstration of NUlid's features.
+        </para>
       </content>
     </section>
 

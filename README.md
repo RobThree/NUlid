@@ -125,17 +125,19 @@ Based on / inspired by [alizain/ulid](https://github.com/alizain/ulid).
 Below measurements are based on a Intel(R) Xeon(R) CPU E3-1225 v3 @ 3.20GHz:
 
 ```
-Guid.NewGuid():                                                    10.968.520/sec
-Ulid.NewUlid(SimpleUlidRng):                                        5.355.601/sec
-Ulid.NewUlid(CSUlidRng):                                            3.306.954/sec
-Guid.Parse(string):                                                 1.302.345/sec
-Ulid.Parse(string):                                                 1.498.890/sec
-Guid.ToString():                                                    3.790.084/sec
-Ulid.ToString():                                                    2.272.227/sec
-new Guid(byte[]):                                                   6.334.916/sec
-new Ulid(byte[]):                                                   5.484.964/sec
-Guid.ToByteArray():                                                 9.534.734/sec
-Ulid.ToByteArray():                                                 2.919.258/sec
-Ulid.ToGuid():                                                      2.863.527/sec
-new Ulid(Guid):                                                     7.434.209/sec
+Guid.NewGuid():                  10.968.520/sec
+UlidNet.Ulid.NewUlid():              78.378/sec *
+Ulid.NewUlid(SimpleUlidRng):      5.355.601/sec
+Ulid.NewUlid(CSUlidRng):          3.306.954/sec
+Guid.Parse(string):               1.302.345/sec
+Ulid.Parse(string):               1.498.890/sec
+Guid.ToString():                  3.790.084/sec
+Ulid.ToString():                  2.272.227/sec
+new Guid(byte[]):                 6.334.916/sec
+new Ulid(byte[]):                 5.484.964/sec
+Guid.ToByteArray():               9.534.734/sec
+Ulid.ToByteArray():               2.919.258/sec
+Ulid.ToGuid():                    2.863.527/sec
+new Ulid(Guid):                   7.434.209/sec
 ```
+\* [fvilers/ulid.net](https://github.com/fvilers/ulid.net) (not included in repository, for reference only)

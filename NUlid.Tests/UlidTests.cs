@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 
 namespace NUlid.Tests
@@ -11,6 +11,7 @@ namespace NUlid.Tests
         //TODO: Test min/max timestamps (7ZZZZZZZZZ == ??)
         //                              (0000000000 == UNIX EPOCH)
         //                               76EZ91ZPZZ == Actual DateTimeOffset.MaxValue
+        //                              and other edge-cases maybe
         //  and vice versa/overflows/whatever
 
         [TestMethod]

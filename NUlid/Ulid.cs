@@ -1,7 +1,6 @@
 ﻿using NUlid.Rng;
 using System;
 using System.Linq;
-using System.Text;
 
 namespace NUlid
 {

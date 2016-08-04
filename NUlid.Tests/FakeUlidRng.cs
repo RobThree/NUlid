@@ -1,5 +1,4 @@
 ﻿using NUlid.Rng;
-using System.Linq;
 
 namespace NUlid.Tests
 {

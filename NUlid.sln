@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Nulid.nuspec = Nulid.nuspec
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUlid.Performance", "NUlid.Performance\NUlid.Performance.csproj", "{505C3072-03AB-4161-8070-AA5118A9EC84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{F2A4DEA6-4305-4BB8-BD86-7332E5F4B77A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2A4DEA6-4305-4BB8-BD86-7332E5F4B77A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2A4DEA6-4305-4BB8-BD86-7332E5F4B77A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{505C3072-03AB-4161-8070-AA5118A9EC84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{505C3072-03AB-4161-8070-AA5118A9EC84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{505C3072-03AB-4161-8070-AA5118A9EC84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{505C3072-03AB-4161-8070-AA5118A9EC84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

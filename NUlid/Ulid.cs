@@ -22,6 +22,28 @@ namespace NUlid
         private static readonly IUlidRng DEFAULTRNG = new CSUlidRng();
         // Default EPOCH used for Ulid's
         private static readonly DateTimeOffset EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        
+        public static long ToUnixTimeMilliseconds(DateTimeOffset dateTime)
+        {
+#if NET46
+            return dateTime.ToUnixTimeMilliseconds();
+#else
+            var date = dateTime.ToUniversalTime();
+            var ticks = date.Ticks - EPOCH.Ticks;
+            var milliseconds = ticks / TimeSpan.TicksPerMillisecond;
+            return milliseconds;
+#endif
+        }
+        
+        public static DateTimeOffset FromUnixTimeMilliseconds(long milliseconds)
+        {
+#if NET46
+            return DateTimeOffset.FromUnixTimeMilliseconds(milliseconds);
+#else
+            var timeInTicks = milliseconds * TimeSpan.TicksPerMillisecond;
+            return EPOCH.AddTicks(timeInTicks);
+#endif
+        }
 
         /// <summary>
         /// Represents the smallest possible value of <see cref="Ulid"/>. This field is read-only.
@@ -143,17 +165,17 @@ namespace NUlid
             Array.Copy(randomPart, 0, data, 6, 10);
         }
 
-        #region Helper functions
+#region Helper functions
         private static byte[] DateTimeOffsetToByteArray(DateTimeOffset value)
         {
-            var mb = BitConverter.GetBytes(value.ToUnixTimeMilliseconds());
+            var mb = BitConverter.GetBytes(ToUnixTimeMilliseconds(value));
             return new[] { mb[5], mb[4], mb[3], mb[2], mb[1], mb[0] };                                  // Drop byte 6 & 7
         }
-
+        
         private static DateTimeOffset ByteArrayToDateTimeOffset(byte[] value)
         {
             var tmp = new byte[] { value[5], value[4], value[3], value[2], value[1], value[0], 0, 0 };  // Pad with 2 "lost" bytes
-            return DateTimeOffset.FromUnixTimeMilliseconds(BitConverter.ToInt64(tmp, 0));
+            return FromUnixTimeMilliseconds(BitConverter.ToInt64(tmp, 0));
         }
 
         private static string ToBase32(byte[] value)
@@ -221,7 +243,7 @@ namespace NUlid
 
             throw new InvalidOperationException("Invalid length");
         }
-        #endregion
+#endregion
 
         /// <summary>
         /// Converts the string representation of a <see cref="Ulid"/> equivalent.

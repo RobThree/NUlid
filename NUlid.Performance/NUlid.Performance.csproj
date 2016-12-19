@@ -56,7 +56,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NUlid\NUlid.csproj">
+    <ProjectReference Include="..\NUlid\NUlid.xproj">
       <Project>{14221c1d-0bcd-4d37-b7fc-051ca5624993}</Project>
       <Name>NUlid</Name>
     </ProjectReference>

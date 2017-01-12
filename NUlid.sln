@@ -3,21 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "NUlid.Documentation", "NUlid.Documentation\NUlid.Documentation.shfbproj", "{F2A4DEA6-4305-4BB8-BD86-7332E5F4B77A}"
+Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "NUlid.Documentation", "misc\NUlid.Documentation\NUlid.Documentation.shfbproj", "{F2A4DEA6-4305-4BB8-BD86-7332E5F4B77A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{14221C1D-0BCD-4D37-B7FC-051CA5624993} = {14221C1D-0BCD-4D37-B7FC-051CA5624993}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{90CBAE9F-201E-4FF9-AF0E-FEE5A34F24F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUlid.Performance", "misc\NUlid.Performance\NUlid.Performance.csproj", "{505C3072-03AB-4161-8070-AA5118A9EC84}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "NUlid", "src\NUlid\NUlid.xproj", "{14221C1D-0BCD-4D37-B7FC-051CA5624993}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F3D150F2-3E70-496A-BEB0-6AD3486A2295}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{D4556579-F33C-441E-9EDA-0B342A28CBB6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DFF819BA-0151-4A90-8B49-53BE276C8288}"
 	ProjectSection(SolutionItems) = preProject
-		Nulid.nuspec = Nulid.nuspec
+		test\NUlid.Tests\NUlid.Tests.xproj = test\NUlid.Tests\NUlid.Tests.xproj
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUlid.Performance", "NUlid.Performance\NUlid.Performance.csproj", "{505C3072-03AB-4161-8070-AA5118A9EC84}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "NUlid", "NUlid\NUlid.xproj", "{14221C1D-0BCD-4D37-B7FC-051CA5624993}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "NUlid.Tests", "NUlid.Tests\NUlid.Tests.xproj", "{D015C9AA-287B-4115-A87F-8050D5A47C94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,12 +38,13 @@ Global
 		{14221C1D-0BCD-4D37-B7FC-051CA5624993}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14221C1D-0BCD-4D37-B7FC-051CA5624993}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14221C1D-0BCD-4D37-B7FC-051CA5624993}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D015C9AA-287B-4115-A87F-8050D5A47C94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D015C9AA-287B-4115-A87F-8050D5A47C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D015C9AA-287B-4115-A87F-8050D5A47C94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D015C9AA-287B-4115-A87F-8050D5A47C94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F2A4DEA6-4305-4BB8-BD86-7332E5F4B77A} = {D4556579-F33C-441E-9EDA-0B342A28CBB6}
+		{505C3072-03AB-4161-8070-AA5118A9EC84} = {D4556579-F33C-441E-9EDA-0B342A28CBB6}
+		{14221C1D-0BCD-4D37-B7FC-051CA5624993} = {F3D150F2-3E70-496A-BEB0-6AD3486A2295}
 	EndGlobalSection
 EndGlobal

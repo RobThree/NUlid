@@ -23,6 +23,6 @@
   <files>
     <file src="NUlid\Ulid.cs" target="content\NUlid\1.1.0" />
     <file src="NUlid\Rng\*.cs" target="content\NUlid\1.1.0\Rng" />
-    <file src="NUlid.Documentation\Help\NUlid.Documentation.chm" target="content\NUlid\1.1.0" />    
+    <!--<file src="NUlid.Documentation\Help\NUlid.Documentation.chm" target="content\NUlid\1.1.0" />-->
   </files>
 </package>

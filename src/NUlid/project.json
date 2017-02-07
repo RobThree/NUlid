@@ -1,0 +1,33 @@
+﻿{
+    "version": "1.1.0",
+    "authors": [
+        "RobIII"
+    ],
+    "packOptions": {
+        "owners": [
+            "RobIII"
+        ],
+        "projectUrl": "https://github.com/RobThree/NUlid",
+        "iconUrl": "https://raw.githubusercontent.com/RobThree/NUlid/master/logo.png",
+        "licenseUrl": "https://raw.githubusercontent.com/RobThree/NUlid/master/LICENSE",
+        "description": ".Net ULID implementation",
+        "summary": "A .Net ULID implementation",
+        "copyright": "(C) 2016 Devcorner.nl",
+        "tags": [
+            "Universally Unique Lexicographically Sortable Identifier",
+            "ULID",
+            "UUID",
+            "GUID"
+        ]
+    },
+    "frameworks": {
+        "netstandard1.3": {
+            "dependencies": {
+                "System.Security.Cryptography.Algorithms": "4.3.0",
+                "System.Runtime.Extensions": "4.3.0"
+            }
+        },
+        "net45": {},
+        "net46": {}
+    }
+}

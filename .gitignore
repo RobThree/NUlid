@@ -253,3 +253,5 @@ paket-files/
 
 # Helpfiles
 *.chm
+.dotnet
+tools

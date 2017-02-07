@@ -7,8 +7,13 @@ namespace NUlid.Rng
     /// </summary>
     public class CSUlidRng : IUlidRng
     {
+#if NETSTANDARD1_3
+        // We only need one, single, instance of an RNG so we keep it around.
+        private static readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
+#else
         // We only need one, single, instance of an RNG so we keep it around.
         private static readonly RNGCryptoServiceProvider _rng = new RNGCryptoServiceProvider();
+#endif
 
         /// <summary>
         /// Creates and returns the specified number of random bytes.

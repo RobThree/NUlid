@@ -1,12 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUlid.Rng;
+﻿using NUlid.Rng;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xunit;
 
 namespace NUlid.Tests
 {
-    [TestClass]
     public class UlidTests
     {
         // test-constants
@@ -27,115 +26,115 @@ namespace NUlid.Tests
             return DateTimeOffset.FromUnixTimeMilliseconds(t.ToUnixTimeMilliseconds());
         }
 
-        [TestMethod]
+        [Fact]
         public void NewUlid_Creates_NewUlid()
         {
             var target = Ulid.NewUlid();
 
-            Assert.AreEqual(26, target.ToString().Length);
+            Assert.Equal(26, target.ToString().Length);
         }
 
-        [TestMethod]
+        [Fact]
         public void NewUlid_Uses_SpecifiedRNG()
         {
             var target = Ulid.NewUlid(new FakeUlidRng());
-            CollectionAssert.AreEqual(FakeUlidRng.DEFAULTRESULT, target.Random);
+            Assert.Equal(FakeUlidRng.DEFAULTRESULT, target.Random);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void NewUlid_Uses_SpecifiedTime()
         {
             var time = StripMicroSeconds(DateTimeOffset.UtcNow);
             var target = Ulid.NewUlid(time);
-            Assert.AreEqual(time, target.Time);
+            Assert.Equal(time, target.Time);
         }
 
-        [TestMethod]
+        [Fact]
         public void Guid_CanConvertTo_Ulid()
         {
             var g = Guid.NewGuid();
             var u = new Ulid(g);
             var t = new Ulid(Guid.Empty);
 
-            Assert.AreEqual(g, u.ToGuid());
-            Assert.AreEqual(Ulid.Empty, t);
-            Assert.AreEqual(Guid.Empty, t.ToGuid());
+            Assert.Equal(g, u.ToGuid());
+            Assert.Equal(Ulid.Empty, t);
+            Assert.Equal(Guid.Empty, t.ToGuid());
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_ToString_EncodesCorrectly()
         {
             var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
 
-            Assert.AreEqual(26, target.ToString().Length);
-            Assert.IsTrue(target.ToString().StartsWith(KNOWNTIMESTAMP_STRING));
-            Assert.IsTrue(target.ToString().EndsWith(KNOWNRANDOMSEQ_STRING));
+            Assert.Equal(26, target.ToString().Length);
+            Assert.True(target.ToString().StartsWith(KNOWNTIMESTAMP_STRING));
+            Assert.True(target.ToString().EndsWith(KNOWNRANDOMSEQ_STRING));
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_Empty_IsCorrectValue()
         {
             var target = Ulid.Empty;
 
-            Assert.AreEqual(UNIXEPOCH, target.Time);
-            Assert.IsTrue(target.Random.All(v => v == 0));
-            Assert.AreEqual(new string('0', 26), target.ToString());
+            Assert.Equal(UNIXEPOCH, target.Time);
+            Assert.True(target.Random.All(v => v == 0));
+            Assert.Equal(new string('0', 26), target.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_Parse_ParsesCorrectly()
         {
             var ulid = Ulid.NewUlid();
             var target = Ulid.Parse(ulid.ToString());
 
-            Assert.IsTrue(target.Random.SequenceEqual(ulid.Random));
-            Assert.AreEqual(ulid.Time, target.Time);
+            Assert.True(target.Random.SequenceEqual(ulid.Random));
+            Assert.Equal(ulid.Time, target.Time);
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_EqualsOperator_WorksCorrectly()
         {
             var a = Ulid.NewUlid();
             var b = new Ulid(a.ToByteArray());
 
-            Assert.IsTrue(a == b);
+            Assert.True(a == b);
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_NotEqualsOperator_WorksCorrectly()
         {
             var a = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
             var b = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(1), new FakeUlidRng());
 
-            Assert.IsTrue(a != b);
+            Assert.True(a != b);
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_Equals_WorksCorrectly()
         {
             var a = Ulid.NewUlid();
             var b = new Ulid(a.ToByteArray());
 
-            Assert.IsTrue(a.Equals(b));
-            Assert.IsTrue(a.Equals(a));
-            Assert.IsFalse(a.Equals(Ulid.Empty));
+            Assert.True(a.Equals(b));
+            Assert.True(a.Equals(a));
+            Assert.False(a.Equals(Ulid.Empty));
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_ObjectEquals_WorksCorrectly()
         {
             var a = Ulid.NewUlid();
             var b = new Ulid(a.ToByteArray());
 
-            Assert.IsTrue(a.Equals((object)b));
-            Assert.IsTrue(a.Equals((object)a));
-            Assert.IsFalse(a.Equals((object)Ulid.Empty));
-            Assert.IsFalse(a.Equals(null));
-            Assert.IsFalse(a.Equals(new object()));
+            Assert.True(a.Equals((object)b));
+            Assert.True(a.Equals((object)a));
+            Assert.False(a.Equals((object)Ulid.Empty));
+            Assert.False(a.Equals(null));
+            Assert.False(a.Equals(new object()));
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_CompareTo_WorksCorrectly()
         {
             var a = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
@@ -144,9 +143,9 @@ namespace NUlid.Tests
             var c = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(-1), new FakeUlidRng());
             var d = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(+1), new FakeUlidRng());
 
-            Assert.AreEqual(0, a.CompareTo(b));
-            Assert.AreEqual(1, a.CompareTo(c));
-            Assert.AreEqual(-1, a.CompareTo(d));
+            Assert.Equal(0, a.CompareTo(b));
+            Assert.Equal(1, a.CompareTo(c));
+            Assert.Equal(-1, a.CompareTo(d));
 
             var rmin = a.ToByteArray(); rmin[15]--;
             var rplus = a.ToByteArray(); rplus[15]++;
@@ -154,51 +153,50 @@ namespace NUlid.Tests
             var e = new Ulid(rmin);
             var f = new Ulid(rplus);
 
-            Assert.AreEqual(1, a.CompareTo(e));
-            Assert.AreEqual(-1, a.CompareTo(f));
+            Assert.Equal(1, a.CompareTo(e));
+            Assert.Equal(-1, a.CompareTo(f));
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_RandomIs_Immutable()
         {
             Ulid.MinValue.Random[0] = 42;
-            Assert.AreEqual(0, Ulid.MinValue.Random[0]);
+            Assert.Equal(0, Ulid.MinValue.Random[0]);
 
             Ulid.MaxValue.Random[0] = 42;
-            Assert.AreEqual(255, Ulid.MaxValue.Random[0]);
+            Assert.Equal(255, Ulid.MaxValue.Random[0]);
 
             Ulid.Empty.Random[0] = 42;
-            Assert.AreEqual(0, Ulid.Empty.Random[0]);
+            Assert.Equal(0, Ulid.Empty.Random[0]);
 
             var u = Ulid.NewUlid(new FakeUlidRng());
             u.Random[0] = 42;
-            Assert.AreEqual(107, u.Random[0]);
+            Assert.Equal(107, u.Random[0]);
 
             // Make sure when we pass an array into the constructor we cannot modify the source array (constructor copies, doesn't use reference)
             var x = Ulid.MaxValue.ToByteArray();
             var t = new Ulid(x);
             x[6] = 0;
-            Assert.AreEqual(255, t.Random[0]);
+            Assert.Equal(255, t.Random[0]);
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_HandlesMaxTimeCorrectly()
         {
             var target = new Ulid(KNOWNMAXTIMESTAMP_STRING + KNOWNMAXRANDOM_STRING);
-            Assert.AreEqual(target.Time, StripMicroSeconds(DateTimeOffset.MaxValue));
+            Assert.Equal(target.Time, StripMicroSeconds(DateTimeOffset.MaxValue));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Fact]
         public void Ulid_HandlesMaxTimePlus1MSCorrectly()
         {
             var maxtime_plusone = "76EZ91ZQ00";
-            var target = new Ulid(maxtime_plusone + KNOWNMINRANDOM_STRING);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new Ulid(maxtime_plusone + KNOWNMINRANDOM_STRING));
         }
 
 
 
-        [TestMethod]
+        [Fact]
         public void Ulid_ObjectCompareTo_WorksCorrectly()
         {
             var a = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
@@ -207,10 +205,10 @@ namespace NUlid.Tests
             var c = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(-1), new FakeUlidRng());
             var d = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(+1), new FakeUlidRng());
 
-            Assert.AreEqual(0, a.CompareTo((object)b));
-            Assert.AreEqual(1, a.CompareTo((object)c));
-            Assert.AreEqual(-1, a.CompareTo((object)d));
-            Assert.AreEqual(1, a.CompareTo(null));
+            Assert.Equal(0, a.CompareTo((object)b));
+            Assert.Equal(1, a.CompareTo((object)c));
+            Assert.Equal(-1, a.CompareTo((object)d));
+            Assert.Equal(1, a.CompareTo(null));
 
             var rmin = a.ToByteArray(); rmin[15]--;
             var rplus = a.ToByteArray(); rplus[15]++;
@@ -218,11 +216,11 @@ namespace NUlid.Tests
             var e = new Ulid(rmin);
             var f = new Ulid(rplus);
 
-            Assert.AreEqual(1, a.CompareTo((object)e));
-            Assert.AreEqual(-1, a.CompareTo((object)f));
+            Assert.Equal(1, a.CompareTo((object)e));
+            Assert.Equal(-1, a.CompareTo((object)f));
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_GetHashCode_WorksCorrectly()
         {
             var rng = new FakeUlidRng();
@@ -235,127 +233,118 @@ namespace NUlid.Tests
             hashcodes.AddRange(Enumerable.Range(0, 1000).Select(i => Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(i)).GetHashCode()));
             hashcodes.AddRange(Enumerable.Range(0, 1000).Select(i => Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(i), rng).GetHashCode()));
 
-            Assert.AreEqual(3 + 1000 + 1000, hashcodes.Distinct().Count());
+            Assert.Equal(3 + 1000 + 1000, hashcodes.Distinct().Count());
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_RNGs_WorkCorrectly()
         {
             // Generate 256 * 256 = 65536 random bytes; then find the distinct values; each byte should've been produced once (...usually)
-            Assert.AreEqual(256, ((IUlidRng)new CSUlidRng()).GetRandomBytes(65536).Distinct().Count());
-            Assert.AreEqual(256, ((IUlidRng)new SimpleUlidRng()).GetRandomBytes(65536).Distinct().Count());
+            Assert.Equal(256, ((IUlidRng)new CSUlidRng()).GetRandomBytes(65536).Distinct().Count());
+            Assert.Equal(256, ((IUlidRng)new SimpleUlidRng()).GetRandomBytes(65536).Distinct().Count());
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_TryParse_WorksCorrectly()
         {
             Ulid r1;
-            Assert.IsFalse(Ulid.TryParse("X", out r1));
-            Assert.AreEqual(r1, Ulid.Empty);
+            Assert.False(Ulid.TryParse("X", out r1));
+            Assert.Equal(r1, Ulid.Empty);
 
             Ulid r2;
-            Assert.IsFalse(Ulid.TryParse(string.Empty, out r2));
-            Assert.AreEqual(r2, Ulid.Empty);
+            Assert.False(Ulid.TryParse(string.Empty, out r2));
+            Assert.Equal(r2, Ulid.Empty);
 
             Ulid r3;
-            Assert.IsFalse(Ulid.TryParse(null, out r3));
-            Assert.AreEqual(r3, Ulid.Empty);
+            Assert.False(Ulid.TryParse(null, out r3));
+            Assert.Equal(r3, Ulid.Empty);
 
             Ulid r4;
-            Assert.IsTrue(Ulid.TryParse(Ulid.MinValue.ToString(), out r4));
-            Assert.IsTrue(Ulid.MinValue == r4);
+            Assert.True(Ulid.TryParse(Ulid.MinValue.ToString(), out r4));
+            Assert.True(Ulid.MinValue == r4);
 
             Ulid r5;
-            Assert.IsTrue(Ulid.TryParse(Ulid.MaxValue.ToString(), out r5));
-            Assert.IsTrue(Ulid.MaxValue == r5);
+            Assert.True(Ulid.TryParse(Ulid.MaxValue.ToString(), out r5));
+            Assert.True(Ulid.MaxValue == r5);
 
             Ulid r6;
             var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-            Assert.IsTrue(Ulid.TryParse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING, out r6));
-            Assert.AreEqual(target, r6);
+            Assert.True(Ulid.TryParse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING, out r6));
+            Assert.Equal(target, r6);
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_Parse_WorksCorrectly()
         {
-            Assert.AreEqual(Ulid.MinValue, Ulid.Parse(Ulid.MinValue.ToString()));
-            Assert.AreEqual(Ulid.MaxValue, Ulid.Parse(Ulid.MaxValue.ToString()));
+            Assert.Equal(Ulid.MinValue, Ulid.Parse(Ulid.MinValue.ToString()));
+            Assert.Equal(Ulid.MaxValue, Ulid.Parse(Ulid.MaxValue.ToString()));
 
             var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-            Assert.AreEqual(target, Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING));
-            Assert.AreEqual(target, new Ulid(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING));
+            Assert.Equal(target, Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING));
+            Assert.Equal(target, new Ulid(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING));
         }
 
-        [TestMethod]
+        [Fact]
         public void Ulid_IsCaseInsensitive()
         {
             var target = new Ulid(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING);
 
-            Assert.AreEqual(target, new Ulid(KNOWNTIMESTAMP_STRING.ToLowerInvariant() + KNOWNRANDOMSEQ_STRING.ToLowerInvariant()));
+            Assert.Equal(target, new Ulid(KNOWNTIMESTAMP_STRING.ToLowerInvariant() + KNOWNRANDOMSEQ_STRING.ToLowerInvariant()));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void Ulid_ObjectCompareTo_Throws()
         {
-            Ulid.NewUlid().CompareTo(new object());
+            Assert.Throws<ArgumentException>(() => Ulid.NewUlid().CompareTo(new object()));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void Ulid_Parse_ThrowsArgumentNullException_OnNull()
         {
-            Ulid.Parse(null);
+            Assert.Throws<ArgumentNullException>(() => Ulid.Parse(null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void Ulid_Parse_ThrowsArgumentNullException_OnEmptyString()
         {
-            Ulid.Parse(string.Empty);
+            Assert.Throws<ArgumentNullException>(() => Ulid.Parse(string.Empty));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(FormatException))]
+        [Fact]
         public void Ulid_Parse_ThrowsFormatException_OnInvalidLengthString()
         {
-            Ulid.Parse("TEST");
+            Assert.Throws<FormatException>(() => Ulid.Parse("TEST"));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(FormatException))]
+        [Fact]
         public void Ulid_Parse_ThrowsFormatException_OnInvalidString1()
         {
-            Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', 'O')); // O is not in BASE32 alphabet
+            Assert.Throws<FormatException>(() => Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', 'O'))); // O is not in BASE32 alphabet
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(FormatException))]
+        [Fact]
         public void Ulid_Parse_ThrowsFormatException_OnInvalidString2()
         {
-            Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', '{')); // Test char after last index in C2B32 array
+            Assert.Throws<FormatException>(() => Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', '{'))); // Test char after last index in C2B32 array
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void Ulid_Constructor_ThrowsArgumentException_OnInvalidByteArray()
         {
-            new Ulid(new byte[] { 1, 2, 3 });
+            Assert.Throws<ArgumentException>(() => new Ulid(new byte[] { 1, 2, 3 }));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Fact]
         public void Ulid_NewUlid_ThrowsArgumentOutOfRangeException_OnTimestamp()
         {
-            Ulid.NewUlid(Ulid.MinValue.Time.AddMilliseconds(-1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Ulid.NewUlid(Ulid.MinValue.Time.AddMilliseconds(-1)));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void Ulid_NewUlid_ThrowsInvalidOperationException_OnRNGReturningInsufficientBytes()
         {
             var rng = new FakeUlidRng(new byte[] { 1, 2, 3 });
-            Ulid.NewUlid(rng);
+            Assert.Throws<InvalidOperationException>(() => Ulid.NewUlid(rng));
         }
     }
 }

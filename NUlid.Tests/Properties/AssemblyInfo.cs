@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Devcorner")]
 [assembly: AssemblyProduct("NUlid.Tests")]
-[assembly: AssemblyCopyright("Copyright © 2016 Devcorner.nl")]
+[assembly: AssemblyCopyright("Copyright © 2016 -2017 Devcorner.nl")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

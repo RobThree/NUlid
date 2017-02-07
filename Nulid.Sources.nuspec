@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>https://raw.githubusercontent.com/RobThree/NUlid/master/LICENSE</licenseUrl>
     <description>.Net ULID implementation. Sources package.</description>
-    <copyright>(C) 2016 Devcorner.nl</copyright>
+    <copyright>(C) 2016 - 2017 Devcorner.nl</copyright>
     <summary>
       A .Net ULID implementation. Sources package.
     </summary>
@@ -22,7 +22,7 @@
   </metadata>
   <files>
     <file src="NUlid\Ulid.cs" target="content\NUlid\1.1.0" />
-    <file src="NUlid\Rng\*.cs" target="content\NUlid\1.1.0\Rng" />
+    <file src="NUlid\Rng\**" target="content\NUlid\1.1.0\Rng" />
     <file src="NUlid.Documentation\Help\NUlid.Documentation.chm" target="content\NUlid\1.1.0\Help" />
   </files>
 </package>

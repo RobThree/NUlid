@@ -3,7 +3,10 @@ using NUlid.Rng;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace NUlid.Tests
 {
@@ -366,8 +369,8 @@ namespace NUlid.Tests
             var converter = TypeDescriptor.GetConverter(typeof(Ulid));
 
             Assert.IsNotNull(converter);
-            Assert.IsTrue(converter?.CanConvertFrom(typeof(string)) ?? false);
-            Assert.IsTrue(converter?.CanConvertFrom(typeof(byte[])) ?? false);
+            Assert.IsTrue(converter.CanConvertFrom(typeof(string)));
+            Assert.IsTrue(converter.CanConvertFrom(typeof(byte[])));
         }
 
         [TestMethod]
@@ -376,7 +379,7 @@ namespace NUlid.Tests
             var original = Ulid.NewUlid();
             var ulidString = original.ToString();
 
-            var converter = TypeDescriptor.GetConverter(typeof(Ulid));          
+            var converter = TypeDescriptor.GetConverter(typeof(Ulid));
             var converted = converter.ConvertFromString(ulidString);
             Assert.AreEqual(original, converted);
         }
@@ -413,6 +416,38 @@ namespace NUlid.Tests
             var ulidByteArray = (byte[])converter.ConvertTo(ulid, typeof(byte[]));
 
             Assert.IsTrue(expectedByteArray.SequenceEqual(ulidByteArray));
+        }
+
+        [TestMethod]
+        public void Ulid_IsSerializable_UsingBinaryFormatter()
+        {
+            var target = Ulid.NewUlid();
+
+            var formatter = new BinaryFormatter();
+            using (var stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, target);
+                stream.Position = 0;
+                var result = formatter.Deserialize(stream);
+
+                Assert.AreEqual(target, result);
+            }
+        }
+
+        [TestMethod]
+        public void Ulid_IsSerializable_UsingDataContract()
+        {
+            var target = Ulid.NewUlid();
+
+            var serializer = new DataContractSerializer(target.GetType());
+            using (var stream = new MemoryStream())
+            {
+                serializer.WriteObject(stream, target);
+                stream.Position = 0;
+                var result = serializer.ReadObject(stream);
+
+                Assert.AreEqual(target, result);
+            }
         }
     }
 }

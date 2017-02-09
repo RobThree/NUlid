@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="fbc64b00-d1a6-4171-8197-66f0fe377047" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>
+        Version 1.2.0 was released on 2017-02-09.
+      </para>
+    </introduction>
+
+    <section>
+      <title>Changes in This Release</title>
+      <content>
+
+        <list class="bullet">
+          <listItem>
+            <para>
+              Added TypeConverter to support serialization scenarios (thanks <externalLink>
+                <linkText>Roberto Collina</linkText>
+                <linkUri>https://github.com/rcollina</linkUri>
+              </externalLink>)
+            </para>
+          </listItem>
+
+        </list>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="55d108d0-b9ef-495d-8303-73b4ec638e70" />
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>

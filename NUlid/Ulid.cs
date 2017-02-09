@@ -1,15 +1,22 @@
 ﻿using NUlid.Rng;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace NUlid
 {
     /// <summary>
-    /// Represents a ulid (Universally Unique Lexicographically Sortable Identifier), based/inspired on
+    /// Represents a <see cref="Ulid"/> (Universally Unique Lexicographically Sortable Identifier), based/inspired on
     /// <see href="https://github.com/alizain/ulid">alizain/ulid</see>.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
     [TypeConverter(typeof(UlidTypeConverter))]
-    public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable
+    [Serializable]
+    [ComVisible(true)]
+    [DebuggerDisplay("{ToString(),nq}")]
+    public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializable, IFormattable
     {
         // Base32 "alphabet"
         private const string BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
@@ -256,8 +263,8 @@ namespace NUlid
         /// When this method returns, contains a <see cref="Ulid"/> equivalent of the <see cref="Ulid"/> contained in
         /// s, if the conversion succeeded, or <see cref="Empty"/> if the conversion failed. The conversion fails if
         /// the s parameter is null or <see cref="System.String.Empty"/>, is not of the correct format, or represents
-        /// an invalid ulid otherwise. This parameter is passed uninitialized; any value originally supplied in result
-        /// will be overwritten.
+        /// an invalid <see cref="Ulid"/> otherwise. This parameter is passed uninitialized; any value originally
+        /// supplied in result will be overwritten.
         /// </param>
         /// <returns>true if s was converted successfully; otherwise, false.</returns>
         public static bool TryParse(string s, out Ulid result)
@@ -446,6 +453,43 @@ namespace NUlid
                     hash = (hash * 16777619) ^ data[i];
                 return hash;
             }
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo"/> with information about the <see cref="Ulid"/>.
+        /// </summary>
+        /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized object data about the <see cref="Ulid"/>.</param>
+        /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
+        /// <exception cref="ArgumentNullException">The <paramref name="info"/> argument is null.</exception>
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new ArgumentNullException(nameof(info));
+            
+            info.AddValue("d", this.ToString(), typeof(string));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ulid"/> structure with serialized data.
+        /// </summary>
+        /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized object data about the <see cref="Ulid"/>.</param>
+        /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
+        /// <exception cref="ArgumentNullException">The <paramref name="info"/> argument is null.</exception>
+        /// <exception cref="SerializationException">The <see cref="Ulid"/> could not be deserialized correctly.</exception>
+        public Ulid(SerializationInfo info, StreamingContext context)
+        {
+            this.data = Parse((string)info.GetValue("d", typeof(string))).ToByteArray();
+        }
+
+
+        /// <summary>
+        /// Returns the <see cref="Ulid"/> in string-representation.
+        /// </summary>
+        /// <returns>The <see cref="Ulid"/> in string-representation.</returns>
+        /// <remarks>Both the format and formatProvider are ignored since there is only 1 valid representation of a <see cref="Ulid"/>.</remarks>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            return this.ToString();
         }
     }
 }

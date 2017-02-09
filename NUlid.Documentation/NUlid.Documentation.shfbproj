@@ -79,6 +79,7 @@
   <ItemGroup>
     <None Include="Content\VersionHistory\v1.0.0.0.aml" />
     <None Include="Content\VersionHistory\v1.1.0.0.aml" />
+    <None Include="Content\VersionHistory\v1.2.0.0.aml" />
     <None Include="Content\VersionHistory\VersionHistory.aml" />
     <None Include="Content\Welcome.aml" />
   </ItemGroup>

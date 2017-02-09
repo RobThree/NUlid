@@ -2,6 +2,7 @@
 using NUlid.Rng;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace NUlid.Tests
@@ -356,6 +357,62 @@ namespace NUlid.Tests
         {
             var rng = new FakeUlidRng(new byte[] { 1, 2, 3 });
             Ulid.NewUlid(rng);
+        }
+
+
+        [TestMethod]
+        public void Ulid_TypeConverter_CanGetUsableConverter()
+        {
+            var converter = TypeDescriptor.GetConverter(typeof(Ulid));
+
+            Assert.IsNotNull(converter);
+            Assert.IsTrue(converter?.CanConvertFrom(typeof(string)) ?? false);
+            Assert.IsTrue(converter?.CanConvertFrom(typeof(byte[])) ?? false);
+        }
+
+        [TestMethod]
+        public void Ulid_TypeConverter_CanConvertFromString()
+        {
+            var original = Ulid.NewUlid();
+            var ulidString = original.ToString();
+
+            var converter = TypeDescriptor.GetConverter(typeof(Ulid));          
+            var converted = converter.ConvertFromString(ulidString);
+            Assert.AreEqual(original, converted);
+        }
+
+        [TestMethod]
+        public void Ulid_TypeConverter_CanConvertFromByteArray()
+        {
+            var original = Ulid.NewUlid();
+            var ulidByteArray = original.ToByteArray();
+
+            var converter = TypeDescriptor.GetConverter(typeof(Ulid));
+            var converted = converter.ConvertFrom(ulidByteArray);
+            Assert.AreEqual(original, converted);
+        }
+
+        [TestMethod]
+        public void Ulid_TypeConverter_CanConvertToString()
+        {
+            var ulid = Ulid.NewUlid();
+            var expectedUlidString = ulid.ToString();
+            var converter = TypeDescriptor.GetConverter(typeof(Ulid));
+            var ulidString = converter.ConvertToString(ulid);
+
+            Assert.AreEqual(expectedUlidString, ulidString);
+        }
+
+        [TestMethod]
+        public void Ulid_TypeConverter_CanConvertToByteArray()
+        {
+            var ulid = Ulid.NewUlid();
+            var expectedByteArray = ulid.ToByteArray();
+
+            var converter = TypeDescriptor.GetConverter(typeof(Ulid));
+            var ulidByteArray = (byte[])converter.ConvertTo(ulid, typeof(byte[]));
+
+            Assert.IsTrue(expectedByteArray.SequenceEqual(ulidByteArray));
         }
     }
 }

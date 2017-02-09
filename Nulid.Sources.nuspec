@@ -3,7 +3,7 @@
   <metadata>
     <id>NUlid.Sources</id>
     <title>NUlid (Sources)</title>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <authors>RobIII, Roberto Collina</authors>
     <owners>RobIII</owners>
     <projectUrl>https://github.com/RobThree/NUlid</projectUrl>
@@ -16,13 +16,13 @@
       A .Net ULID implementation. Sources package.
     </summary>
     <releaseNotes>
-      Performance improvements
+      Added UlidTypeConverter to support serialization scenarios.
     </releaseNotes>
     <tags>Universally Unique Lexicographically Sortable Identifier ULID UUID GUID</tags>
   </metadata>
   <files>
-    <file src="NUlid\Ulid.cs" target="content\NUlid\1.1.0" />
-    <file src="NUlid\Rng\**" target="content\NUlid\1.1.0\Rng" />
-    <file src="NUlid.Documentation\Help\NUlid.Documentation.chm" target="content\NUlid\1.1.0\Help" />
+    <file src="NUlid\*.cs" target="content\NUlid\1.2.0" />
+    <file src="NUlid\Rng\**" target="content\NUlid\1.2.0\Rng" />
+    <file src="NUlid.Documentation\Help\NUlid.Documentation.chm" target="content\NUlid\1.2.0\Help" />
   </files>
 </package>

@@ -1,10 +1,8 @@
-﻿using NUlid.Rng;
+﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
+using NUlid.Rng;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NUlid.Performance
 {
@@ -12,180 +10,167 @@ namespace NUlid.Performance
     {
         static void Main(string[] args)
         {
-            int iterations = 1000000;
+            var benchmarks = new[] {
+                typeof(NewGuidvsNewUlid),
+                typeof(GuidParsevsUlidParse),
+                typeof(GuidToStringvsUlidToString),
+                typeof(GuidFromBytesvsUlidFromBytes),
+                typeof(GuidToByteArrayvsUlidToByteArray),
+                typeof(GuidToUlidAndViceVersa)
+            };
 
-            Time<object>((p, it) =>
-                {
-                    for (int i = 0; i < it; i++)
-                        Guid.NewGuid();
-                }, iterations, 
-                "Guid.NewGuid():                                               {0,15:N0}/sec"
-            );
-
-            Time<object>(
-                (p, it) =>
-                {
-                    var simplerng = new SimpleUlidRng();
-                    for (int i = 0; i < it; i++)
-                        Ulid.NewUlid(simplerng);
-                }, 
-                iterations,
-                "Ulid.NewUlid(SimpleUlidRng):                                  {0,15:N0}/sec"
-            );
-
-            Time<object>(
-                (p, it) =>
-                {
-                    var csrng = new CSUlidRng();
-                    for (int i = 0; i < it; i++)
-                        Ulid.NewUlid(csrng);
-                },
-                iterations,
-                "Ulid.NewUlid(CSUlidRng):                                      {0,15:N0}/sec"
-            );
-
-            Time(
-                (it) => { return Enumerable.Range(0, it).Select(n => Guid.NewGuid().ToString()); },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        Guid.Parse(i);
-                },
-                iterations,
-                "Guid.Parse(string):                                           {0,15:N0}/sec"
-            );
-
-            Time(
-                (it) => { return Enumerable.Range(0, it).Select(n => Ulid.NewUlid().ToString()); },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        Ulid.Parse(i);
-                }, 
-                iterations,
-                "Ulid.Parse(string):                                           {0,15:N0}/sec"
-            );
+            foreach (var b in benchmarks)
+                BenchmarkRunner.Run(b);
+        }
+    }
 
 
-            Time(
-                (it) => { return Enumerable.Range(0, it).Select(n => Guid.NewGuid()); },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        i.ToString();
-                },
-                iterations,
-                "Guid.ToString():                                              {0,15:N0}/sec"
-            );
+    public class NewGuidvsNewUlid
+    {
+        private static readonly IUlidRng simplerng = new SimpleUlidRng();
+        private static readonly IUlidRng csrng = new CSUlidRng();
 
-            Time(
-                (it) => { return Enumerable.Range(0, it).Select(n => Ulid.NewUlid()); },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        i.ToString();
-                },
-                iterations,
-                "Ulid.ToString():                                              {0,15:N0}/sec"
-            );
-
-            Time(
-                (it) => {
-                    var r = new Random();
-                    return Enumerable.Range(0, it).Select(n => { var b = new byte[16]; r.NextBytes(b); return b; });
-                },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        new Guid(i);
-                },
-                iterations,
-                "new Guid(byte[]):                                             {0,15:N0}/sec"
-            );
-
-            Time(
-                (it) => {
-                    var r = new Random();
-                    return Enumerable.Range(0, it).Select(n => { var b = new byte[16]; r.NextBytes(b); return b; });
-                },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        new Ulid(i);
-                },
-                iterations,
-                "new Ulid(byte[]):                                             {0,15:N0}/sec"
-            );
-
-            Time(
-                (it) => { return Enumerable.Range(0, it).Select(n => Guid.NewGuid()); },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        i.ToByteArray();
-                },
-                iterations,
-                "Guid.ToByteArray():                                           {0,15:N0}/sec"
-            );
-
-            Time(
-                (it) => { return Enumerable.Range(0, it).Select(n => Ulid.NewUlid()); },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        i.ToByteArray();
-                },
-                iterations,
-                "Ulid.ToByteArray():                                           {0,15:N0}/sec"
-            );
-
-            Time(
-                (it) => { return Enumerable.Range(0, it).Select(n => Ulid.NewUlid()); },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        i.ToGuid();
-                },
-                iterations,
-                "Ulid.ToGuid():                                                {0,15:N0}/sec"
-            );
-
-            Time(
-                (it) => { return Enumerable.Range(0, it).Select(n => Guid.NewGuid()); },
-                (p, it) =>
-                {
-                    foreach (var i in p)
-                        new Ulid(i);
-                },
-                iterations,
-                "new Ulid(Guid):                                               {0,15:N0}/sec"
-            );
-
-            Console.ReadKey();
+        [Benchmark(Baseline = true, Description = "NewGuid()")]
+        public Guid NewGuid()
+        {
+            return Guid.NewGuid();
         }
 
-        private static double Time<T>(Action<T, int> act, int iterations, string description)
+        [Benchmark(Baseline = false, Description = "NewUlid(SimpleUlidRng)")]
+        public Ulid NewUlid_SimpleRNG()
         {
-            return Time(null, act, iterations, description);
+            return Ulid.NewUlid(simplerng);
         }
 
-        private static double Time<T>(Func<int, T> prepare, Action<T, int> act, int iterations, string description)
+        [Benchmark(Baseline = false, Description = "NewUlid(CSUlidRng)")]
+        public Ulid NewUlid_CSRNG()
         {
-            T prepared = default(T);
-            if (prepare != null)
-                prepared = prepare(iterations);
+            return Ulid.NewUlid(csrng);
+        }
+    }
 
-            //Warmup
-            act(prepared, 5);
+    public class GuidParsevsUlidParse
+    {
+        private const int testcount = 1000;
+        private readonly string[] testguids;
+        private readonly string[] testulids;
 
-            var s = Stopwatch.StartNew();
-            act(prepared, iterations);
-            var e = s.Elapsed;
+        public GuidParsevsUlidParse()
+        {
+            testguids = Enumerable.Range(0, testcount).Select(i => Guid.NewGuid().ToString()).ToArray();
+            testulids = Enumerable.Range(0, testcount).Select(i => Ulid.NewUlid().ToString()).ToArray();
+        }
 
-            var result = (iterations / e.TotalMilliseconds) * 1000;
-            Console.WriteLine(description, result);
+        [Benchmark(Baseline = true, Description = "Guid.Parse(string)", OperationsPerInvoke = testcount)]
+        public Guid[] GuidParse()
+        {
+            return testguids.Select(s => Guid.Parse(s)).ToArray();
+        }
 
-            return result;
+        [Benchmark(Baseline = false, Description = "Ulid.Parse(string)", OperationsPerInvoke = testcount)]
+        public Ulid[] UlidParse()
+        {
+            return testulids.Select(s => Ulid.Parse(s)).ToArray();
+        }
+
+    }
+
+    public class GuidToStringvsUlidToString
+    {
+        private const int testcount = 1000;
+        private readonly Guid[] testguids;
+        private readonly Ulid[] testulids;
+
+        public GuidToStringvsUlidToString()
+        {
+            testguids = Enumerable.Range(0, testcount).Select(i => Guid.NewGuid()).ToArray();
+            testulids = Enumerable.Range(0, testcount).Select(i => Ulid.NewUlid()).ToArray();
+        }
+
+        [Benchmark(Baseline = true, Description = "Guid.ToString()", OperationsPerInvoke = testcount)]
+        public string[] GuidToString()
+        {
+            return testguids.Select(g => g.ToString()).ToArray();
+        }
+
+        [Benchmark(Baseline = false, Description = "Ulid.ToString()", OperationsPerInvoke = testcount)]
+        public string[] UlidToString()
+        {
+            return testulids.Select(u => u.ToString()).ToArray();
+        }
+    }
+
+    public class GuidFromBytesvsUlidFromBytes
+    {
+        private const int testcount = 1000;
+        private readonly byte[][] data;
+
+        public GuidFromBytesvsUlidFromBytes()
+        {
+            var r = new Random();
+            data = Enumerable.Range(0, testcount).Select(n => { var b = new byte[16]; r.NextBytes(b); return b; }).ToArray();
+        }
+
+        [Benchmark(Baseline = true, Description = "new Guid(byte[])", OperationsPerInvoke = testcount)]
+        public Guid[] GuidFromByteArray()
+        {
+            return data.Select(d => new Guid(d)).ToArray();
+        }
+
+        [Benchmark(Baseline = false, Description = "new Ulid(byte[])", OperationsPerInvoke = testcount)]
+        public Ulid[] UlidFromByteArray()
+        {
+            return data.Select(d => new Ulid(d)).ToArray();
+        }
+    }
+
+    public class GuidToByteArrayvsUlidToByteArray
+    {
+        private const int testcount = 1000;
+        private readonly Guid[] testguids;
+        private readonly Ulid[] testulids;
+
+        public GuidToByteArrayvsUlidToByteArray()
+        {
+            testguids = Enumerable.Range(0, testcount).Select(i => Guid.NewGuid()).ToArray();
+            testulids = Enumerable.Range(0, testcount).Select(i => Ulid.NewUlid()).ToArray();
+        }
+
+        [Benchmark(Baseline = true, Description = "Guid.ToByteArray()", OperationsPerInvoke = testcount)]
+        public byte[][] GuidToByteArray()
+        {
+            return testguids.Select(g => g.ToByteArray()).ToArray();
+        }
+
+        [Benchmark(Baseline = false, Description = "Ulid.ToByteArray()", OperationsPerInvoke = testcount)]
+        public byte[][] UlidToByteArray()
+        {
+            return testulids.Select(u => u.ToByteArray()).ToArray();
+        }
+    }
+
+    public class GuidToUlidAndViceVersa
+    {
+        private const int testcount = 1000;
+        private readonly Guid[] testguids;
+        private readonly Ulid[] testulids;
+
+        public GuidToUlidAndViceVersa()
+        {
+            testguids = Enumerable.Range(0, testcount).Select(i => Guid.NewGuid()).ToArray();
+            testulids = Enumerable.Range(0, testcount).Select(i => Ulid.NewUlid()).ToArray();
+        }
+
+        [Benchmark(Description = "ToGuid()", OperationsPerInvoke = testcount)]
+        public Guid[] ToGuid()
+        {
+            return testulids.Select(g => g.ToGuid()).ToArray();
+        }
+
+        [Benchmark(Description = "ToUlid()", OperationsPerInvoke = testcount)]
+        public Ulid[] ToUlid()
+        {
+            return testguids.Select(g => new Ulid(g)).ToArray();
         }
     }
 }

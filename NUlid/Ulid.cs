@@ -1,5 +1,6 @@
 ﻿using NUlid.Rng;
 using System;
+using System.ComponentModel;
 
 namespace NUlid
 {
@@ -7,6 +8,7 @@ namespace NUlid
     /// Represents a ulid (Universally Unique Lexicographically Sortable Identifier), based/inspired on
     /// <see href="https://github.com/alizain/ulid">alizain/ulid</see>.
     /// </summary>
+    [TypeConverter(typeof(UlidTypeConverter))]
     public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable
     {
         // Base32 "alphabet"

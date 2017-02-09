@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NUlid.Performance")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright © 2016 - 2017 Devcorner.nl")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

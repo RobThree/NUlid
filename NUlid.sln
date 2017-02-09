@@ -15,6 +15,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{90CBAE9F-201E-4FF9-AF0E-FEE5A34F24F0}"
 	ProjectSection(SolutionItems) = preProject
 		Nulid.nuspec = Nulid.nuspec
+		Nulid.Sources.nuspec = Nulid.Sources.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUlid.Performance", "NUlid.Performance\NUlid.Performance.csproj", "{505C3072-03AB-4161-8070-AA5118A9EC84}"

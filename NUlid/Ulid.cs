@@ -153,26 +153,28 @@ namespace NUlid
         }
 
         #region Helper functions
-        private static DateTimeOffset FromUnixTime(long value)
+        public static DateTimeOffset FromUnixTimeMilliseconds(long milliseconds)
         {
-            return EPOCH.AddMilliseconds(value);
+            long ticks = milliseconds * TimeSpan.TicksPerMillisecond + 621355968000000000;
+            return new DateTimeOffset(ticks, TimeSpan.Zero);
         }
 
-        private static long ToUnixTime(DateTimeOffset value)
+        private static long ToUnixTimeMilliseconds(DateTimeOffset value)
         {
-            return (long)(value - EPOCH).TotalMilliseconds;
+            long milliseconds = value.Ticks / TimeSpan.TicksPerMillisecond;
+            return milliseconds - 62135596800000;
         }
 
         private static byte[] DateTimeOffsetToByteArray(DateTimeOffset value)
         {
-            var mb = BitConverter.GetBytes(ToUnixTime(value));
+            var mb = BitConverter.GetBytes(ToUnixTimeMilliseconds(value));
             return new[] { mb[5], mb[4], mb[3], mb[2], mb[1], mb[0] };                                  // Drop byte 6 & 7
         }
 
         private static DateTimeOffset ByteArrayToDateTimeOffset(byte[] value)
         {
             var tmp = new byte[] { value[5], value[4], value[3], value[2], value[1], value[0], 0, 0 };  // Pad with 2 "lost" bytes
-            return FromUnixTime(BitConverter.ToInt64(tmp, 0));
+            return FromUnixTimeMilliseconds(BitConverter.ToInt64(tmp, 0));
         }
 
         private static string ToBase32(byte[] value)

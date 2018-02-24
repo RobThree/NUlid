@@ -66,8 +66,7 @@ namespace NUlid
 
             if (asString != null)
             {
-                Ulid ulid;
-                if (Ulid.TryParse(asString, out ulid)) return ulid;
+                if (Ulid.TryParse(asString, out Ulid ulid)) return ulid;
                 throw new NotSupportedException($"Invalid Ulid representation: \"{asString}\"");
             }
 

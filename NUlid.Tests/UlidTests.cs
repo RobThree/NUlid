@@ -253,29 +253,23 @@ namespace NUlid.Tests
         [TestMethod]
         public void Ulid_TryParse_WorksCorrectly()
         {
-            Ulid r1;
-            Assert.IsFalse(Ulid.TryParse("X", out r1));
+            Assert.IsFalse(Ulid.TryParse("X", out Ulid r1));
             Assert.AreEqual(r1, Ulid.Empty);
 
-            Ulid r2;
-            Assert.IsFalse(Ulid.TryParse(string.Empty, out r2));
+            Assert.IsFalse(Ulid.TryParse(string.Empty, out Ulid r2));
             Assert.AreEqual(r2, Ulid.Empty);
 
-            Ulid r3;
-            Assert.IsFalse(Ulid.TryParse(null, out r3));
+            Assert.IsFalse(Ulid.TryParse(null, out Ulid r3));
             Assert.AreEqual(r3, Ulid.Empty);
 
-            Ulid r4;
-            Assert.IsTrue(Ulid.TryParse(Ulid.MinValue.ToString(), out r4));
+            Assert.IsTrue(Ulid.TryParse(Ulid.MinValue.ToString(), out Ulid r4));
             Assert.IsTrue(Ulid.MinValue == r4);
 
-            Ulid r5;
-            Assert.IsTrue(Ulid.TryParse(Ulid.MaxValue.ToString(), out r5));
+            Assert.IsTrue(Ulid.TryParse(Ulid.MaxValue.ToString(), out Ulid r5));
             Assert.IsTrue(Ulid.MaxValue == r5);
 
-            Ulid r6;
             var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-            Assert.IsTrue(Ulid.TryParse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING, out r6));
+            Assert.IsTrue(Ulid.TryParse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING, out Ulid r6));
             Assert.AreEqual(target, r6);
         }
 

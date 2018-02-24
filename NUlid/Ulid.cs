@@ -23,6 +23,7 @@ namespace NUlid
         // Char to index lookup array for massive speedup since we can find a char's index in O(1). We use 255 as 'sentinel' value for invalid indexes.
         private static readonly byte[] C2B32 = new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 255, 18, 19, 255, 20, 21, 255, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 255, 18, 19, 255, 20, 21, 255, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31 };
         private static readonly int C2B32LEN = C2B32.Length;
+        private const long UNIXEPOCHMILLISECONDS = 62135596800000;
 
         // Internal structure for data
         private readonly byte[] data;
@@ -155,14 +156,14 @@ namespace NUlid
         #region Helper functions
         public static DateTimeOffset FromUnixTimeMilliseconds(long milliseconds)
         {
-            long ticks = milliseconds * TimeSpan.TicksPerMillisecond + 621355968000000000;
+            long ticks = milliseconds * TimeSpan.TicksPerMillisecond + (UNIXEPOCHMILLISECONDS * 10000);
             return new DateTimeOffset(ticks, TimeSpan.Zero);
         }
 
         private static long ToUnixTimeMilliseconds(DateTimeOffset value)
         {
             long milliseconds = value.Ticks / TimeSpan.TicksPerMillisecond;
-            return milliseconds - 62135596800000;
+            return milliseconds - UNIXEPOCHMILLISECONDS;
         }
 
         private static byte[] DateTimeOffsetToByteArray(DateTimeOffset value)

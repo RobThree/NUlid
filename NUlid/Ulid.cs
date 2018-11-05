@@ -171,6 +171,12 @@ namespace NUlid
         }
 
         #region Helper functions
+        /// <summary>
+        /// Calculates and returns a <see cref="DateTimeOffset"/> from a number of milliseconds.
+        /// </summary>
+        /// <param name="milliseconds">The number of milliseconds representing the <see cref="DateTimeOffset"/>.</param>
+        /// <returns>A <see cref="DateTimeOffset"/> from a number of milliseconds.</returns>
+        [Obsolete("Do not use; this method should have been private from the start and will be removed in the next (major) version")]
         public static DateTimeOffset FromUnixTimeMilliseconds(long milliseconds)
         {
             var ticks = milliseconds * TimeSpan.TicksPerMillisecond + (UNIXEPOCHMILLISECONDS * 10000);
@@ -192,7 +198,9 @@ namespace NUlid
         private static DateTimeOffset ByteArrayToDateTimeOffset(byte[] value)
         {
             var tmp = new byte[] { value[5], value[4], value[3], value[2], value[1], value[0], 0, 0 };  // Pad with 2 "lost" bytes
+#pragma warning disable CS0618
             return FromUnixTimeMilliseconds(BitConverter.ToInt64(tmp, 0));
+#pragma warning restore CS0618
         }
 
         private static string ToBase32(byte[] value)
@@ -526,6 +534,8 @@ namespace NUlid
         /// <summary>
         /// Returns the <see cref="Ulid"/> in string-representation.
         /// </summary>
+        /// <param name="format">Will be igored.</param>
+        /// <param name="formatProvider">Will be igored.</param>
         /// <returns>The <see cref="Ulid"/> in string-representation.</returns>
         /// <remarks>Both the format and formatProvider are ignored since there is only 1 valid representation of a <see cref="Ulid"/>.</remarks>
         public string ToString(string format, IFormatProvider formatProvider)

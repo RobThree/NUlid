@@ -14,7 +14,7 @@
         <list class="bullet">
           <listItem>
             <para>
-              Bugfix release
+              Internal refactoring; internal reference type data[] is now 16 separate bytes (value types)
             </para>
           </listItem>
 

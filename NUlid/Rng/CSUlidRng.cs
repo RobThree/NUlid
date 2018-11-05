@@ -29,7 +29,7 @@ namespace NUlid.Rng
         /// <returns>The specified number of random bytes.</returns>
         byte[] IUlidRng.GetRandomBytes(int length)
         {
-            return this.GetRandomBytes(length);
+            return GetRandomBytes(length);
         }
     }
 }

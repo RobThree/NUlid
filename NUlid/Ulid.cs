@@ -25,8 +25,11 @@ namespace NUlid
         private static readonly int C2B32LEN = C2B32.Length;
         private const long UNIXEPOCHMILLISECONDS = 62135596800000;
 
-        // Internal structure for data
-        private readonly byte[] data;
+        // Internal parts of ULID
+        private readonly byte _a; private readonly byte _b; private readonly byte _c; private readonly byte _d;
+        private readonly byte _e; private readonly byte _f; private readonly byte _g; private readonly byte _h;
+        private readonly byte _i; private readonly byte _j; private readonly byte _k; private readonly byte _l;
+        private readonly byte _m; private readonly byte _n; private readonly byte _o; private readonly byte _p;
 
         // Default RNG to use when no RNG is specified
         private static readonly IUlidRng DEFAULTRNG = new CSUlidRng();
@@ -51,12 +54,12 @@ namespace NUlid
         /// <summary>
         /// Gets the "time part" of the <see cref="Ulid"/>.
         /// </summary>
-        public DateTimeOffset Time { get { return ByteArrayToDateTimeOffset(data); } }
+        public DateTimeOffset Time => ByteArrayToDateTimeOffset(new[] { _a, _b, _c, _d, _e, _f });
 
         /// <summary>
         /// Gets the "random part" of the <see cref="Ulid"/>.
         /// </summary>
-        public byte[] Random { get { return new[] { data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15] }; } }
+        public byte[] Random => new[] { _g, _h, _i, _j, _k, _l, _m, _n, _o, _p };
 
         /// <summary>
         /// Creates and returns a new <see cref="Ulid"/> based on the current (UTC) time and default
@@ -116,8 +119,22 @@ namespace NUlid
             if (bytes.Length != 16)
                 throw new ArgumentException("An array of 16 elements is required", nameof(bytes));
 
-            data = new byte[16];
-            Array.Copy(bytes, data, 16);
+            _a = bytes[0];
+            _b = bytes[1];
+            _c = bytes[2];
+            _d = bytes[3];
+            _e = bytes[4];
+            _f = bytes[5];
+            _g = bytes[6];
+            _h = bytes[7];
+            _i = bytes[8];
+            _j = bytes[9];
+            _k = bytes[10];
+            _l = bytes[11];
+            _m = bytes[12];
+            _n = bytes[13];
+            _o = bytes[14];
+            _p = bytes[15];
         }
 
         /// <summary>
@@ -147,22 +164,22 @@ namespace NUlid
             if (randomPart.Length != 10)
                 throw new InvalidOperationException("randomPart must be 10 bytes");
 
-            data = new byte[16];
-
-            Array.Copy(DateTimeOffsetToByteArray(timePart), data, 6);
-            Array.Copy(randomPart, 0, data, 6, 10);
+            var d = DateTimeOffsetToByteArray(timePart);
+            _a = d[0]; _b = d[1]; _c = d[2]; _d = d[3]; _e = d[4]; _f = d[5];
+            _g = randomPart[0]; _h = randomPart[1]; _i = randomPart[2]; _j = randomPart[3]; _k = randomPart[4];
+            _l = randomPart[5]; _m = randomPart[6]; _n = randomPart[7]; _o = randomPart[8]; _p = randomPart[9];
         }
 
         #region Helper functions
         public static DateTimeOffset FromUnixTimeMilliseconds(long milliseconds)
         {
-            long ticks = milliseconds * TimeSpan.TicksPerMillisecond + (UNIXEPOCHMILLISECONDS * 10000);
+            var ticks = milliseconds * TimeSpan.TicksPerMillisecond + (UNIXEPOCHMILLISECONDS * 10000);
             return new DateTimeOffset(ticks, TimeSpan.Zero);
         }
 
         private static long ToUnixTimeMilliseconds(DateTimeOffset value)
         {
-            long milliseconds = value.Ticks / TimeSpan.TicksPerMillisecond;
+            var milliseconds = value.Ticks / TimeSpan.TicksPerMillisecond;
             return milliseconds - UNIXEPOCHMILLISECONDS;
         }
 
@@ -275,7 +292,7 @@ namespace NUlid
         /// <param name="result">
         /// When this method returns, contains a <see cref="Ulid"/> equivalent of the <see cref="Ulid"/> contained in
         /// s, if the conversion succeeded, or <see cref="Empty"/> if the conversion failed. The conversion fails if
-        /// the s parameter is null or <see cref="System.String.Empty"/>, is not of the correct format, or represents
+        /// the s parameter is null or <see cref="string.Empty"/>, is not of the correct format, or represents
         /// an invalid <see cref="Ulid"/> otherwise. This parameter is passed uninitialized; any value originally
         /// supplied in result will be overwritten.
         /// </param>
@@ -300,8 +317,8 @@ namespace NUlid
         /// <returns>The <see cref="Ulid"/> in string-representation.</returns>
         public override string ToString()
         {
-            return ToBase32(new[] { data[0], data[1], data[2], data[3], data[4], data[5] })
-                + ToBase32(new[] { data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15] });
+            return ToBase32(new[] { _a, _b, _c, _d, _e, _f })
+                + ToBase32(new[] { _g, _h, _i, _j, _k, _l, _m, _n, _o, _p });
         }
 
         /// <summary>
@@ -310,9 +327,7 @@ namespace NUlid
         /// <returns>A 16-element byte array.</returns>
         public byte[] ToByteArray()
         {
-            var ret = new byte[16];
-            Array.Copy(data, ret, 16);
-            return ret;
+            return new byte[] { _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p };
         }
 
         /// <summary>
@@ -321,7 +336,7 @@ namespace NUlid
         /// <returns>A <see cref="Guid"/> that represents the value of this instance.</returns>
         public Guid ToGuid()
         {
-            return new Guid(this.ToByteArray());
+            return new Guid(ToByteArray());
         }
 
         /// <summary>
@@ -380,11 +395,17 @@ namespace NUlid
         /// </returns>
         public int CompareTo(Ulid other)
         {
-            for (var i = 0; i < 16; i++)
-            {
-                if (data[i] != other.data[i])
-                    return data[i].CompareTo(other.data[i]);
-            }
+            var d = other.ToByteArray();
+
+            if (_a != d[0]) return _a.CompareTo(d[0]); if (_b != d[1]) return _b.CompareTo(d[1]);
+            if (_c != d[2]) return _c.CompareTo(d[2]); if (_d != d[3]) return _d.CompareTo(d[3]);
+            if (_e != d[4]) return _e.CompareTo(d[4]); if (_f != d[5]) return _f.CompareTo(d[5]);
+            if (_g != d[6]) return _g.CompareTo(d[6]); if (_h != d[7]) return _h.CompareTo(d[7]);
+            if (_i != d[8]) return _i.CompareTo(d[8]); if (_j != d[9]) return _j.CompareTo(d[9]);
+            if (_k != d[10]) return _k.CompareTo(d[10]); if (_l != d[11]) return _l.CompareTo(d[11]);
+            if (_m != d[12]) return _m.CompareTo(d[12]); if (_n != d[13]) return _n.CompareTo(d[13]);
+            if (_o != d[14]) return _o.CompareTo(d[14]); if (_p != d[15]) return _p.CompareTo(d[15]);
+
             return 0;
         }
 
@@ -436,8 +457,11 @@ namespace NUlid
         /// <returns>true if x and y are equal; otherwise, false.</returns>
         public static bool operator ==(Ulid x, Ulid y)
         {
+            var a = x.ToByteArray();
+            var b = y.ToByteArray();
+
             for (var i = 0; i < 16; i++)
-                if (x.data[i] != y.data[i])
+                if (a[i] != b[i])
                     return false;
             return true;
         }
@@ -461,9 +485,10 @@ namespace NUlid
         {
             unchecked // Overflow is fine, just wrap
             {
+                var d = ToByteArray();
                 var hash = (int)2166136261;
                 for (var i = 0; i < 16; i++)
-                    hash = (hash * 16777619) ^ data[i];
+                    hash = (hash * 16777619) ^ d[i];
                 return hash;
             }
         }
@@ -478,8 +503,8 @@ namespace NUlid
         {
             if (info == null)
                 throw new ArgumentNullException(nameof(info));
-            
-            info.AddValue("d", this.ToString(), typeof(string));
+
+            info.AddValue("d", ToString(), typeof(string));
         }
 
         /// <summary>
@@ -491,7 +516,10 @@ namespace NUlid
         /// <exception cref="SerializationException">The <see cref="Ulid"/> could not be deserialized correctly.</exception>
         public Ulid(SerializationInfo info, StreamingContext context)
         {
-            this.data = Parse((string)info.GetValue("d", typeof(string))).ToByteArray();
+            var d = Parse((string)info.GetValue("d", typeof(string))).ToByteArray();
+
+            _a = d[0]; _b = d[1]; _c = d[2]; _d = d[3]; _e = d[4]; _f = d[5]; _g = d[6]; _h = d[7];
+            _i = d[8]; _j = d[9]; _k = d[10]; _l = d[11]; _m = d[12]; _n = d[13]; _o = d[14]; _p = d[15];
         }
 
 
@@ -502,7 +530,7 @@ namespace NUlid
         /// <remarks>Both the format and formatProvider are ignored since there is only 1 valid representation of a <see cref="Ulid"/>.</remarks>
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            return this.ToString();
+            return ToString();
         }
     }
 }

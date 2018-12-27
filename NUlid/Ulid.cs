@@ -524,6 +524,9 @@ namespace NUlid
         /// <exception cref="SerializationException">The <see cref="Ulid"/> could not be deserialized correctly.</exception>
         public Ulid(SerializationInfo info, StreamingContext context)
         {
+            if (info == null)
+                throw new ArgumentNullException(nameof(info));
+
             var d = Parse((string)info.GetValue("d", typeof(string))).ToByteArray();
 
             _a = d[0]; _b = d[1]; _c = d[2]; _d = d[3]; _e = d[4]; _f = d[5]; _g = d[6]; _h = d[7];

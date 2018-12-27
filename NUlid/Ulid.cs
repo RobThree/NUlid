@@ -370,7 +370,7 @@ namespace NUlid
             // Check that obj is a ulid first
             if (obj == null || !(obj is Ulid))
                 return false;
-            else return Equals((Ulid)obj);
+            return Equals((Ulid)obj);
         }
 
         /// <summary>

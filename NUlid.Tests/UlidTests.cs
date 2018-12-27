@@ -342,6 +342,13 @@ namespace NUlid.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Ulid_Constructor_ThrowsArgumentNullException_OnNullSerializationInfo()
+        {
+            new Ulid(null, new StreamingContext());
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Ulid_NewUlid_ThrowsArgumentOutOfRangeException_OnTimestamp()
         {

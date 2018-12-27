@@ -162,7 +162,7 @@ namespace NUlid
             if (timePart < EPOCH)
                 throw new ArgumentOutOfRangeException(nameof(timePart));
             if (randomPart.Length != 10)
-                throw new InvalidOperationException("randomPart must be 10 bytes");
+                throw new InvalidOperationException($"{nameof(randomPart)} must be 10 bytes");
 
             var d = DateTimeOffsetToByteArray(timePart);
             _a = d[0]; _b = d[1]; _c = d[2]; _d = d[3]; _e = d[4]; _f = d[5];
@@ -370,7 +370,7 @@ namespace NUlid
             // Check that obj is a ulid first
             if (obj == null || !(obj is Ulid))
                 return false;
-            else return Equals((Ulid)obj);
+            return Equals((Ulid)obj);
         }
 
         /// <summary>
@@ -524,6 +524,9 @@ namespace NUlid
         /// <exception cref="SerializationException">The <see cref="Ulid"/> could not be deserialized correctly.</exception>
         public Ulid(SerializationInfo info, StreamingContext context)
         {
+            if (info == null)
+                throw new ArgumentNullException(nameof(info));
+
             var d = Parse((string)info.GetValue("d", typeof(string))).ToByteArray();
 
             _a = d[0]; _b = d[1]; _c = d[2]; _d = d[3]; _e = d[4]; _f = d[5]; _g = d[6]; _h = d[7];

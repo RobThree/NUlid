@@ -162,7 +162,7 @@ namespace NUlid
             if (timePart < EPOCH)
                 throw new ArgumentOutOfRangeException(nameof(timePart));
             if (randomPart.Length != 10)
-                throw new InvalidOperationException("randomPart must be 10 bytes");
+                throw new InvalidOperationException($"{nameof(randomPart)} must be 10 bytes");
 
             var d = DateTimeOffsetToByteArray(timePart);
             _a = d[0]; _b = d[1]; _c = d[2]; _d = d[3]; _e = d[4]; _f = d[5];

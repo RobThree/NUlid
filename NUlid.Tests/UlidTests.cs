@@ -253,23 +253,23 @@ namespace NUlid.Tests
         [TestMethod]
         public void Ulid_TryParse_WorksCorrectly()
         {
-            Assert.IsFalse(Ulid.TryParse("X", out Ulid r1));
+            Assert.IsFalse(Ulid.TryParse("X", out var r1));
             Assert.AreEqual(r1, Ulid.Empty);
 
-            Assert.IsFalse(Ulid.TryParse(string.Empty, out Ulid r2));
+            Assert.IsFalse(Ulid.TryParse(string.Empty, out var r2));
             Assert.AreEqual(r2, Ulid.Empty);
 
-            Assert.IsFalse(Ulid.TryParse(null, out Ulid r3));
+            Assert.IsFalse(Ulid.TryParse(null, out var r3));
             Assert.AreEqual(r3, Ulid.Empty);
 
-            Assert.IsTrue(Ulid.TryParse(Ulid.MinValue.ToString(), out Ulid r4));
+            Assert.IsTrue(Ulid.TryParse(Ulid.MinValue.ToString(), out var r4));
             Assert.IsTrue(Ulid.MinValue == r4);
 
-            Assert.IsTrue(Ulid.TryParse(Ulid.MaxValue.ToString(), out Ulid r5));
+            Assert.IsTrue(Ulid.TryParse(Ulid.MaxValue.ToString(), out var r5));
             Assert.IsTrue(Ulid.MaxValue == r5);
 
             var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-            Assert.IsTrue(Ulid.TryParse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING, out Ulid r6));
+            Assert.IsTrue(Ulid.TryParse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING, out var r6));
             Assert.AreEqual(target, r6);
         }
 
@@ -339,6 +339,13 @@ namespace NUlid.Tests
         public void Ulid_Constructor_ThrowsArgumentException_OnInvalidByteArray()
         {
             new Ulid(new byte[] { 1, 2, 3 });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Ulid_Constructor_ThrowsArgumentNullException_OnNullSerializationInfo()
+        {
+            new Ulid(null, new StreamingContext());
         }
 
         [TestMethod]
@@ -442,6 +449,14 @@ namespace NUlid.Tests
 
                 Assert.AreEqual(target, result);
             }
+        }
+
+        [TestMethod]
+        public void InstanceCreatedWithoutRunningConstructor_Equals_EmptyUlid()
+        {
+            var target = Activator.CreateInstance<Ulid>();
+
+            Assert.IsTrue(target.Equals(Ulid.Empty));
         }
     }
 }

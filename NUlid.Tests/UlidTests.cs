@@ -526,12 +526,5 @@ namespace NUlid.Tests
             var result = Ulid.NewUlid(target.Time.Add(TimeSpan.FromMilliseconds(1)), rng);  // Should NOT throw
             Assert.AreEqual("01BX5ZZKBM00ADBEEFDEADBEEF", result.ToString()); // We should have a new "random" value and timestamp should have increased by one
         }
-
-        //[TestMethod]
-        //public void Test()
-        //{
-        //    var rng = new MonotonicRng();
-        //    var ulid = Ulid.NewUlid(rng);
-        //}
     }
 }

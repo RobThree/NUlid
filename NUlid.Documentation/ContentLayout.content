@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
-  <Topic id="e46f2558-fc83-4540-9762-6f494f768376" visible="True" isDefault="true" title="Welcome to the NUlid library">
+  <Topic id="e46f2558-fc83-4540-9762-6f494f768376" visible="True" isDefault="true" isSelected="true" title="Welcome to the NUlid library">
     <HelpKeywords>
       <HelpKeyword index="K" term="Welcome" />
     </HelpKeywords>
@@ -34,9 +34,14 @@
         <HelpKeyword index="K" term="version, 1.3.1.0" />
       </HelpKeywords>
     </Topic>
-    <Topic id="feb8eb9e-57cc-4c56-9b7c-0961a897e7f0" visible="True" isSelected="true" title="Version 1.3.2.0">
+    <Topic id="feb8eb9e-57cc-4c56-9b7c-0961a897e7f0" visible="True" title="Version 1.3.2.0">
       <HelpKeywords>
         <HelpKeyword index="K" term="version, 1.3.2.0" />
+      </HelpKeywords>
+    </Topic>
+    <Topic id="3e01a757-ad42-4e45-8d59-9d3bdeb2b82c" visible="True" title="Version 1.4.0.0">
+      <HelpKeywords>
+        <HelpKeyword index="K" term="version, 1.4.0.0" />
       </HelpKeywords>
     </Topic>
   </Topic>

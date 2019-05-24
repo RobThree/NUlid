@@ -1,4 +1,5 @@
 ﻿using NUlid.Rng;
+using System;
 
 namespace NUlid.Tests
 {
@@ -10,10 +11,10 @@ namespace NUlid.Tests
     /// </remarks>
     public class FakeUlidRng : IUlidRng
     {
-        //Values specifically chosen to spell DEADBEEFDEADBEEF
+        //Values specifically chosen to make the result spell DEADBEEFDEADBEEF
         public static readonly byte[] DEFAULTRESULT = new byte[] { 107, 148, 213, 185, 207, 107, 148, 213, 185, 207 };
 
-        private byte[] _desiredresult;
+        private readonly byte[] _desiredresult;
 
         public FakeUlidRng()
             : this(DEFAULTRESULT) { }
@@ -23,7 +24,7 @@ namespace NUlid.Tests
             _desiredresult = desiredResult;
         }
 
-        public byte[] GetRandomBytes(int length)
+        public byte[] GetRandomBytes(DateTimeOffset dateTime)
         {
             return _desiredresult;
         }

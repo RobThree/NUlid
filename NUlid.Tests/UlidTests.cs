@@ -243,14 +243,6 @@ namespace NUlid.Tests
         }
 
         [TestMethod]
-        public void Ulid_RNGs_WorkCorrectly()
-        {
-            // Generate 256 * 256 = 65536 random bytes; then find the distinct values; each byte should've been produced once (...usually)
-            Assert.AreEqual(256, ((IUlidRng)new CSUlidRng()).GetRandomBytes(65536).Distinct().Count());
-            Assert.AreEqual(256, ((IUlidRng)new SimpleUlidRng()).GetRandomBytes(65536).Distinct().Count());
-        }
-
-        [TestMethod]
         public void Ulid_TryParse_WorksCorrectly()
         {
             Assert.IsFalse(Ulid.TryParse("X", out var r1));
@@ -458,5 +450,88 @@ namespace NUlid.Tests
 
             Assert.IsTrue(target.Equals(Ulid.Empty));
         }
+
+        [TestMethod]
+        public void MonotonicRng_Ensure_MaskMSBWorksCorrectly()
+        {
+            var rng = new FakeUlidRng(new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 });
+            var ts = DateTimeOffset.Now;
+
+            Assert.IsTrue(new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 0).GetRandomBytes(ts)), "Mask 0");
+            Assert.IsTrue(new byte[] { 127, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 1).GetRandomBytes(ts)), "Mask 1");
+            Assert.IsTrue(new byte[] { 63, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 2).GetRandomBytes(ts)), "Mask 2");
+
+            Assert.IsTrue(new byte[] { 1, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 7).GetRandomBytes(ts)), "Mask 7");
+            Assert.IsTrue(new byte[] { 0, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 8).GetRandomBytes(ts)), "Mask 8");
+            Assert.IsTrue(new byte[] { 0, 127, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 9).GetRandomBytes(ts)), "Mask 9");
+
+            Assert.IsTrue(new byte[] { 0, 1, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 15).GetRandomBytes(ts)), "Mask 15");
+            Assert.IsTrue(new byte[] { 0, 0, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 16).GetRandomBytes(ts)), "Mask 16");
+            Assert.IsTrue(new byte[] { 0, 0, 127, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 17).GetRandomBytes(ts)), "Mask 17");
+
+            Assert.IsTrue(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 7, 255 }.SequenceEqual(new MonotonicRng(rng, 69).GetRandomBytes(ts)), "Mask 69");
+            Assert.IsTrue(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 3, 255 }.SequenceEqual(new MonotonicRng(rng, 70).GetRandomBytes(ts)), "Mask 70");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void MonotonicRng_Ensure_ThrowsOnInvalidMask1()
+        {
+            new MonotonicRng(-1);
+        }
+
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void MonotonicRng_Ensure_ThrowsOnInvalidMask2()
+        {
+            new MonotonicRng(71);
+        }
+
+        [TestMethod]
+        public void MonotonicRng_Sequence_Testvectors()
+        {
+            var target = Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRY");
+
+            var rng = new MonotonicRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
+
+            Assert.AreEqual("01BX5ZZKBKACTAV9WEVGEMMVRZ", Ulid.NewUlid(target.Time, rng).ToString());
+            Assert.AreEqual("01BX5ZZKBKACTAV9WEVGEMMVS0", Ulid.NewUlid(target.Time, rng).ToString());
+            Assert.AreEqual("01BX5ZZKBKACTAV9WEVGEMMVS1", Ulid.NewUlid(target.Time, rng).ToString());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(OverflowException))]
+        public void MonotonicRng_Sequence_Throws_OnOverflow()
+        {
+            var target = Ulid.Parse("01BX5ZZKBKZZZZZZZZZZZZZZZX");
+
+            var rng = new MonotonicRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
+
+            Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZY"));
+            Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZZ"));
+            Ulid.NewUlid(target.Time, rng);  // Should throw
+        }
+
+        [TestMethod]
+        public void MonotonicRng_Sequence_Resets_OnNewTimeStamp()
+        {
+            var target = Ulid.Parse("01BX5ZZKBKZZZZZZZZZZZZZZZX");
+
+            var rng = new MonotonicRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
+
+            Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZY"));
+            Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZZ"));
+            // Now we change the time, JUST in time before we overflow
+            var result = Ulid.NewUlid(target.Time.Add(TimeSpan.FromMilliseconds(1)), rng);  // Should NOT throw
+            Assert.AreEqual("01BX5ZZKBM00ADBEEFDEADBEEF", result.ToString()); // We should have a new "random" value and timestamp should have increased by one
+        }
+
+        //[TestMethod]
+        //public void Test()
+        //{
+        //    var rng = new MonotonicRng();
+        //    var ulid = Ulid.NewUlid(rng);
+        //}
     }
 }

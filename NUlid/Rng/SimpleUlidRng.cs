@@ -5,31 +5,21 @@ namespace NUlid.Rng
     /// <summary>
     /// A simple (but fast(er)) RNG for the random part of ulid's.
     /// </summary>
-    public class SimpleUlidRng : IUlidRng
+    public class SimpleUlidRng : BaseRng
     {
         // We only need one, single, instance of an RNG so we keep it around.
         private static readonly Random _rng = new Random();
+        private readonly byte[] _buffer = new byte[RANDLEN];
 
         /// <summary>
-        /// Creates and returns the specified number of random bytes.
+        /// Creates and returns random bytes.
         /// </summary>
-        /// <param name="length">The desired number of random bytes.</param>
-        /// <returns>The specified number of random bytes.</returns>
-        public byte[] GetRandomBytes(int length)
+        /// <param name="dateTime">DateTime for which the random bytes need to be generated; is ignored.</param>
+        /// <returns>Random bytes.</returns>
+        public override byte[] GetRandomBytes(DateTimeOffset dateTime)
         {
-            var result = new byte[length];
-            _rng.NextBytes(result);
-            return result;
-        }
-
-        /// <summary>
-        /// Creates and returns the specified number of random bytes.
-        /// </summary>
-        /// <param name="length">The desired number of random bytes.</param>
-        /// <returns>The specified number of random bytes.</returns>
-        byte[] IUlidRng.GetRandomBytes(int length)
-        {
-            return GetRandomBytes(length);
+            _rng.NextBytes(_buffer);
+            return _buffer;
         }
     }
 }

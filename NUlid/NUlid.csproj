@@ -7,16 +7,17 @@
     <PackageId>NUlid</PackageId>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <Product>NUlid</Product>
-    <Copyright>(C) 2016 - 2018 Devcorner.nl</Copyright>
+    <Copyright>(C) 2016 - 2019 Devcorner.nl</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl>https://raw.githubusercontent.com/RobThree/NUlid/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
     <PackageTags>Universally Unique Lexicographically Sortable Identifier ULID UUID GUID</PackageTags>
-    <PackageReleaseNotes>* Changed internal byte-array to separate variables (see issue #9) to get rid of reference type</PackageReleaseNotes>
+    <PackageReleaseNotes>* Added support for Monotonic ULIDs (minor breaking change in RNGs)</PackageReleaseNotes>
     <IncludeSource>true</IncludeSource>
     <Description>A .Net ULID implementation</Description>
     <PackageIconUrl>https://raw.githubusercontent.com/RobThree/NUlid/master/logo.png</PackageIconUrl>
-    <Version>1.3.2</Version>
+    <Version>1.4.0</Version>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

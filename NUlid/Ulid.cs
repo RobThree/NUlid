@@ -23,7 +23,7 @@ namespace NUlid
         // Char to index lookup array for massive speedup since we can find a char's index in O(1). We use 255 as 'sentinel' value for invalid indexes.
         private static readonly byte[] C2B32 = new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 255, 18, 19, 255, 20, 21, 255, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 255, 18, 19, 255, 20, 21, 255, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31 };
         private static readonly int C2B32LEN = C2B32.Length;
-        private const long UNIXEPOCHMILLISECONDS = 62135596800000;
+        internal const long UNIXEPOCHMILLISECONDS = 62135596800000;
 
         // Internal parts of ULID
         private readonly byte _a; private readonly byte _b; private readonly byte _c; private readonly byte _d;
@@ -31,10 +31,8 @@ namespace NUlid
         private readonly byte _i; private readonly byte _j; private readonly byte _k; private readonly byte _l;
         private readonly byte _m; private readonly byte _n; private readonly byte _o; private readonly byte _p;
 
-        // Default RNG to use when no RNG is specified
-        private static readonly IUlidRng DEFAULTRNG = new CSUlidRng();
         // Default EPOCH used for Ulid's
-        private static readonly DateTimeOffset EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        internal static readonly DateTimeOffset EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// Represents the smallest possible value of <see cref="Ulid"/>. This field is read-only.
@@ -68,7 +66,7 @@ namespace NUlid
         /// <returns>Returns a new <see cref="Ulid"/>.</returns>
         public static Ulid NewUlid()
         {
-            return NewUlid(DateTimeOffset.UtcNow, DEFAULTRNG);
+            return NewUlid(DateTimeOffset.UtcNow, BaseRng.DEFAULTRNG);
         }
 
         /// <summary>
@@ -81,7 +79,7 @@ namespace NUlid
         /// <returns>Returns a new <see cref="Ulid"/>.</returns>
         public static Ulid NewUlid(DateTimeOffset time)
         {
-            return NewUlid(time, DEFAULTRNG);
+            return NewUlid(time, BaseRng.DEFAULTRNG);
         }
 
         /// <summary>
@@ -104,7 +102,7 @@ namespace NUlid
         /// <returns>Returns a new <see cref="Ulid"/>.</returns>
         public static Ulid NewUlid(DateTimeOffset time, IUlidRng rng)
         {
-            return new Ulid(time, rng.GetRandomBytes(10));
+            return new Ulid(time, rng.GetRandomBytes(time));
         }
 
         /// <summary>
@@ -171,19 +169,13 @@ namespace NUlid
         }
 
         #region Helper functions
-        /// <summary>
-        /// Calculates and returns a <see cref="DateTimeOffset"/> from a number of milliseconds.
-        /// </summary>
-        /// <param name="milliseconds">The number of milliseconds representing the <see cref="DateTimeOffset"/>.</param>
-        /// <returns>A <see cref="DateTimeOffset"/> from a number of milliseconds.</returns>
-        [Obsolete("Do not use; this method should have been private from the start and will be removed in the next (major) version")]
-        public static DateTimeOffset FromUnixTimeMilliseconds(long milliseconds)
+        private static DateTimeOffset FromUnixTimeMilliseconds(long milliseconds)
         {
             var ticks = milliseconds * TimeSpan.TicksPerMillisecond + (UNIXEPOCHMILLISECONDS * 10000);
             return new DateTimeOffset(ticks, TimeSpan.Zero);
         }
 
-        private static long ToUnixTimeMilliseconds(DateTimeOffset value)
+        internal static long ToUnixTimeMilliseconds(DateTimeOffset value)
         {
             var milliseconds = value.Ticks / TimeSpan.TicksPerMillisecond;
             return milliseconds - UNIXEPOCHMILLISECONDS;
@@ -198,31 +190,27 @@ namespace NUlid
         private static DateTimeOffset ByteArrayToDateTimeOffset(byte[] value)
         {
             var tmp = new byte[] { value[5], value[4], value[3], value[2], value[1], value[0], 0, 0 };  // Pad with 2 "lost" bytes
-#pragma warning disable CS0618
             return FromUnixTimeMilliseconds(BitConverter.ToInt64(tmp, 0));
-#pragma warning restore CS0618
         }
 
         private static string ToBase32(byte[] value)
         {
             // Hand-optimized unrolled loops ahead
-
-            if (value.Length == 6)
+            switch (value.Length)
             {
-                return new string(
-                    new[] {
+                case 6:     // Time part
+                    return new string(
+                        new[] {
                         /* 0  */ BASE32[(value[0] & 224) >> 5],                             /* 1  */ BASE32[value[0] & 31],
                         /* 2  */ BASE32[(value[1] & 248) >> 3],                             /* 3  */ BASE32[((value[1] & 7) << 2) | ((value[2] & 192) >> 6)],
                         /* 4  */ BASE32[(value[2] & 62) >> 1],                              /* 5  */ BASE32[((value[2] & 1) << 4) | ((value[3] & 240) >> 4)],
                         /* 6  */ BASE32[((value[3] & 15) << 1) | ((value[4] & 128) >> 7)],  /* 7  */ BASE32[(value[4] & 124) >> 2],
                         /* 8  */ BASE32[((value[4] & 3) << 3) | ((value[5] & 224) >> 5)],   /* 9  */ BASE32[value[5] & 31],
-                    }
-                );
-            }
-            if (value.Length == 10)
-            {
-                return new string(
-                    new[] {
+                        }
+                    );
+                case 10:    // Random part
+                    return new string(
+                        new[] {
                         /* 0  */ BASE32[(value[0] & 248) >> 3],                             /* 1  */ BASE32[((value[0] & 7) << 2) | ((value[1] & 192) >> 6)],
                         /* 2  */ BASE32[(value[1] & 62) >> 1],                              /* 3  */ BASE32[((value[1] & 1) << 4) | ((value[2] & 240) >> 4)],
                         /* 4  */ BASE32[((value[2] & 15) << 1) | ((value[3] & 128) >> 7)],  /* 5  */ BASE32[(value[3] & 124) >> 2],  
@@ -231,10 +219,9 @@ namespace NUlid
                         /* 10 */ BASE32[(value[6] & 62) >> 1],                              /* 11 */ BASE32[((value[6] & 1) << 4) | ((value[7] & 240) >> 4)],
                         /* 12 */ BASE32[((value[7] & 15) << 1) | ((value[8] & 128) >> 7)],  /* 13 */ BASE32[(value[8] & 124) >> 2],
                         /* 14 */ BASE32[((value[8] & 3) << 3) | ((value[9] & 224) >> 5)],   /* 15 */ BASE32[value[9] & 31],
-                    }
-                );
+                        }
+                    );
             }
-
             throw new InvalidOperationException("Invalid length");
         }
 
@@ -243,29 +230,26 @@ namespace NUlid
             // Hand-optimized unrolled loops ahead
             unchecked
             {
-                if (v.Length == 10)
+                switch (v.Length)
                 {
-                    return new byte[]
-                    {
-                    /* 0 */ (byte)((C2B32[v[0]] << 5) | C2B32[v[1]]),                                   /* 1 */ (byte)((C2B32[v[2]] << 3) | (C2B32[v[3]] >> 2)),
-                    /* 2 */ (byte)((C2B32[v[3]] << 6) | (C2B32[v[4]] << 1) | (C2B32[v[5]] >> 4)),       /* 3 */ (byte)((C2B32[v[5]] << 4) | (C2B32[v[6]] >> 1)),
-                    /* 4 */ (byte)((C2B32[v[6]] << 7) | (C2B32[v[7]] << 2) | (C2B32[v[8]] >> 3)),       /* 5 */ (byte)((C2B32[v[8]] << 5) | C2B32[v[9]]),
-                    };
-                }
-
-                if (v.Length == 16)
-                {
-                    return new byte[]
-                    {
-                    /* 0 */ (byte)((C2B32[v[0]] << 3) | (C2B32[v[1]] >> 2)),                            /* 1 */ (byte)((C2B32[v[1]] << 6) | (C2B32[v[2]] << 1) | (C2B32[v[3]] >> 4)),
-                    /* 2 */ (byte)((C2B32[v[3]] << 4) | (C2B32[v[4]] >> 1)),                            /* 3 */ (byte)((C2B32[v[4]] << 7) | (C2B32[v[5]] << 2) | (C2B32[v[6]] >> 3)),
-                    /* 4 */ (byte)((C2B32[v[6]] << 5) | C2B32[v[7]]),                                   /* 5 */ (byte)((C2B32[v[8]] << 3) | C2B32[v[9]] >> 2),
-                    /* 6 */ (byte)((C2B32[v[9]] << 6) | (C2B32[v[10]] << 1) | (C2B32[v[11]] >> 4)),     /* 7 */ (byte)((C2B32[v[11]] << 4) | (C2B32[v[12]] >> 1)),
-                    /* 8 */ (byte)((C2B32[v[12]] << 7) | (C2B32[v[13]] << 2) | (C2B32[v[14]] >> 3)),    /* 9 */ (byte)((C2B32[v[14]] << 5) | C2B32[v[15]]),
-                    };
+                    case 10:    // Time part
+                        return new byte[]
+                        {
+                        /* 0 */ (byte)((C2B32[v[0]] << 5) | C2B32[v[1]]),                                   /* 1 */ (byte)((C2B32[v[2]] << 3) | (C2B32[v[3]] >> 2)),
+                        /* 2 */ (byte)((C2B32[v[3]] << 6) | (C2B32[v[4]] << 1) | (C2B32[v[5]] >> 4)),       /* 3 */ (byte)((C2B32[v[5]] << 4) | (C2B32[v[6]] >> 1)),
+                        /* 4 */ (byte)((C2B32[v[6]] << 7) | (C2B32[v[7]] << 2) | (C2B32[v[8]] >> 3)),       /* 5 */ (byte)((C2B32[v[8]] << 5) | C2B32[v[9]]),
+                        };
+                    case 16:    // Random part
+                        return new byte[]
+                        {
+                        /* 0 */ (byte)((C2B32[v[0]] << 3) | (C2B32[v[1]] >> 2)),                            /* 1 */ (byte)((C2B32[v[1]] << 6) | (C2B32[v[2]] << 1) | (C2B32[v[3]] >> 4)),
+                        /* 2 */ (byte)((C2B32[v[3]] << 4) | (C2B32[v[4]] >> 1)),                            /* 3 */ (byte)((C2B32[v[4]] << 7) | (C2B32[v[5]] << 2) | (C2B32[v[6]] >> 3)),
+                        /* 4 */ (byte)((C2B32[v[6]] << 5) | C2B32[v[7]]),                                   /* 5 */ (byte)((C2B32[v[8]] << 3) | C2B32[v[9]] >> 2),
+                        /* 6 */ (byte)((C2B32[v[9]] << 6) | (C2B32[v[10]] << 1) | (C2B32[v[11]] >> 4)),     /* 7 */ (byte)((C2B32[v[11]] << 4) | (C2B32[v[12]] >> 1)),
+                        /* 8 */ (byte)((C2B32[v[12]] << 7) | (C2B32[v[13]] << 2) | (C2B32[v[14]] >> 3)),    /* 9 */ (byte)((C2B32[v[14]] << 5) | C2B32[v[15]]),
+                        };
                 }
             }
-
             throw new InvalidOperationException("Invalid length");
         }
         #endregion

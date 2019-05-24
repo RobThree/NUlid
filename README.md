@@ -76,7 +76,7 @@ Below is the current specification of ULID as implemented in this repository.
 **Randomness**
 - 80 (Whenever possible: Cryptographically secure) Random bits
 
-As of v1.4.0 monotonic ULID's are supported (see below).
+As of v1.4.0 [monotonic ULID's](https://github.com/ulid/spec#monotonicity) are supported (see below).
 
 ### Monotonicity
 When generating a ULID within the same millisecond, it is possible to provide some guarantees regarding sort order (with some caveats). When you use the MonotonicUlidRng and a newly generated ULID in the same millisecond is detected, the random component is incremented by 1 bit in the least significant bit position (with carrying). For example: 

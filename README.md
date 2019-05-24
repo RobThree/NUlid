@@ -76,6 +76,26 @@ Below is the current specification of ULID as implemented in this repository.
 **Randomness**
 - 80 (Whenever possible: Cryptographically secure) Random bits
 
+As of v1.4.0 monotonic ULID's are supported (see below).
+
+### Monotonicity
+When generating a ULID within the same millisecond, it is possible to provide some guarantees regarding sort order (with some caveats). When you use the MonotonicUlidRng and a newly generated ULID in the same millisecond is detected, the random component is incremented by 1 bit in the least significant bit position (with carrying). For example: 
+
+```c#
+// Create monotonic rng
+var rng = new MonotonicRng();
+
+// Create ULIDs, assume that these calls occur within the same millisecond:
+Console.WriteLine(Ulid.NewUlid(rng)); // 01DBN5W2SG000DCBVYHX4T6MCX
+Console.WriteLine(Ulid.NewUlid(rng)); // 01DBN5W2SG000DCBVYHX4T6MCY
+Console.WriteLine(Ulid.NewUlid(rng)); // 01DBN5W2SG000DCBVYHX4T6MCZ
+Console.WriteLine(Ulid.NewUlid(rng)); // 01DBN5W2SG000DCBVYHX4T6MD0
+Console.WriteLine(Ulid.NewUlid(rng)); // 01DBN5W2SG000DCBVYHX4T6MD1
+Console.WriteLine(Ulid.NewUlid(rng)); // 01DBN5W2SG000DCBVYHX4T6MD2
+```
+
+By default the 10 most significant bits are set to zero on the random part of the ULID; this ensures you can generate enough ULID's before causing an overflow. The number of masked bits can be specified and may be any value between 0 and 70. Some implementations simply pick a random value for the random part and increment this value, however, there's a (very small) chance that this random part is close to the overflow value. If you then happen to generate a lot of ULID's within the same millisecond there is a risk the you hit the overflow. By our method you have (some) control over the number monotonic values before 'running out of values' (overflowing). It is, with some effort, even possible to 'resume counting' from any given ULID. 
+
 ### Encoding
 
 [Crockford's Base32](http://www.crockford.com/wrmg/base32.html) is used as shown. This alphabet excludes the letters I, L, O, and U to avoid confusion and abuse.

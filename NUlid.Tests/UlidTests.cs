@@ -493,7 +493,7 @@ namespace NUlid.Tests
         {
             var target = Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRY");
 
-            var rng = new MonotonicUlidRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
+            var rng = new MonotonicUlidRng(new FakeUlidRng(), lastValue: target);
 
             Assert.AreEqual("01BX5ZZKBKACTAV9WEVGEMMVRZ", Ulid.NewUlid(target.Time, rng).ToString());
             Assert.AreEqual("01BX5ZZKBKACTAV9WEVGEMMVS0", Ulid.NewUlid(target.Time, rng).ToString());
@@ -506,7 +506,7 @@ namespace NUlid.Tests
         {
             var target = Ulid.Parse("01BX5ZZKBKZZZZZZZZZZZZZZZX");
 
-            var rng = new MonotonicUlidRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
+            var rng = new MonotonicUlidRng(new FakeUlidRng(), lastValue: target);
 
             Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZY"));
             Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZZ"));
@@ -518,7 +518,7 @@ namespace NUlid.Tests
         {
             var target = Ulid.Parse("01BX5ZZKBKZZZZZZZZZZZZZZZX");
 
-            var rng = new MonotonicUlidRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
+            var rng = new MonotonicUlidRng(new FakeUlidRng(), lastValue: target);
 
             Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZY"));
             Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZZ"));

@@ -457,27 +457,27 @@ namespace NUlid.Tests
             var rng = new FakeUlidRng(new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 });
             var ts = DateTimeOffset.Now;
 
-            Assert.IsTrue(new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 0).GetRandomBytes(ts)), "Mask 0");
-            Assert.IsTrue(new byte[] { 127, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 1).GetRandomBytes(ts)), "Mask 1");
-            Assert.IsTrue(new byte[] { 63, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 2).GetRandomBytes(ts)), "Mask 2");
+            Assert.IsTrue(new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 0).GetRandomBytes(ts)), "Mask 0");
+            Assert.IsTrue(new byte[] { 127, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 1).GetRandomBytes(ts)), "Mask 1");
+            Assert.IsTrue(new byte[] { 63, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 2).GetRandomBytes(ts)), "Mask 2");
 
-            Assert.IsTrue(new byte[] { 1, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 7).GetRandomBytes(ts)), "Mask 7");
-            Assert.IsTrue(new byte[] { 0, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 8).GetRandomBytes(ts)), "Mask 8");
-            Assert.IsTrue(new byte[] { 0, 127, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 9).GetRandomBytes(ts)), "Mask 9");
+            Assert.IsTrue(new byte[] { 1, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 7).GetRandomBytes(ts)), "Mask 7");
+            Assert.IsTrue(new byte[] { 0, 255, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 8).GetRandomBytes(ts)), "Mask 8");
+            Assert.IsTrue(new byte[] { 0, 127, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 9).GetRandomBytes(ts)), "Mask 9");
 
-            Assert.IsTrue(new byte[] { 0, 1, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 15).GetRandomBytes(ts)), "Mask 15");
-            Assert.IsTrue(new byte[] { 0, 0, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 16).GetRandomBytes(ts)), "Mask 16");
-            Assert.IsTrue(new byte[] { 0, 0, 127, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicRng(rng, 17).GetRandomBytes(ts)), "Mask 17");
+            Assert.IsTrue(new byte[] { 0, 1, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 15).GetRandomBytes(ts)), "Mask 15");
+            Assert.IsTrue(new byte[] { 0, 0, 255, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 16).GetRandomBytes(ts)), "Mask 16");
+            Assert.IsTrue(new byte[] { 0, 0, 127, 255, 255, 255, 255, 255, 255, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 17).GetRandomBytes(ts)), "Mask 17");
 
-            Assert.IsTrue(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 7, 255 }.SequenceEqual(new MonotonicRng(rng, 69).GetRandomBytes(ts)), "Mask 69");
-            Assert.IsTrue(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 3, 255 }.SequenceEqual(new MonotonicRng(rng, 70).GetRandomBytes(ts)), "Mask 70");
+            Assert.IsTrue(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 7, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 69).GetRandomBytes(ts)), "Mask 69");
+            Assert.IsTrue(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 3, 255 }.SequenceEqual(new MonotonicUlidRng(rng, 70).GetRandomBytes(ts)), "Mask 70");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void MonotonicRng_Ensure_ThrowsOnInvalidMask1()
         {
-            new MonotonicRng(-1);
+            new MonotonicUlidRng(-1);
         }
 
 
@@ -485,7 +485,7 @@ namespace NUlid.Tests
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void MonotonicRng_Ensure_ThrowsOnInvalidMask2()
         {
-            new MonotonicRng(71);
+            new MonotonicUlidRng(71);
         }
 
         [TestMethod]
@@ -493,7 +493,7 @@ namespace NUlid.Tests
         {
             var target = Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRY");
 
-            var rng = new MonotonicRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
+            var rng = new MonotonicUlidRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
 
             Assert.AreEqual("01BX5ZZKBKACTAV9WEVGEMMVRZ", Ulid.NewUlid(target.Time, rng).ToString());
             Assert.AreEqual("01BX5ZZKBKACTAV9WEVGEMMVS0", Ulid.NewUlid(target.Time, rng).ToString());
@@ -506,7 +506,7 @@ namespace NUlid.Tests
         {
             var target = Ulid.Parse("01BX5ZZKBKZZZZZZZZZZZZZZZX");
 
-            var rng = new MonotonicRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
+            var rng = new MonotonicUlidRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
 
             Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZY"));
             Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZZ"));
@@ -518,7 +518,7 @@ namespace NUlid.Tests
         {
             var target = Ulid.Parse("01BX5ZZKBKZZZZZZZZZZZZZZZX");
 
-            var rng = new MonotonicRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
+            var rng = new MonotonicUlidRng(new FakeUlidRng(), lastvalue: target.Random, intializeLastGen: target.Time);
 
             Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZY"));
             Assert.IsTrue(Ulid.NewUlid(target.Time, rng).ToString().EndsWith("ZZZZZZZZZZZZZZZZ"));

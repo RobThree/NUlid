@@ -6,7 +6,7 @@ namespace NUlid.Rng
     /// <summary>
     /// A cryptographically secure (but slow(er)) RNG for the random part of ulid's.
     /// </summary>
-    public class CSUlidRng : BaseRng
+    public class CSUlidRng : BaseUlidRng
     {
         // We only need one, single, instance of an RNG so we keep it around.
         private static readonly RNGCryptoServiceProvider _rng = new RNGCryptoServiceProvider();

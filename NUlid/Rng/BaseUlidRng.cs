@@ -2,7 +2,7 @@
 
 namespace NUlid.Rng
 {
-    public abstract class BaseRng : IUlidRng
+    public abstract class BaseUlidRng : IUlidRng
     {
         protected const int RANDLEN = 10;
         

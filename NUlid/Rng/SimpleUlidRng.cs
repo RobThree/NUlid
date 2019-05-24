@@ -5,7 +5,7 @@ namespace NUlid.Rng
     /// <summary>
     /// A simple (but fast(er)) RNG for the random part of ulid's.
     /// </summary>
-    public class SimpleUlidRng : BaseRng
+    public class SimpleUlidRng : BaseUlidRng
     {
         // We only need one, single, instance of an RNG so we keep it around.
         private static readonly Random _rng = new Random();

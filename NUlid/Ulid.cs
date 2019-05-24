@@ -66,7 +66,7 @@ namespace NUlid
         /// <returns>Returns a new <see cref="Ulid"/>.</returns>
         public static Ulid NewUlid()
         {
-            return NewUlid(DateTimeOffset.UtcNow, BaseRng.DEFAULTRNG);
+            return NewUlid(DateTimeOffset.UtcNow, BaseUlidRng.DEFAULTRNG);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace NUlid
         /// <returns>Returns a new <see cref="Ulid"/>.</returns>
         public static Ulid NewUlid(DateTimeOffset time)
         {
-            return NewUlid(time, BaseRng.DEFAULTRNG);
+            return NewUlid(time, BaseUlidRng.DEFAULTRNG);
         }
 
         /// <summary>

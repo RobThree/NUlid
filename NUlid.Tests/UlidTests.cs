@@ -313,10 +313,26 @@ namespace NUlid.Tests
         }
 
         [TestMethod]
+        public void Ulid_Parse_Handles_IiLl_TreatedAs_One()  //https://www.crockford.com/base32.html
+        {
+            Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('1', 'i') + KNOWNRANDOMSEQ_STRING));
+            Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('1', 'I') + KNOWNRANDOMSEQ_STRING));
+            Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('1', 'l') + KNOWNRANDOMSEQ_STRING));
+            Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('1', 'L') + KNOWNRANDOMSEQ_STRING));
+        }
+
+        [TestMethod]
+        public void Ulid_Parse_Handles_Oo_TreatedAs_Zero()  //https://www.crockford.com/base32.html
+        {
+            Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('0', 'o') + KNOWNRANDOMSEQ_STRING));
+            Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('0', 'O') + KNOWNRANDOMSEQ_STRING));
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(FormatException))]
         public void Ulid_Parse_ThrowsFormatException_OnInvalidString1()
         {
-            Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', 'O')); // O is not in BASE32 alphabet
+            Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', 'U')); // U is not in BASE32 alphabet
         }
 
         [TestMethod]
@@ -525,6 +541,13 @@ namespace NUlid.Tests
             // Now we change the time, JUST in time before we overflow
             var result = Ulid.NewUlid(target.Time.Add(TimeSpan.FromMilliseconds(1)), rng);  // Should NOT throw
             Assert.AreEqual("01BX5ZZKBM00ADBEEFDEADBEEF", result.ToString()); // We should have a new "random" value and timestamp should have increased by one
+        }
+
+        [TestMethod]
+        public void Parse_Allows_Hyphens()
+        {
+            Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ"), Ulid.Parse("01BX5ZZKBK-ACTA-V9WE-VGEM-MVRZ"));
+            Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ"), Ulid.Parse("01BX5ZZKBK-ACTAV9WEVGEMMVRZ"));
         }
     }
 }

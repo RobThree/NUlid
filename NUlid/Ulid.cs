@@ -21,7 +21,7 @@ namespace NUlid
         // Base32 "alphabet"
         private const string BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
         // Char to index lookup array for massive speedup since we can find a char's index in O(1). We use 255 as 'sentinel' value for invalid indexes.
-        private static readonly byte[] C2B32 = new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 255, 18, 19, 255, 20, 21, 255, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 255, 18, 19, 255, 20, 21, 255, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31 };
+        private static readonly byte[] C2B32 = new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 1, 18, 19, 1, 20, 21, 0, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 1, 18, 19, 1, 20, 21, 0, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31 };
         private static readonly int C2B32LEN = C2B32.Length;
         internal const long UNIXEPOCHMILLISECONDS = 62135596800000;
 
@@ -266,14 +266,15 @@ namespace NUlid
             if (string.IsNullOrEmpty(s))
                 throw new ArgumentNullException(nameof(s));
 
-            if (s.Length != 26)
+            var stripped = s.Replace("-", string.Empty);
+            if (stripped.Length != 26)
                 throw new FormatException("Invalid Base32 string");
             // Check if all chars are allowed by doing a lookup for each and seeing if we have an index <= 32 for it
             for (var i = 0; i < 26; i++)
-                if (s[i] >= C2B32LEN || C2B32[s[i]] > 31)
+                if (stripped[i] >= C2B32LEN || C2B32[stripped[i]] > 31)
                     throw new FormatException("Invalid Base32 string");
 
-            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(s.Substring(0, 10))), FromBase32(s.Substring(10, 16)));
+            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(stripped.Substring(0, 10))), FromBase32(stripped.Substring(10, 16)));
         }
 
         /// <summary>

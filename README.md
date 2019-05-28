@@ -1,5 +1,5 @@
 # ![Logo](https://raw.githubusercontent.com/RobThree/NUlid/master/logo.png) NUlid
-A .Net [ULID](https://github.com/alizain/ulid/blob/master/README.md) implementation
+A .Net [ULID](https://github.com/ulid/spec/blob/master/README.md) implementation
 
 ## Universally Unique Lexicographically Sortable Identifier
 

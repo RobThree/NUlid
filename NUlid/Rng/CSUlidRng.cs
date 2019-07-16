@@ -10,8 +10,7 @@ namespace NUlid.Rng
     {
         // We only need one, single, instance of an RNG so we keep it around.
         private static readonly RNGCryptoServiceProvider _rng = new RNGCryptoServiceProvider();
-        private readonly byte[] _buffer = new byte[RANDLEN];
-
+        
         /// <summary>
         /// Creates and returns cryptographically secure random bytes.
         /// </summary>
@@ -19,8 +18,9 @@ namespace NUlid.Rng
         /// <returns>Random bytes.</returns>
         public override byte[] GetRandomBytes(DateTimeOffset dateTime)
         {
-            _rng.GetBytes(_buffer);
-            return _buffer;
+            var buffer = new byte[RANDLEN];
+            _rng.GetBytes(buffer);
+            return buffer;
         }
     }
 }

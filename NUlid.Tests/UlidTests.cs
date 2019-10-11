@@ -41,7 +41,7 @@ namespace NUlid.Tests
         public void NewUlid_Uses_SpecifiedRNG()
         {
             var target = Ulid.NewUlid(new FakeUlidRng());
-            CollectionAssert.AreEqual(FakeUlidRng.DEFAULTRESULT, target.Random);
+            CollectionAssert.AreEqual(FakeUlidRng.DEFAULTRESULT.ToArray(), target.Random);
         }
 
 

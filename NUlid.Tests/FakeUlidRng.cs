@@ -1,5 +1,7 @@
 ﻿using NUlid.Rng;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NUlid.Tests
 {
@@ -12,12 +14,11 @@ namespace NUlid.Tests
     public class FakeUlidRng : IUlidRng
     {
         //Values specifically chosen to make the result spell DEADBEEFDEADBEEF
-        public static readonly byte[] DEFAULTRESULT = new byte[] { 107, 148, 213, 185, 207, 107, 148, 213, 185, 207 };
-
+        public static IReadOnlyList<byte> DEFAULTRESULT = new byte[] { 107, 148, 213, 185, 207, 107, 148, 213, 185, 207 };
         private readonly byte[] _desiredresult;
 
         public FakeUlidRng()
-            : this(DEFAULTRESULT) { }
+            : this(DEFAULTRESULT.ToArray()) { }
 
         public FakeUlidRng(byte[] desiredResult)
         {

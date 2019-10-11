@@ -23,13 +23,11 @@ namespace NUlid.Tests
         private const string KNOWNMINRANDOM_STRING = "0000000000000000";
         private const string KNOWNMAXRANDOM_STRING = "ZZZZZZZZZZZZZZZZ";
 
-        private static DateTimeOffset StripMicroSeconds(DateTimeOffset t)
-        {
+        private static DateTimeOffset StripMicroSeconds(DateTimeOffset t) =>
             // We can't use DateTimeOffsets to compare since the resolution of a ulid is milliseconds, and DateTimeOffset
             // has microseconds and more. So we drop that part by converting to UnixTimeMilliseconds and then back to
             // a DateTimeOffset.
-            return DateTimeOffset.FromUnixTimeMilliseconds(t.ToUnixTimeMilliseconds());
-        }
+            DateTimeOffset.FromUnixTimeMilliseconds(t.ToUnixTimeMilliseconds());
 
         [TestMethod]
         public void NewUlid_Creates_NewUlid()
@@ -189,7 +187,7 @@ namespace NUlid.Tests
         public void Ulid_HandlesMaxTimeCorrectly()
         {
             var target = new Ulid(KNOWNMAXTIMESTAMP_STRING + KNOWNMAXRANDOM_STRING);
-            Assert.AreEqual(target.Time, StripMicroSeconds(DateTimeOffset.MaxValue));
+            Assert.AreEqual(StripMicroSeconds(DateTimeOffset.MaxValue), target.Time);
         }
 
         [TestMethod]
@@ -246,13 +244,13 @@ namespace NUlid.Tests
         public void Ulid_TryParse_WorksCorrectly()
         {
             Assert.IsFalse(Ulid.TryParse("X", out var r1));
-            Assert.AreEqual(r1, Ulid.Empty);
+            Assert.AreEqual(Ulid.Empty, r1);
 
             Assert.IsFalse(Ulid.TryParse(string.Empty, out var r2));
-            Assert.AreEqual(r2, Ulid.Empty);
+            Assert.AreEqual(Ulid.Empty, r2);
 
             Assert.IsFalse(Ulid.TryParse(null, out var r3));
-            Assert.AreEqual(r3, Ulid.Empty);
+            Assert.AreEqual(Ulid.Empty, r3);
 
             Assert.IsTrue(Ulid.TryParse(Ulid.MinValue.ToString(), out var r4));
             Assert.IsTrue(Ulid.MinValue == r4);
@@ -262,7 +260,7 @@ namespace NUlid.Tests
 
             var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
             Assert.IsTrue(Ulid.TryParse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING, out var r6));
-            Assert.AreEqual(target, r6);
+            Assert.AreEqual(r6, target);
         }
 
         [TestMethod]
@@ -272,8 +270,8 @@ namespace NUlid.Tests
             Assert.AreEqual(Ulid.MaxValue, Ulid.Parse(Ulid.MaxValue.ToString()));
 
             var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-            Assert.AreEqual(target, Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING));
-            Assert.AreEqual(target, new Ulid(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING));
+            Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), target);
+            Assert.AreEqual(new Ulid(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), target);
         }
 
         [TestMethod]
@@ -281,36 +279,24 @@ namespace NUlid.Tests
         {
             var target = new Ulid(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING);
 
-            Assert.AreEqual(target, new Ulid(KNOWNTIMESTAMP_STRING.ToLowerInvariant() + KNOWNRANDOMSEQ_STRING.ToLowerInvariant()));
+            Assert.AreEqual(new Ulid(KNOWNTIMESTAMP_STRING.ToLowerInvariant() + KNOWNRANDOMSEQ_STRING.ToLowerInvariant()), target);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void Ulid_ObjectCompareTo_Throws()
-        {
-            Ulid.NewUlid().CompareTo(new object());
-        }
+        public void Ulid_ObjectCompareTo_Throws() => Ulid.NewUlid().CompareTo(new object());
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Ulid_Parse_ThrowsArgumentNullException_OnNull()
-        {
-            Ulid.Parse(null);
-        }
+        public void Ulid_Parse_ThrowsArgumentNullException_OnNull() => Ulid.Parse(null);
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Ulid_Parse_ThrowsArgumentNullException_OnEmptyString()
-        {
-            Ulid.Parse(string.Empty);
-        }
+        public void Ulid_Parse_ThrowsArgumentNullException_OnEmptyString() => Ulid.Parse(string.Empty);
 
         [TestMethod]
         [ExpectedException(typeof(FormatException))]
-        public void Ulid_Parse_ThrowsFormatException_OnInvalidLengthString()
-        {
-            Ulid.Parse("TEST");
-        }
+        public void Ulid_Parse_ThrowsFormatException_OnInvalidLengthString() => Ulid.Parse("TEST");
 
         [TestMethod]
         public void Ulid_Parse_Handles_IiLl_TreatedAs_One()  //https://www.crockford.com/base32.html
@@ -330,38 +316,27 @@ namespace NUlid.Tests
 
         [TestMethod]
         [ExpectedException(typeof(FormatException))]
-        public void Ulid_Parse_ThrowsFormatException_OnInvalidString1()
-        {
-            Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', 'U')); // U is not in BASE32 alphabet
-        }
+        public void Ulid_Parse_ThrowsFormatException_OnInvalidString1() => Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', 'U')); // U is not in BASE32 alphabet
 
         [TestMethod]
         [ExpectedException(typeof(FormatException))]
-        public void Ulid_Parse_ThrowsFormatException_OnInvalidString2()
-        {
-            Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', '{')); // Test char after last index in C2B32 array
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Ulid_Constructor_ThrowsArgumentException_OnInvalidByteArray()
-        {
-            new Ulid(new byte[] { 1, 2, 3 });
-        }
+        public void Ulid_Parse_ThrowsFormatException_OnInvalidString2() => Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', '{')); // Test char after last index in C2B32 array
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Ulid_Constructor_ThrowsArgumentNullException_OnNullSerializationInfo()
-        {
-            new Ulid(null, new StreamingContext());
-        }
+        public void Ulid_Constructor_ThrowsArgumentException_OnNullByteArray() => new Ulid((byte[])null);
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void Ulid_Constructor_ThrowsArgumentException_OnInvalidByteArray() => new Ulid(new byte[] { 1, 2, 3 });
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Ulid_NewUlid_ThrowsArgumentNullException_OnNullRng() => Ulid.NewUlid(Ulid.MinValue.Time, null);
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Ulid_NewUlid_ThrowsArgumentOutOfRangeException_OnTimestamp()
-        {
-            Ulid.NewUlid(Ulid.MinValue.Time.AddMilliseconds(-1));
-        }
+        public void Ulid_NewUlid_ThrowsArgumentOutOfRangeException_OnTimestamp() => Ulid.NewUlid(Ulid.MinValue.Time.AddMilliseconds(-1));
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
@@ -491,18 +466,12 @@ namespace NUlid.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void MonotonicRng_Ensure_ThrowsOnInvalidMask1()
-        {
-            new MonotonicUlidRng(-1);
-        }
+        public void MonotonicRng_Ensure_ThrowsOnInvalidMask1() => new MonotonicUlidRng(-1);
 
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void MonotonicRng_Ensure_ThrowsOnInvalidMask2()
-        {
-            new MonotonicUlidRng(71);
-        }
+        public void MonotonicRng_Ensure_ThrowsOnInvalidMask2() => new MonotonicUlidRng(71);
 
         [TestMethod]
         public void MonotonicRng_Sequence_Testvectors()
@@ -548,6 +517,39 @@ namespace NUlid.Tests
         {
             Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ"), Ulid.Parse("01BX5ZZKBK-ACTA-V9WE-VGEM-MVRZ"));
             Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ"), Ulid.Parse("01BX5ZZKBK-ACTAV9WEVGEMMVRZ"));
+        }
+
+        [TestMethod]
+        public void GreaterThanOperator()
+        {
+            Assert.IsTrue(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1") > new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0"));
+            Assert.IsFalse(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1") > new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1"));
+            Assert.IsFalse(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0") > new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1"));
+        }
+
+        [TestMethod]
+        public void GreaterThanOrEqualOperator()
+        {
+            Assert.IsTrue(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1") >= new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0"));
+            Assert.IsTrue(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1") >= new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1"));
+            Assert.IsFalse(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0") >= new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1"));
+        }
+
+
+        [TestMethod]
+        public void LessThanOperator()
+        {
+            Assert.IsTrue(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0") < new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1"));
+            Assert.IsFalse(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0") < new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0"));
+            Assert.IsFalse(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1") < new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0"));
+        }
+
+        [TestMethod]
+        public void LessThanOrEqualOperator()
+        {
+            Assert.IsTrue(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0") <= new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1"));
+            Assert.IsTrue(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0") <= new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0"));
+            Assert.IsFalse(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1") <= new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0"));
         }
     }
 }

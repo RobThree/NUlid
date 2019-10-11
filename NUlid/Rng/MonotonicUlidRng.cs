@@ -29,13 +29,13 @@ namespace NUlid.Rng
         // Number of MSB's that are masked out by default when generating a new sequence 'seed'
         private const int DEFAULTMSBMASKBITS = 10;
         // 'Pre-computed' mask with which new sequence 'seeds' are masked
-        private readonly byte[] _mask = new byte[RANDLEN];  
+        private readonly byte[] _mask = new byte[RANDLEN];
 
         // Object to lock() on while generating
         private readonly object _genlock = new object();
 
         // Contains the timestamp of when the GetRandomBytes method was last called
-        private long _lastgen;  
+        private long _lastgen;
         // Contains the last generated value
         private byte[] _lastvalue;
 
@@ -133,7 +133,7 @@ namespace NUlid.Rng
                     _lastvalue = _rng.GetRandomBytes(dateTime);                 // Use internal RNG to get bytes from
                     for (var i = 0; i < _mask.Length && _mask[i] < 255; i++)    // Mask out desired number of MSB's
                         _lastvalue[i] = (byte)(_lastvalue[i] & _mask[i]);
-                    
+
                     _lastgen = timestamp;   // Store last timestamp
                 }
                 return _lastvalue;

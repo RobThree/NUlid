@@ -32,9 +32,6 @@ namespace NUlid.Rng
         /// </summary>
         /// <param name="dateTime">DateTime for which the random bytes need to be generated; can be ignored but provides context.</param>
         /// <returns>Random bytes.</returns>
-        byte[] IUlidRng.GetRandomBytes(DateTimeOffset dateTime)
-        {
-            return GetRandomBytes(dateTime);
-        }
+        byte[] IUlidRng.GetRandomBytes(DateTimeOffset dateTime) => GetRandomBytes(dateTime);
     }
 }

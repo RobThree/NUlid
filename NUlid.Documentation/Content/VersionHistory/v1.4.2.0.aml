@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="9b91c470-d8f0-48b3-9fb7-3b7318f1d87d" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>
+        Version 1.4.2 was released on 2019-10-11.
+      </para>
+    </introduction>
+
+    <section>
+      <title>Changes in This Release</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <para>
+              The <codeEntityReference>T:NUlid.UlidTypeConverter</codeEntityReference> no longer internal.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              Implemented &lt;, &lt;=, &gt; and &gt;= operators.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              Constructors now throw on null byte arrays and null RNG.
+            </para>
+          </listItem>
+        </list>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="55d108d0-b9ef-495d-8303-73b4ec638e70" />
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>

@@ -64,10 +64,7 @@ namespace NUlid
         /// (<see cref="CSUlidRng"/>) RNG.
         /// </summary>
         /// <returns>Returns a new <see cref="Ulid"/>.</returns>
-        public static Ulid NewUlid()
-        {
-            return NewUlid(DateTimeOffset.UtcNow, BaseUlidRng.DEFAULTRNG);
-        }
+        public static Ulid NewUlid() => NewUlid(DateTimeOffset.UtcNow, BaseUlidRng.DEFAULTRNG);
 
         /// <summary>
         /// Creates and returns a new <see cref="Ulid"/> based on the specified time and default
@@ -77,20 +74,14 @@ namespace NUlid
         /// The <see cref="DateTimeOffset"/> to use for the time-part of the <see cref="Ulid"/>.
         /// </param>
         /// <returns>Returns a new <see cref="Ulid"/>.</returns>
-        public static Ulid NewUlid(DateTimeOffset time)
-        {
-            return NewUlid(time, BaseUlidRng.DEFAULTRNG);
-        }
+        public static Ulid NewUlid(DateTimeOffset time) => NewUlid(time, BaseUlidRng.DEFAULTRNG);
 
         /// <summary>
         /// Creates and returns a new <see cref="Ulid"/> based on the current (UTC) time and using the specified RNG.
         /// </summary>
         /// <param name="rng">The <see cref="IUlidRng"/> to use for random number generation.</param>
         /// <returns>Returns a new <see cref="Ulid"/>.</returns>
-        public static Ulid NewUlid(IUlidRng rng)
-        {
-            return NewUlid(DateTimeOffset.UtcNow, rng);
-        }
+        public static Ulid NewUlid(IUlidRng rng) => NewUlid(DateTimeOffset.UtcNow, rng);
 
         /// <summary>
         /// Creates and returns a new <see cref="Ulid"/> based on the specified time and using the specified RNG.
@@ -100,8 +91,11 @@ namespace NUlid
         /// </param>
         /// <param name="rng">The <see cref="IUlidRng"/> to use for random number generation.</param>
         /// <returns>Returns a new <see cref="Ulid"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="rng"/> is <see langword="null"/>.</exception>
         public static Ulid NewUlid(DateTimeOffset time, IUlidRng rng)
         {
+            if (rng == null)
+                throw new ArgumentNullException(nameof(rng));
             return new Ulid(time, rng.GetRandomBytes(time));
         }
 
@@ -111,10 +105,13 @@ namespace NUlid
         /// <param name="bytes">
         /// A 16-element byte array containing values with which to initialize the <see cref="Ulid"/>.
         /// </param>
-        /// <exception cref="ArgumentException">bytes argument is anything but 16 bytes.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="bytes"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="bytes"/>  is anything but 16 bytes long.</exception>
         public Ulid(byte[] bytes)
         {
-            if (bytes.Length != 16)
+            if (bytes == null)
+                throw new ArgumentNullException(nameof(bytes));
+            if ( bytes.Length != 16)
                 throw new ArgumentException("An array of 16 elements is required", nameof(bytes));
 
             _a = bytes[0];
@@ -139,20 +136,14 @@ namespace NUlid
         /// Initializes a new instance of the <see cref="Ulid"/> structure by using the specified <see cref="Guid"/>
         /// </summary>
         /// <param name="guid">A <see cref="Guid"/> representing a <see cref="Ulid"/>.</param>
-        public Ulid(Guid guid)
-        {
-            this = new Ulid(guid.ToByteArray());
-        }
+        public Ulid(Guid guid) => this = new Ulid(guid.ToByteArray());
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Ulid"/> structure by using the value represented by the
         /// specified string.
         /// </summary>
         /// <param name="ulid">A string that contains a <see cref="Ulid"/>.</param>
-        public Ulid(string ulid)
-        {
-            this = Parse(ulid);
-        }
+        public Ulid(string ulid) => this = Parse(ulid);
 
         // Internal constructor
         private Ulid(DateTimeOffset timePart, byte[] randomPart)
@@ -297,7 +288,9 @@ namespace NUlid
                 result = Parse(s);
                 return true;
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 result = Empty;
                 return false;
@@ -308,29 +301,20 @@ namespace NUlid
         /// Returns the <see cref="Ulid"/> in string-representation.
         /// </summary>
         /// <returns>The <see cref="Ulid"/> in string-representation.</returns>
-        public override string ToString()
-        {
-            return ToBase32(new[] { _a, _b, _c, _d, _e, _f })
+        public override string ToString() => ToBase32(new[] { _a, _b, _c, _d, _e, _f })
                 + ToBase32(new[] { _g, _h, _i, _j, _k, _l, _m, _n, _o, _p });
-        }
 
         /// <summary>
         /// Returns a 16-element byte array that contains the value of this instance.
         /// </summary>
         /// <returns>A 16-element byte array.</returns>
-        public byte[] ToByteArray()
-        {
-            return new byte[] { _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p };
-        }
+        public byte[] ToByteArray() => new byte[] { _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p };
 
         /// <summary>
         /// Returns a <see cref="Guid"/> that represents the value of this instance.
         /// </summary>
         /// <returns>A <see cref="Guid"/> that represents the value of this instance.</returns>
-        public Guid ToGuid()
-        {
-            return new Guid(ToByteArray());
-        }
+        public Guid ToGuid() => new Guid(ToByteArray());
 
         /// <summary>
         /// Returns a value indicating whether this instance and a specified <see cref="Ulid"/> object represent the
@@ -338,10 +322,7 @@ namespace NUlid
         /// </summary>
         /// <param name="other">An <see cref="Ulid"/> to compare to this instance.</param>
         /// <returns>true if other is equal to this instance; otherwise, false.</returns>
-        public bool Equals(Ulid other)
-        {
-            return this == other;
-        }
+        public bool Equals(Ulid other) => this == other;
 
         /// <summary>
         /// Returns a value that indicates whether this instance is equal to a specified object.
@@ -465,10 +446,7 @@ namespace NUlid
         /// <param name="x">The first object to compare.</param>
         /// <param name="y">The second object to compare.</param>
         /// <returns>true if x and y are not equal; otherwise, false.</returns>
-        public static bool operator !=(Ulid x, Ulid y)
-        {
-            return !(x == y);
-        }
+        public static bool operator !=(Ulid x, Ulid y) => !(x == y);
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -507,7 +485,9 @@ namespace NUlid
         /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="info"/> argument is null.</exception>
         /// <exception cref="SerializationException">The <see cref="Ulid"/> could not be deserialized correctly.</exception>
-        public Ulid(SerializationInfo info, StreamingContext context)
+#pragma warning disable CA1801 // Parameter context of methor .ctor is never used
+        private Ulid(SerializationInfo info, StreamingContext context)
+#pragma warning restore CA1801 // Parameter context of methor .ctor is never used
         {
             if (info == null)
                 throw new ArgumentNullException(nameof(info));
@@ -526,9 +506,69 @@ namespace NUlid
         /// <param name="formatProvider">Will be igored.</param>
         /// <returns>The <see cref="Ulid"/> in string-representation.</returns>
         /// <remarks>Both the format and formatProvider are ignored since there is only 1 valid representation of a <see cref="Ulid"/>.</remarks>
-        public string ToString(string format, IFormatProvider formatProvider)
+        public string ToString(string format, IFormatProvider formatProvider) => ToString();
+
+        /// <summary>
+        /// Compares two <see cref="Ulid"/>s and returns <see langword="true"/>  when the <see cref="Ulid"/> on the
+        /// left of the operator is less than the <see cref="Ulid"/> on the right of the operator, 
+        /// <see langword="false"/> otherwise.
+        /// </summary>
+        /// <param name="left"><see cref="Ulid"/> on the left of the operator.</param>
+        /// <param name="right"><see cref="Ulid"/> on the right of the operator.</param>
+        /// <returns>
+        /// Returns <see langword="true"/> when the <see cref="Ulid"/> on the left of the operator is less than the
+        /// <see cref="Ulid"/> on the right of the operator, <see langword="false"/> otherwise.
+        /// </returns>
+        public static bool operator <(Ulid left, Ulid right)
         {
-            return ToString();
+            return left.CompareTo(right) < 0;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="Ulid"/>s and returns <see langword="true"/>  when the <see cref="Ulid"/> on the
+        /// left of the operator is less than, or equal to, the <see cref="Ulid"/> on the right of the operator, 
+        /// <see langword="false"/> otherwise.
+        /// </summary>
+        /// <param name="left"><see cref="Ulid"/> on the left of the operator.</param>
+        /// <param name="right"><see cref="Ulid"/> on the right of the operator.</param>
+        /// <returns>
+        /// Returns <see langword="true"/> when the <see cref="Ulid"/> on the left of the operator is less than,
+        /// or equal to, the <see cref="Ulid"/> on the right of the operator, <see langword="false"/> otherwise.
+        /// </returns>
+        public static bool operator <=(Ulid left, Ulid right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="Ulid"/>s and returns <see langword="true"/>  when the <see cref="Ulid"/> on the
+        /// left of the operator is greater than the <see cref="Ulid"/> on the right of the operator, 
+        /// <see langword="false"/> otherwise.
+        /// </summary>
+        /// <param name="left"><see cref="Ulid"/> on the left of the operator.</param>
+        /// <param name="right"><see cref="Ulid"/> on the right of the operator.</param>
+        /// <returns>
+        /// Returns <see langword="true"/> when the <see cref="Ulid"/> on the left of the operator is greater than the
+        /// <see cref="Ulid"/> on the right of the operator, <see langword="false"/> otherwise.
+        /// </returns>
+        public static bool operator >(Ulid left, Ulid right)
+        {
+            return left.CompareTo(right) > 0;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="Ulid"/>s and returns <see langword="true"/>  when the <see cref="Ulid"/> on the
+        /// left of the operator is greater than, or equal to, the <see cref="Ulid"/> on the right of the operator, 
+        /// </summary>
+        /// <param name="left"><see cref="Ulid"/> on the left of the operator.</param>
+        /// <param name="right"><see cref="Ulid"/> on the right of the operator.</param>
+        /// <returns>
+        /// Returns <see langword="true"/> when the <see cref="Ulid"/> on the left of the operator is greater than,
+        /// or equal to, the <see cref="Ulid"/> on the right of the operator, <see langword="false"/> otherwise.
+        /// </returns>
+        public static bool operator >=(Ulid left, Ulid right)
+        {
+            return left.CompareTo(right) >= 0;
         }
     }
 }

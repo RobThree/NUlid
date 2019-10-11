@@ -11,12 +11,14 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
-    <PackageTags>Universally Unique Lexicographically Sortable Identifier ULID UUID GUID</PackageTags>
-    <PackageReleaseNotes>* Fix a race condition in the CRUlidRng and SimpleUlidRng (See #12)</PackageReleaseNotes>
+    <PackageTags>Universally Unique Lexicographically Sortable Identifier, ULID, UUID, GUID</PackageTags>
+    <PackageReleaseNotes>* The UlidTypeConverter no longer internal
+* Implemented &lt;, &lt;=, &gt; and &gt;= operators
+* Constructors now throw on null byte arrays and null RNG</PackageReleaseNotes>
     <IncludeSource>true</IncludeSource>
     <Description>A .Net ULID implementation</Description>
     <PackageIconUrl>https://raw.githubusercontent.com/RobThree/NUlid/master/logo.png</PackageIconUrl>
-    <Version>1.4.1</Version>
+    <Version>1.4.2</Version>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -27,4 +29,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
     <DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

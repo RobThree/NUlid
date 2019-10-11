@@ -8,7 +8,7 @@ namespace NUlid
     /// <summary>
     /// Converts a <see cref="string"/> or <see cref="T:byte[]"/> type to a <see cref="Ulid"/> type, and vice versa.
     /// </summary>
-    internal sealed class UlidTypeConverter : TypeConverter
+    public sealed class UlidTypeConverter : TypeConverter
     {
         /// <summary>
         /// Returns whether this converter can convert an object of the given type to the type of this converter.
@@ -39,36 +39,25 @@ namespace NUlid
         /// true if destinationType is of type <see cref="InstanceDescriptor"/>, <see cref="string"/>, or 
         /// <see cref="T:byte[]"/>; otherwise, false.
         /// </returns>
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-        {
-            return destinationType == typeof(byte[])
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(byte[])
                 || destinationType == typeof(string)
                 || base.CanConvertTo(context, destinationType);
-        }
 
         /// <summary>
         /// Converts the given object to the type of this converter, using the specified context and culture information.
         /// </summary>
         /// <param name="context">An <see cref="ITypeDescriptorContext"/> that provides a format context.</param>
         /// <param name="culture">The <see cref="CultureInfo"/> to use as the current culture.</param>
-        /// <param name="value">The <see cref="Object"/> to convert.</param>
-        /// <returns>An <see cref="Object"/> that represents the converted value.</returns>
+        /// <param name="value">The <see cref="object"/> to convert.</param>
+        /// <returns>An <see cref="object"/> that represents the converted value.</returns>
         /// <exception cref="NotSupportedException">The conversion cannot be performed.</exception>
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            var asByteArray = value as byte[];
-            var asString = value as string;
-
-            if (asByteArray != null)
-            {
+            if (value is byte[] asByteArray)
                 return new Ulid(asByteArray);
-            }
 
-            if (asString != null)
-            {
-                if (Ulid.TryParse(asString, out Ulid ulid)) return ulid;
-                throw new NotSupportedException($"Invalid Ulid representation: \"{asString}\"");
-            }
+            if (value is string asString)
+                return Ulid.TryParse(asString, out var ulid) ? ulid : throw new NotSupportedException($"Invalid Ulid representation: \"{asString}\"");
 
             return base.ConvertFrom(context, culture, value);
         }
@@ -78,22 +67,18 @@ namespace NUlid
         /// </summary>
         /// <param name="context">An <see cref="ITypeDescriptorContext"/> that provides a format context.</param>
         /// <param name="culture">A <see cref="CultureInfo"/>. If <see langword="null"/> is passed, the current culture is assumed.</param>
-        /// <param name="value">The <see cref="Object"/> to convert.</param>
+        /// <param name="value">The <see cref="object"/> to convert.</param>
         /// <param name="destinationType">The <see cref="Type"/> to convert the value parameter to.</param>
-        /// <returns>An <see cref="Object"/> that represents the converted value.</returns>
+        /// <returns>An <see cref="object"/> that represents the converted value.</returns>
         /// <exception cref="ArgumentNullException">The destinationType parameter is <see langword="null"/>.</exception>
         /// <exception cref="NotSupportedException">The conversion cannot be performed.</exception>
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
             if (destinationType == typeof(byte[]))
-            {
                 return ((Ulid)value).ToByteArray();
-            }
 
             if (destinationType == typeof(string))
-            {
                 return ((Ulid)value).ToString();
-            }
 
             return base.ConvertTo(context, culture, value, destinationType);
         }

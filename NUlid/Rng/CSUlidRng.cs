@@ -10,7 +10,7 @@ namespace NUlid.Rng
     {
         // We only need one, single, instance of an RNG so we keep it around.
         private static readonly RNGCryptoServiceProvider _rng = new RNGCryptoServiceProvider();
-        
+
         /// <summary>
         /// Creates and returns cryptographically secure random bytes.
         /// </summary>

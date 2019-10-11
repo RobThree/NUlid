@@ -269,7 +269,7 @@ namespace NUlid
             var stripped = s.Replace("-", string.Empty);
             if (stripped.Length != 26)
                 throw new FormatException("Invalid Base32 string");
-            // Check if all chars are allowed by doing a lookup for each and seeing if we have an index <= 32 for it
+            // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
             for (var i = 0; i < 26; i++)
                 if (stripped[i] >= C2B32LEN || C2B32[stripped[i]] > 31)
                     throw new FormatException("Invalid Base32 string");

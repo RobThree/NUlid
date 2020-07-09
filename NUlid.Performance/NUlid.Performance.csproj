@@ -49,8 +49,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Benchmarking\Bench.cs" />
+    <Compile Include="Benchmarking\BenchCompleteEventArgs.cs" />
+    <Compile Include="Benchmarking\BenchEventArgs.cs" />
+    <Compile Include="Benchmarking\BenchResult.cs" />
+    <Compile Include="Benchmarking\BenchRunningEventArgs.cs" />
+    <Compile Include="Benchmarking\ForBench.cs" />
+    <Compile Include="Benchmarking\ForEachBench.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Benchmarking\IBench.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Benchmarking\SimpleBencher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

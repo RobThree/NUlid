@@ -26,11 +26,6 @@ namespace NUlid.Rng
         // Internal RNG to base initial values for the current millisecond on
         private readonly IUlidRng _rng;
 
-        // Number of MSB's that are masked out by default when generating a new sequence 'seed'
-        private const int DEFAULTMSBMASKBITS = 10;
-        // 'Pre-computed' mask with which new sequence 'seeds' are masked
-        private readonly byte[] _mask = new byte[RANDLEN];
-
         // Object to lock() on while generating
         private readonly object _genlock = new object();
 
@@ -41,61 +36,23 @@ namespace NUlid.Rng
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MonotonicUlidRng"/> class with a default
-        /// <see cref="IUlidRng"/> and default number of mask bits.
+        /// <see cref="IUlidRng"/>.
         /// </summary>
         public MonotonicUlidRng()
-            : this(DEFAULTMSBMASKBITS) { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MonotonicUlidRng"/> class with a default
-        /// <see cref="IUlidRng"/> and specified number of mask bits.
-        /// </summary>
-        /// <param name="maskMsbBits">
-        /// The number of (most significant) bits to mask out / set to 0 when generating a random value for a given
-        /// timestamp
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when <paramref name="maskMsbBits"/> is less than 0 or more than 70.
-        /// </exception>
-        public MonotonicUlidRng(int maskMsbBits)
-            : this(DEFAULTRNG, maskMsbBits) { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MonotonicUlidRng"/> class with a specified
-        /// <see cref="IUlidRng"/> and default number of mask bits.
-        /// </summary>
-        /// <param name="rng">The <see cref="IUlidRng"/> to get the random numbers from.</param>
-        public MonotonicUlidRng(IUlidRng rng)
-            : this(rng, DEFAULTMSBMASKBITS) { }
+            : this(DEFAULTRNG) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MonotonicUlidRng"/> class.
         /// </summary>
         /// <param name="rng">The <see cref="IUlidRng"/> to get the random numbers from.</param>
-        /// <param name="maskMsbBits">
-        /// The number of (most significant) bits to mask out / set to 0 when generating a random value for a given
-        /// timestamp
-        /// </param>
         /// <param name="lastValue">The last value to 'continue from'; use <see langword="null"/> for defaults.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="rng"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when <paramref name="maskMsbBits"/> is less than 0 or more than 70.
-        /// </exception>
-        public MonotonicUlidRng(IUlidRng rng, int maskMsbBits = DEFAULTMSBMASKBITS, Ulid? lastValue = null)
+        public MonotonicUlidRng(IUlidRng rng, Ulid? lastValue = null)
         {
             _rng = rng ?? throw new ArgumentNullException(nameof(rng));
-            var maskbits = maskMsbBits >= 0 && maskMsbBits <= 80 - DEFAULTMSBMASKBITS ? maskMsbBits : throw new ArgumentOutOfRangeException(nameof(maskMsbBits));
 
             _lastvalue = lastValue == null ? new byte[RANDLEN] : lastValue.Value.Random;
             _lastgen = Ulid.ToUnixTimeMilliseconds(lastValue == null ? Ulid.EPOCH : lastValue.Value.Time);
-
-            // Prepare (or 'pre-compute') mask
-            for (var i = 0; i < _mask.Length; i++)
-            {
-                var bits = maskbits > 8 ? 8 : maskbits; // Calculate number of bits to mask from this byte
-                maskbits -= bits;                       // Decrease number of bits needing to mask total
-                _mask[i] = (byte)((1 << 8 - bits) - 1);
-            }
         }
 
         /// <summary>
@@ -116,10 +73,7 @@ namespace NUlid.Rng
                 // Get unix time for given datetime
                 var timestamp = Ulid.ToUnixTimeMilliseconds(dateTime);
 
-                if (timestamp < _lastgen)
-                    throw new InvalidOperationException("Clock moved backwards; this is not supported.");
-
-                if (timestamp == _lastgen)  // Same timestamp as last time we generated random values?
+                if (timestamp <= _lastgen)  // Same or earlier timestamp as last time we generated random values?
                 {
                     // Increment our random value by one.
                     var i = RANDLEN;
@@ -131,8 +85,7 @@ namespace NUlid.Rng
                 else // New(er) timestamp, so generate a new random value and store the new(er) timestamp
                 {
                     _lastvalue = _rng.GetRandomBytes(dateTime);                 // Use internal RNG to get bytes from
-                    for (var i = 0; i < _mask.Length && _mask[i] < 255; i++)    // Mask out desired number of MSB's
-                        _lastvalue[i] = (byte)(_lastvalue[i] & _mask[i]);
+                    _lastvalue[0] = (byte)(_lastvalue[0] & 0x7F);               // Mask out bit 0 of the random part
 
                     _lastgen = timestamp;   // Store last timestamp
                 }

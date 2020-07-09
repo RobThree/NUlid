@@ -189,13 +189,12 @@ Console.WriteLine(Ulid.NewUlid(rng)); // 01DBN5W2SG000DCBVYHX4T6MD2
 ]]>
         </code>
         <para>
-          By default the 10 most significant bits are set to zero on the random part of the ULID; this ensures you can
-          generate enough ULID's before causing an overflow. The number of masked bits can be specified and may be any
-          value between 0 and 70. Some implementations simply pick a random value for the random part and increment
-          this value, however, there's a (very small) chance that this random part is close to the overflow value. If
-          you then happen to generate a lot of ULID's within the same millisecond there is a risk the you hit the
-          overflow. By our method you have (some) control over the number monotonic values before 'running out of
-          values' (overflowing). It is, with some effort, even possible to 'resume counting' from any given ULID.
+          By default the most significant bit of the random part is set to zero; this ensures you can generate enough
+          ULID's after the initial one before causing an overflow. Some implementations simply pick a random value for
+          the random part and increment this value, however, there's a (very small) chance that this random part is close
+          to the overflow value. If you then happen to generate a lot of ULID's within the same millisecond there is a
+          risk the you hit the overflow. By our method we ensure there's enough 'room' for new values before 'running out
+          of values' (overflowing). It is, with some effort, even possible to 'resume counting' from any given ULID.
         </para>
     </content>
   </section>

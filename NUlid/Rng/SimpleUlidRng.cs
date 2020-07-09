@@ -3,7 +3,7 @@
 namespace NUlid.Rng
 {
     /// <summary>
-    /// A simple (but fast(er)) RNG for the random part of ulid's.
+    /// A simple RNG for the random part of ulid's.
     /// </summary>
     public class SimpleUlidRng : BaseUlidRng
     {

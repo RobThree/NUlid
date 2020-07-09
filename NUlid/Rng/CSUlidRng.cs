@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 namespace NUlid.Rng
 {
     /// <summary>
-    /// A cryptographically secure (but slow(er)) RNG for the random part of ulid's.
+    /// A cryptographically secure RNG for the random part of ulid's.
     /// </summary>
     public class CSUlidRng : BaseUlidRng
     {

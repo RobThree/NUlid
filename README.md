@@ -79,7 +79,7 @@ Below is the current specification of ULID as implemented in this repository.
 As of v1.4.0 [monotonic ULID's](https://github.com/ulid/spec#monotonicity) are supported (see below).
 
 ### Monotonicity
-When generating a ULID within the same millisecond, it is possible to provide some guarantees regarding sort order (with some caveats). When you use the MonotonicUlidRng and a newly generated ULID in the same millisecond is detected, the random component is incremented by 1 bit in the least significant bit position (with carrying). For example: 
+When generating a ULID within the same millisecond, it is possible to provide some guarantees regarding sort order (with some caveats). When you use the `MonotonicUlidRng` and a newly generated ULID in the same millisecond is detected, the random component is incremented by 1 bit in the least significant bit position (with carrying). For example: 
 
 ```c#
 // Create monotonic rng

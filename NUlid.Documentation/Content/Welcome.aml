@@ -104,10 +104,10 @@ Console.WriteLine(myulid.Time);
         <para>
           You can also convert from/to <codeEntityReference>T:System.Guid</codeEntityReference>/UUID's, get the byte-representation of a ULID, 
           create a ULID with specific timestamp and you can even specify an <codeEntityReference>T:NUlid.Rng.IUlidRng</codeEntityReference> to
-          use for generating the randomness (by default NUlid uses the (slower, but cryptographically secure)
-          <codeEntityReference>T:NUlid.Rng.CSUlidRng</codeEntityReference> but a (faster)
-          <codeEntityReference>T:NUlid.Rng.SimpleUlidRng</codeEntityReference> is also provided). The ULID is implemented as a struct with
-          (operator) overloads for (in)equality, comparison etc. built-in and is, generally, very much like .Net's native
+          use for generating the randomness (by default NUlid uses the <codeEntityReference>T:NUlid.Rng.CSUlidRng</codeEntityReference> but a
+          <codeEntityReference>T:NUlid.Rng.SimpleUlidRng</codeEntityReference> is also provided, as well as a
+          <codeEntityReference>T:NUlid.Rng.MonotonicUlidRng</codeEntityReference>). The ULID is implemented as a struct with (operator) overloads
+          for (in)equality, comparison etc. built-in and is, generally, very much like .Net's native
           <codeEntityReference>T:System.Guid</codeEntityReference> struct. The <externalLink>
             <linkText>testsuite</linkText>
             <linkUri>https://github.com/RobThree/NUlid/blob/master/NUlid.Tests</linkUri>

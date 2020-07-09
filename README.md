@@ -51,7 +51,7 @@ Output:
 
 `4-8-2016 15:31:59 +00:00`
 
-You can also convert from/to GUID/UUID's, get the byte-representation of a ULID, create a ULID with specific timestamp and you can even specify an [`IUlidRng`](NUlid/Rng/IUlidRng.cs) to use for generating the randomness (by default NUlid uses the (slower, but cryptographically secure) [`CSUlidRng`](NUlid/Rng/CSUlidRng.cs) but a (faster) [`SimpleUlidRng`](NUlid/Rng/SimpleUlidRng.cs) is also provided). The ULID is implemented as a `struct` with (operator) overloads for (in)equality, comparison etc. built-in and is, generally, very much like .Net's native `Guid` struct. An extensive helpfile is provided in the Nuget package and [the testsuite](NUlid.Tests) also serves as a (simple) demonstration of NUlid's features.
+You can also convert from/to GUID/UUID's, get the byte-representation of a ULID, create a ULID with specific timestamp and you can even specify an [`IUlidRng`](NUlid/Rng/IUlidRng.cs) to use for generating the randomness (by default NUlid uses the [`CSUlidRng`](NUlid/Rng/CSUlidRng.cs) but a [`SimpleUlidRng`](NUlid/Rng/SimpleUlidRng.cs) is also provided, as well as a [`MonotonicUlidRng`](NUlid/Rng/MonotonicUlidRng.cs)). The ULID is implemented as a `struct` with (operator) overloads for (in)equality, comparison etc. built-in and is, generally, very much like .Net's native `Guid` struct. An extensive helpfile is provided in the Nuget package and [the testsuite](NUlid.Tests) also serves as a (simple) demonstration of NUlid's features.
 
 ## Specification
 

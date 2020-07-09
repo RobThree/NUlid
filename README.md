@@ -142,23 +142,24 @@ Based on / inspired by [alizain/ulid](https://github.com/alizain/ulid).
 
 ## Performance
 
-Below measurements are based on an Intel(R) Xeon(R) CPU E3-1225 v3 @ 3.20GHz:
+Below measurements are based on an Intel(R) Core(TM) i9-10900X CPU @ 4.29Ghz:
 
 ```
-Guid.NewGuid():                  10.968.520/sec
-UlidNet.Ulid.NewUlid():              78.378/sec *
-Ulid.NewUlid(SimpleUlidRng):      5.355.601/sec
-Ulid.NewUlid(CSUlidRng):          3.306.954/sec
-Guid.Parse(string):               1.302.345/sec
-Ulid.Parse(string):               1.498.890/sec
-Guid.ToString():                  3.790.084/sec
-Ulid.ToString():                  2.272.227/sec
-new Guid(byte[]):                 6.334.916/sec
-new Ulid(byte[]):                 5.484.964/sec
-Guid.ToByteArray():               9.534.734/sec
-Ulid.ToByteArray():               2.919.258/sec
-Ulid.ToGuid():                    2.863.527/sec
-new Ulid(Guid):                   7.434.209/sec
+Completed Guid.NewGuid()                          :     131.053.526/sec.
+Completed Ulid.NewUlid(SimpleUlidRng)             :       3.024.842/sec.
+Completed Ulid.NewUlid(CSUlidRng)                 :       5.992.481/sec.
+Completed Ulid.NewUlid(SimpleMonotonicUlidRng)    :       3.874.197/sec.
+Completed Ulid.NewUlid(CSMonotonicUlidRng)        :       3.866.197/sec.
+Completed Guid.Parse(string)                      :       2.238.621/sec.
+Completed Ulid.Parse(string)                      :         935.686/sec.
+Completed Guid.ToString()                         :       4.094.236/sec.
+Completed Ulid.ToString()                         :       1.325.308/sec.
+Completed new Guid(byte[])                        :       5.038.934/sec.
+Completed new Ulid(byte[])                        :       4.958.778/sec.
+Completed Guid.ToByteArray()                      :       6.529.349/sec.
+Completed Ulid.ToByteArray()                      :       2.038.058/sec.
+Completed Ulid.ToGuid()                           :       1.973.557/sec.
+Completed new Ulid(Guid)                          :       6.742.094/sec.
 ```
 \* [fvilers/ulid.net](https://github.com/fvilers/ulid.net) (not included in repository, for reference only)
 

@@ -7,7 +7,7 @@ namespace NUlid.Performance
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             var simplerng = new SimpleUlidRng();
             var csrng = new CSUlidRng();
@@ -23,9 +23,6 @@ namespace NUlid.Performance
 
             var d = DateTimeOffset.Now;
             var benchtests = new IBench[] {
-                new ForBench("Simple", () => simplerng.GetRandomBytes(d)),
-                new ForBench("CS", () => csrng.GetRandomBytes(d)),
-
                 new ForBench("Guid.NewGuid()", () => Guid.NewGuid()),
                 new ForBench("Ulid.NewUlid(SimpleUlidRng)", () => Ulid.NewUlid(simplerng)),
                 new ForBench("Ulid.NewUlid(CSUlidRng)", () => Ulid.NewUlid(csrng)),

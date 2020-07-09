@@ -195,7 +195,7 @@ namespace NUlid.Tests
         public void Ulid_HandlesMaxTimePlus1MSCorrectly()
         {
             var maxtime_plusone = "76EZ91ZQ00";
-            var target = new Ulid(maxtime_plusone + KNOWNMINRANDOM_STRING);
+            new Ulid(maxtime_plusone + KNOWNMINRANDOM_STRING);
         }
 
 

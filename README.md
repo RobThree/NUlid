@@ -161,6 +161,3 @@ Completed Ulid.ToByteArray()                      :       2.038.058/sec.
 Completed Ulid.ToGuid()                           :       1.973.557/sec.
 Completed new Ulid(Guid)                          :       6.742.094/sec.
 ```
-\* [fvilers/ulid.net](https://github.com/fvilers/ulid.net) (not included in repository, for reference only)
-
-![Performance comparison](https://raw.githubusercontent.com/RobThree/NUlid/master/NUlid.Performance/results/comparison-v1.1.png)

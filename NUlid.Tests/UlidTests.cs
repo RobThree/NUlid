@@ -346,7 +346,6 @@ namespace NUlid.Tests
             Ulid.NewUlid(rng);
         }
 
-
         [TestMethod]
         public void Ulid_TypeConverter_CanGetUsableConverter()
         {
@@ -402,6 +401,7 @@ namespace NUlid.Tests
             Assert.IsTrue(expectedByteArray.SequenceEqual(ulidByteArray));
         }
 
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
         [TestMethod]
         public void Ulid_IsSerializable_UsingBinaryFormatter()
         {
@@ -433,6 +433,7 @@ namespace NUlid.Tests
                 Assert.AreEqual(target, result);
             }
         }
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
 
         [TestMethod]
         public void InstanceCreatedWithoutRunningConstructor_Equals_EmptyUlid()
@@ -480,6 +481,7 @@ namespace NUlid.Tests
             var result = Ulid.NewUlid(target.Time.Add(TimeSpan.FromMilliseconds(1)), rng);  // Should NOT throw
             Assert.AreEqual("01BX5ZZKBMDEADBEEFDEADBEEF", result.ToString()); // We should have a new "random" value and timestamp should have increased by one
         }
+
 
         [TestMethod]
         public void Parse_Allows_Hyphens()

@@ -571,8 +571,8 @@ namespace NUlid
             return left.CompareTo(right) >= 0;
         }
 
-        public static Ulid FromString(string ulid) => new Ulid(ulid);
-        public static implicit operator Ulid(string ulid) => FromString(ulid);
-        public static implicit operator string(Ulid ulid) => ulid.ToString();
+        //public static Ulid FromString(string ulid) => new Ulid(ulid);
+        //public static implicit operator Ulid(string ulid) => FromString(ulid);
+        //public static implicit operator string(Ulid ulid) => ulid.ToString();
     }
 }

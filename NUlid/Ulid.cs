@@ -18,6 +18,7 @@ namespace NUlid
     [DebuggerDisplay("{ToString(),nq}")]
     public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializable, IFormattable
     {
+        internal const string HYPHEN = "-";
         // Base32 "alphabet"
         private const string BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
         // Char to index lookup array for massive speedup since we can find a char's index in O(1). We use 255 as 'sentinel' value for invalid indexes.
@@ -111,7 +112,7 @@ namespace NUlid
         {
             if (bytes == null)
                 throw new ArgumentNullException(nameof(bytes));
-            if ( bytes.Length != 16)
+            if (bytes.Length != 16)
                 throw new ArgumentException("An array of 16 elements is required", nameof(bytes));
 
             _a = bytes[0];
@@ -144,6 +145,15 @@ namespace NUlid
         /// </summary>
         /// <param name="ulid">A string that contains a <see cref="Ulid"/>.</param>
         public Ulid(string ulid) => this = Parse(ulid);
+
+#if NETSTANDARD2_1
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ulid"/> structure by using the value represented by the
+        /// specified string.
+        /// </summary>
+        /// <param name="ulid">A <see cref="ReadOnlySpan{char} /> that contains a <see cref="Ulid"/>.</param>
+        public Ulid(ReadOnlySpan<char> ulid) => this = Parse(ulid);
+#endif
 
         // Internal constructor
         private Ulid(DateTimeOffset timePart, byte[] randomPart)
@@ -215,7 +225,7 @@ namespace NUlid
             }
             throw new InvalidOperationException("Invalid length");
         }
-
+#if NETSTANDARD2_0
         private static byte[] FromBase32(string v)
         {
             // Hand-optimized unrolled loops ahead
@@ -243,8 +253,38 @@ namespace NUlid
             }
             throw new InvalidOperationException("Invalid length");
         }
+#elif NETSTANDARD2_1
+        private static byte[] FromBase32(ReadOnlySpan<char> v)
+        {
+            // Hand-optimized unrolled loops ahead
+            unchecked
+            {
+                switch (v.Length)
+                {
+                    case 10:    // Time part
+                        return new byte[]
+                        {
+                        /* 0 */ (byte)((C2B32[v[0]] << 5) | C2B32[v[1]]),                                   /* 1 */ (byte)((C2B32[v[2]] << 3) | (C2B32[v[3]] >> 2)),
+                        /* 2 */ (byte)((C2B32[v[3]] << 6) | (C2B32[v[4]] << 1) | (C2B32[v[5]] >> 4)),       /* 3 */ (byte)((C2B32[v[5]] << 4) | (C2B32[v[6]] >> 1)),
+                        /* 4 */ (byte)((C2B32[v[6]] << 7) | (C2B32[v[7]] << 2) | (C2B32[v[8]] >> 3)),       /* 5 */ (byte)((C2B32[v[8]] << 5) | C2B32[v[9]]),
+                        };
+                    case 16:    // Random part
+                        return new byte[]
+                        {
+                        /* 0 */ (byte)((C2B32[v[0]] << 3) | (C2B32[v[1]] >> 2)),                            /* 1 */ (byte)((C2B32[v[1]] << 6) | (C2B32[v[2]] << 1) | (C2B32[v[3]] >> 4)),
+                        /* 2 */ (byte)((C2B32[v[3]] << 4) | (C2B32[v[4]] >> 1)),                            /* 3 */ (byte)((C2B32[v[4]] << 7) | (C2B32[v[5]] << 2) | (C2B32[v[6]] >> 3)),
+                        /* 4 */ (byte)((C2B32[v[6]] << 5) | C2B32[v[7]]),                                   /* 5 */ (byte)((C2B32[v[8]] << 3) | C2B32[v[9]] >> 2),
+                        /* 6 */ (byte)((C2B32[v[9]] << 6) | (C2B32[v[10]] << 1) | (C2B32[v[11]] >> 4)),     /* 7 */ (byte)((C2B32[v[11]] << 4) | (C2B32[v[12]] >> 1)),
+                        /* 8 */ (byte)((C2B32[v[12]] << 7) | (C2B32[v[13]] << 2) | (C2B32[v[14]] >> 3)),    /* 9 */ (byte)((C2B32[v[14]] << 5) | C2B32[v[15]]),
+                        };
+                }
+            }
+            throw new InvalidOperationException("Invalid length");
+        }
+#endif
         #endregion
 
+#if NETSTANDARD2_0
         /// <summary>
         /// Converts the string representation of a <see cref="Ulid"/> equivalent.
         /// </summary>
@@ -265,8 +305,49 @@ namespace NUlid
                 if (stripped[i] >= C2B32LEN || C2B32[stripped[i]] > 31)
                     throw new FormatException("Invalid Base32 string");
 
-            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(stripped.Substring(0, 10))), FromBase32(stripped.Substring(10, 16)));
+            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(stripped.Substring(0, 10))), FromBase32(stripped.Substring(10, 26)));
         }
+#elif NETSTANDARD2_1
+        /// <summary>
+        /// Converts the string representation of a <see cref="Ulid"/> equivalent.
+        /// </summary>
+        /// <param name="s">A string containing a <see cref="Ulid"/> to convert.</param>
+        /// <returns>A <see cref="Ulid"/> equivalent to the value contained in s.</returns>
+        /// <exception cref="ArgumentNullException">s is null or empty.</exception>
+        /// <exception cref="FormatException">s is not in the correct format.</exception>
+        public static Ulid Parse(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                throw new ArgumentNullException(nameof(s));
+
+            return Parse(s.Replace(HYPHEN, string.Empty).AsSpan());
+        }
+
+
+        /// <summary>
+        /// Converts the string representation of a <see cref="Ulid"/> equivalent.
+        /// </summary>
+        /// <param name="s">A <see cref="ReadOnlySpan{char}"/> (with no hyphens) containing a <see cref="Ulid"/> to convert.</param>
+        /// <returns>A <see cref="Ulid"/> equivalent to the value contained in s.</returns>
+        /// <exception cref="ArgumentNullException">s is null or empty.</exception>
+        /// <exception cref="FormatException">s is not in the correct format.</exception>
+        /// <remarks>Hyphens not allowed</remarks>
+        public static Ulid Parse(ReadOnlySpan<char> s)
+        {
+            if (s == null || s.Length == 0)
+                throw new ArgumentNullException(nameof(s));
+
+            if (s.Length != 26)
+                throw new FormatException("Invalid Base32 string");
+
+            // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
+            for (var i = 0; i < 26; i++)
+                if (s[i] >= C2B32LEN || C2B32[s[i]] > 31)
+                    throw new FormatException("Invalid Base32 string");
+
+            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(s[..10])), FromBase32(s[10..26]));
+        }
+#endif
 
         /// <summary>
         /// Converts the string representation of a <see cref="Ulid"/> to an instance of a <see cref="Ulid"/>. A return
@@ -296,6 +377,37 @@ namespace NUlid
                 return false;
             }
         }
+
+#if NETSTANDARD2_1
+        /// <summary>
+        /// Converts the string representation of a <see cref="Ulid"/> to an instance of a <see cref="Ulid"/>. A return
+        /// value indicates whether the conversion succeeded.
+        /// </summary>
+        /// <param name="s">A <see cref="ReadOnlySpan{char}"/> (with no hyphens) containing a <see cref="Ulid"/> to convert.</param>
+        /// <param name="result">
+        /// When this method returns, contains a <see cref="Ulid"/> equivalent of the <see cref="Ulid"/> contained in
+        /// s, if the conversion succeeded, or <see cref="Empty"/> if the conversion failed. The conversion fails if
+        /// the s parameter is null or <see cref="string.Empty"/>, is not of the correct format, or represents
+        /// an invalid <see cref="Ulid"/> otherwise. This parameter is passed uninitialized; any value originally
+        /// supplied in result will be overwritten.
+        /// </param>
+        /// <returns>true if s was converted successfully; otherwise, false.</returns>
+        public static bool TryParse(ReadOnlySpan<char> s, out Ulid result)
+        {
+            try
+            {
+                result = Parse(s);
+                return true;
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                result = Empty;
+                return false;
+            }
+        }
+#endif
 
         /// <summary>
         /// Returns the <see cref="Ulid"/> in string-representation.

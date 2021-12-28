@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Authors>RobIII</Authors>
     <Company>RobIII</Company>
     <PackageId>NUlid</PackageId>
@@ -16,13 +16,13 @@
     <PackageReleaseNotes>Monotonic UlidRng no longer allows specifying the mask; we default to masking out the MSB of the random part which gives us at least 2^79 bits before running into a sequenceoverflow. Also fixed a bug in the MonotonicUlidRng that caused an InvalidOperationException("Clock moved backwards; this is not supported.")</PackageReleaseNotes>
     <IncludeSource>true</IncludeSource>
     <Description>A .Net ULID implementation</Description>
-    <Version>1.5</Version>
+    <Version>1.6</Version>
     <LangVersion>latest</LangVersion>
     <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RELEASE;NETSTANDARD2_0</DefineConstants>
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">

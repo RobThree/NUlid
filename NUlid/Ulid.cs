@@ -18,7 +18,8 @@ namespace NUlid
     [DebuggerDisplay("{ToString(),nq}")]
     public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializable, IFormattable
     {
-        internal const string HYPHEN = "-";
+        internal const string HYPHEN_STRING = "-";
+        internal const char HYPHEN_CHAR = '-';
         // Base32 "alphabet"
         private const string BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
         // Char to index lookup array for massive speedup since we can find a char's index in O(1). We use 255 as 'sentinel' value for invalid indexes.
@@ -297,7 +298,7 @@ namespace NUlid
             if (string.IsNullOrEmpty(s))
                 throw new ArgumentNullException(nameof(s));
 
-            var stripped = s.Replace("-", string.Empty);
+            var stripped = s.Replace(HYPHEN_STRING, string.Empty);
             if (stripped.Length != 26)
                 throw new FormatException("Invalid Base32 string");
             // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
@@ -312,41 +313,63 @@ namespace NUlid
         /// Converts the string representation of a <see cref="Ulid"/> equivalent.
         /// </summary>
         /// <param name="s">A string containing a <see cref="Ulid"/> to convert.</param>
-        /// <returns>A <see cref="Ulid"/> equivalent to the value contained in s.</returns>
-        /// <exception cref="ArgumentNullException">s is null or empty.</exception>
-        /// <exception cref="FormatException">s is not in the correct format.</exception>
+        /// <returns>A <see cref="Ulid"/> equivalent to the value contained in <paramref name="s"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="s"/> is null or empty.</exception>
+        /// <exception cref="FormatException"><paramref name="s"/> is not in the correct format.</exception>
         public static Ulid Parse(string s)
         {
             if (string.IsNullOrEmpty(s))
                 throw new ArgumentNullException(nameof(s));
 
-            return Parse(s.Replace(HYPHEN, string.Empty).AsSpan());
+            return Parse(s.AsSpan());
         }
 
 
         /// <summary>
         /// Converts the string representation of a <see cref="Ulid"/> equivalent.
         /// </summary>
-        /// <param name="s">A <see cref="ReadOnlySpan{char}"/> (with no hyphens) containing a <see cref="Ulid"/> to convert.</param>
-        /// <returns>A <see cref="Ulid"/> equivalent to the value contained in s.</returns>
-        /// <exception cref="ArgumentNullException">s is null or empty.</exception>
-        /// <exception cref="FormatException">s is not in the correct format.</exception>
+        /// <param name="span">A <see cref="ReadOnlySpan{char}"/>Span of char containing a <see cref="Ulid"/> to convert.</param>
+        /// <returns>A <see cref="Ulid"/> equivalent to the value contained in <paramref name="span"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="span"/> is null or empty.</exception>
+        /// <exception cref="FormatException"><paramref name="span"/> is not in the correct format.</exception>
         /// <remarks>Hyphens not allowed</remarks>
-        public static Ulid Parse(ReadOnlySpan<char> s)
+        public static Ulid Parse(ReadOnlySpan<char> span)
         {
-            if (s == null || s.Length == 0)
-                throw new ArgumentNullException(nameof(s));
+            if (span == null || span.Length == 0)
+                throw new ArgumentNullException(nameof(span));
 
-            if (s.Length != 26)
+            if (span.Length > 26)
+            {
+                Span<char> buffer = stackalloc char[26];
+
+                var position = 0;
+                for (var i = 0; i < span.Length; i++)
+                    if (span[i] != HYPHEN_CHAR)
+                    {
+                        if (span[i] >= C2B32LEN || C2B32[span[i]] > 31)
+                            throw new FormatException("Invalid Base32 string");
+                        buffer[position++] = span[i];
+                    }
+
+                if (position != 26)
+                {
+                    throw new FormatException("Invalid Base32 string");
+                }
+
+                return new Ulid(ByteArrayToDateTimeOffset(FromBase32(buffer[..10])), FromBase32(buffer[10..26]));
+            }
+
+            if (span.Length != 26)
                 throw new FormatException("Invalid Base32 string");
 
             // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
             for (var i = 0; i < 26; i++)
-                if (s[i] >= C2B32LEN || C2B32[s[i]] > 31)
+                if (span[i] >= C2B32LEN || C2B32[span[i]] > 31)
                     throw new FormatException("Invalid Base32 string");
 
-            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(s[..10])), FromBase32(s[10..26]));
+            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(span[..10])), FromBase32(span[10..26]));
         }
+
 #endif
 
         /// <summary>

@@ -544,6 +544,13 @@ namespace NUlid.Tests
         }
 
         [TestMethod]
+        public void Parse_WithSpan_Allows_Hyphens()
+        {
+            Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ".AsSpan()), Ulid.Parse("01BX5ZZKBK-ACTA-V9WE-VGEM-MVRZ".AsSpan()));
+            Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ".AsSpan()), Ulid.Parse("01BX5ZZKBK-ACTAV9WEVGEMMVRZ".AsSpan()));
+        }
+
+        [TestMethod]
         public void GreaterThanOperator()
         {
             Assert.IsTrue(new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS1") > new Ulid("01BX5ZZKBKACTAV9WEVGEMMVS0"));

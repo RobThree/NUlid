@@ -13,7 +13,7 @@
     <RootNamespace>NUlid.Documentation</RootNamespace>
     <Name>NUlid.Documentation</Name>
     <!-- SHFB properties -->
-    <FrameworkVersion>Cross-platform (.NET Core/.NET Standard)</FrameworkVersion>
+    <FrameworkVersion>.NET Core/.NET Standard/.NET 5.0+</FrameworkVersion>
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>NUlid.Documentation</HtmlHelpName>
     <Language>en-US</Language>

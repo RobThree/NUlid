@@ -27,7 +27,7 @@ namespace NUlid.Rng
         private readonly IUlidRng _rng;
 
         // Object to lock() on while generating
-        private readonly object _genlock = new object();
+        private readonly object _genlock = new();
 
         // Contains the timestamp of when the GetRandomBytes method was last called
         private long _lastgen;
@@ -77,10 +77,12 @@ namespace NUlid.Rng
                 {
                     // Increment our random value by one.
                     var i = RANDLEN;
-                    while (--i >= 0 && ++_lastvalue[i] == 0) ;
+                    while (--i >= 0 && ++_lastvalue[i] == 0) { }
                     // If i made it all the way to -1 we have an overflow and we throw
                     if (i < 0)
+                    {
                         throw new OverflowException();
+                    }
                 }
                 else // New(er) timestamp, so generate a new random value and store the new(er) timestamp
                 {

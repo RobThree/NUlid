@@ -39,12 +39,12 @@ namespace NUlid
         /// <summary>
         /// Represents the smallest possible value of <see cref="Ulid"/>. This field is read-only.
         /// </summary>
-        public static readonly Ulid MinValue = new Ulid(EPOCH, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+        public static readonly Ulid MinValue = new(EPOCH, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 
         /// <summary>
         /// Represents the largest possible value of <see cref="Ulid"/>. This field is read-only.
         /// </summary>
-        public static readonly Ulid MaxValue = new Ulid(DateTimeOffset.MaxValue, new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 });
+        public static readonly Ulid MaxValue = new(DateTimeOffset.MaxValue, new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 });
 
         /// <summary>
         /// A read-only instance of the <see cref="Ulid"/> structure whose value is all zeros.
@@ -97,7 +97,10 @@ namespace NUlid
         public static Ulid NewUlid(DateTimeOffset time, IUlidRng rng)
         {
             if (rng == null)
+            {
                 throw new ArgumentNullException(nameof(rng));
+            }
+
             return new Ulid(time, rng.GetRandomBytes(time));
         }
 
@@ -112,9 +115,14 @@ namespace NUlid
         public Ulid(byte[] bytes)
         {
             if (bytes == null)
+            {
                 throw new ArgumentNullException(nameof(bytes));
+            }
+
             if (bytes.Length != 16)
+            {
                 throw new ArgumentException("An array of 16 elements is required", nameof(bytes));
+            }
 
             _a = bytes[0];
             _b = bytes[1];
@@ -152,7 +160,7 @@ namespace NUlid
         /// Initializes a new instance of the <see cref="Ulid"/> structure by using the value represented by the
         /// specified string.
         /// </summary>
-        /// <param name="ulid">A <see cref="ReadOnlySpan{char} /> that contains a <see cref="Ulid"/>.</param>
+        /// <param name="ulid">A <see cref="ReadOnlySpan{T}" /> that contains a <see cref="Ulid"/>.</param>
         public Ulid(ReadOnlySpan<char> ulid) => this = Parse(ulid);
 #endif
 
@@ -160,9 +168,14 @@ namespace NUlid
         private Ulid(DateTimeOffset timePart, byte[] randomPart)
         {
             if (timePart < EPOCH)
+            {
                 throw new ArgumentOutOfRangeException(nameof(timePart));
+            }
+
             if (randomPart.Length != 10)
+            {
                 throw new InvalidOperationException($"{nameof(randomPart)} must be 10 bytes");
+            }
 
             var d = DateTimeOffsetToByteArray(timePart);
             _a = d[0]; _b = d[1]; _c = d[2]; _d = d[3]; _e = d[4]; _f = d[5];
@@ -195,13 +208,12 @@ namespace NUlid
             return FromUnixTimeMilliseconds(BitConverter.ToInt64(tmp, 0));
         }
 
-        private static string ToBase32(byte[] value)
-        {
+        private static string ToBase32(byte[] value) =>
             // Hand-optimized unrolled loops ahead
-            switch (value.Length)
+            value.Length switch
             {
-                case 6:     // Time part
-                    return new string(
+                // Time part
+                6 => new string(
                         new[] {
                         /* 0  */ BASE32[(value[0] & 224) >> 5],                             /* 1  */ BASE32[value[0] & 31],
                         /* 2  */ BASE32[(value[1] & 248) >> 3],                             /* 3  */ BASE32[((value[1] & 7) << 2) | ((value[2] & 192) >> 6)],
@@ -209,9 +221,9 @@ namespace NUlid
                         /* 6  */ BASE32[((value[3] & 15) << 1) | ((value[4] & 128) >> 7)],  /* 7  */ BASE32[(value[4] & 124) >> 2],
                         /* 8  */ BASE32[((value[4] & 3) << 3) | ((value[5] & 224) >> 5)],   /* 9  */ BASE32[value[5] & 31],
                         }
-                    );
-                case 10:    // Random part
-                    return new string(
+                    ),
+                // Random part
+                10 => new string(
                         new[] {
                         /* 0  */ BASE32[(value[0] & 248) >> 3],                             /* 1  */ BASE32[((value[0] & 7) << 2) | ((value[1] & 192) >> 6)],
                         /* 2  */ BASE32[(value[1] & 62) >> 1],                              /* 3  */ BASE32[((value[1] & 1) << 4) | ((value[2] & 240) >> 4)],
@@ -222,10 +234,9 @@ namespace NUlid
                         /* 12 */ BASE32[((value[7] & 15) << 1) | ((value[8] & 128) >> 7)],  /* 13 */ BASE32[(value[8] & 124) >> 2],
                         /* 14 */ BASE32[((value[8] & 3) << 3) | ((value[9] & 224) >> 5)],   /* 15 */ BASE32[value[9] & 31],
                         }
-                    );
-            }
-            throw new InvalidOperationException("Invalid length");
-        }
+                    ),
+                _ => throw new InvalidOperationException("Invalid length"),
+            };
 #if NETSTANDARD2_0
         private static byte[] FromBase32(string v)
         {
@@ -296,15 +307,23 @@ namespace NUlid
         public static Ulid Parse(string s)
         {
             if (string.IsNullOrEmpty(s))
+            {
                 throw new ArgumentNullException(nameof(s));
+            }
 
             var stripped = s.Replace(HYPHEN_STRING, string.Empty);
             if (stripped.Length != 26)
+            {
                 throw new FormatException("Invalid Base32 string");
+            }
             // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
             for (var i = 0; i < 26; i++)
+            {
                 if (stripped[i] >= C2B32LEN || C2B32[stripped[i]] > 31)
+                {
                     throw new FormatException("Invalid Base32 string");
+                }
+            }
 
             return new Ulid(ByteArrayToDateTimeOffset(FromBase32(stripped.Substring(0, 10))), FromBase32(stripped.Substring(10, 26)));
         }
@@ -319,7 +338,9 @@ namespace NUlid
         public static Ulid Parse(string s)
         {
             if (string.IsNullOrEmpty(s))
+            {
                 throw new ArgumentNullException(nameof(s));
+            }
 
             return Parse(s.AsSpan());
         }
@@ -328,7 +349,7 @@ namespace NUlid
         /// <summary>
         /// Converts the string representation of a <see cref="Ulid"/> equivalent.
         /// </summary>
-        /// <param name="span">A <see cref="ReadOnlySpan{char}"/>Span of char containing a <see cref="Ulid"/> to convert.</param>
+        /// <param name="span">A <see cref="ReadOnlySpan{T}"/>Span of char containing a <see cref="Ulid"/> to convert.</param>
         /// <returns>A <see cref="Ulid"/> equivalent to the value contained in <paramref name="span"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="span"/> is null or empty.</exception>
         /// <exception cref="FormatException"><paramref name="span"/> is not in the correct format.</exception>
@@ -336,7 +357,9 @@ namespace NUlid
         public static Ulid Parse(ReadOnlySpan<char> span)
         {
             if (span == null || span.Length == 0)
+            {
                 throw new ArgumentNullException(nameof(span));
+            }
 
             if (span.Length > 26)
             {
@@ -344,12 +367,17 @@ namespace NUlid
 
                 var position = 0;
                 for (var i = 0; i < span.Length; i++)
+                {
                     if (span[i] != HYPHEN_CHAR)
                     {
                         if (span[i] >= C2B32LEN || C2B32[span[i]] > 31)
+                        {
                             throw new FormatException("Invalid Base32 string");
+                        }
+
                         buffer[position++] = span[i];
                     }
+                }
 
                 if (position != 26)
                 {
@@ -360,12 +388,18 @@ namespace NUlid
             }
 
             if (span.Length != 26)
+            {
                 throw new FormatException("Invalid Base32 string");
+            }
 
             // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
             for (var i = 0; i < 26; i++)
+            {
                 if (span[i] >= C2B32LEN || C2B32[span[i]] > 31)
+                {
                     throw new FormatException("Invalid Base32 string");
+                }
+            }
 
             return new Ulid(ByteArrayToDateTimeOffset(FromBase32(span[..10])), FromBase32(span[10..26]));
         }
@@ -392,9 +426,7 @@ namespace NUlid
                 result = Parse(s);
                 return true;
             }
-#pragma warning disable CA1031 // Do not catch general exception types
             catch
-#pragma warning restore CA1031 // Do not catch general exception types
             {
                 result = Empty;
                 return false;
@@ -406,7 +438,7 @@ namespace NUlid
         /// Converts the string representation of a <see cref="Ulid"/> to an instance of a <see cref="Ulid"/>. A return
         /// value indicates whether the conversion succeeded.
         /// </summary>
-        /// <param name="s">A <see cref="ReadOnlySpan{char}"/> (with no hyphens) containing a <see cref="Ulid"/> to convert.</param>
+        /// <param name="s">A <see cref="ReadOnlySpan{T}"/> (with no hyphens) containing a <see cref="Ulid"/> to convert.</param>
         /// <param name="result">
         /// When this method returns, contains a <see cref="Ulid"/> equivalent of the <see cref="Ulid"/> contained in
         /// s, if the conversion succeeded, or <see cref="Empty"/> if the conversion failed. The conversion fails if
@@ -422,9 +454,7 @@ namespace NUlid
                 result = Parse(s);
                 return true;
             }
-#pragma warning disable CA1031 // Do not catch general exception types
             catch
-#pragma warning restore CA1031 // Do not catch general exception types
             {
                 result = Empty;
                 return false;
@@ -449,7 +479,7 @@ namespace NUlid
         /// Returns a <see cref="Guid"/> that represents the value of this instance.
         /// </summary>
         /// <returns>A <see cref="Guid"/> that represents the value of this instance.</returns>
-        public Guid ToGuid() => new Guid(ToByteArray());
+        public Guid ToGuid() => new(ToByteArray());
 
         /// <summary>
         /// Returns a value indicating whether this instance and a specified <see cref="Ulid"/> object represent the
@@ -469,8 +499,11 @@ namespace NUlid
         public override bool Equals(object obj)
         {
             // Check that obj is a ulid first
-            if (obj == null || !(obj is Ulid))
+            if (obj == null || obj is not Ulid)
+            {
                 return false;
+            }
+
             return Equals((Ulid)obj);
         }
 
@@ -506,14 +539,85 @@ namespace NUlid
         {
             var d = other.ToByteArray();
 
-            if (_a != d[0]) return _a.CompareTo(d[0]); if (_b != d[1]) return _b.CompareTo(d[1]);
-            if (_c != d[2]) return _c.CompareTo(d[2]); if (_d != d[3]) return _d.CompareTo(d[3]);
-            if (_e != d[4]) return _e.CompareTo(d[4]); if (_f != d[5]) return _f.CompareTo(d[5]);
-            if (_g != d[6]) return _g.CompareTo(d[6]); if (_h != d[7]) return _h.CompareTo(d[7]);
-            if (_i != d[8]) return _i.CompareTo(d[8]); if (_j != d[9]) return _j.CompareTo(d[9]);
-            if (_k != d[10]) return _k.CompareTo(d[10]); if (_l != d[11]) return _l.CompareTo(d[11]);
-            if (_m != d[12]) return _m.CompareTo(d[12]); if (_n != d[13]) return _n.CompareTo(d[13]);
-            if (_o != d[14]) return _o.CompareTo(d[14]); if (_p != d[15]) return _p.CompareTo(d[15]);
+            if (_a != d[0])
+            {
+                return _a.CompareTo(d[0]);
+            }
+
+            if (_b != d[1])
+            {
+                return _b.CompareTo(d[1]);
+            }
+
+            if (_c != d[2])
+            {
+                return _c.CompareTo(d[2]);
+            }
+
+            if (_d != d[3])
+            {
+                return _d.CompareTo(d[3]);
+            }
+
+            if (_e != d[4])
+            {
+                return _e.CompareTo(d[4]);
+            }
+
+            if (_f != d[5])
+            {
+                return _f.CompareTo(d[5]);
+            }
+
+            if (_g != d[6])
+            {
+                return _g.CompareTo(d[6]);
+            }
+
+            if (_h != d[7])
+            {
+                return _h.CompareTo(d[7]);
+            }
+
+            if (_i != d[8])
+            {
+                return _i.CompareTo(d[8]);
+            }
+
+            if (_j != d[9])
+            {
+                return _j.CompareTo(d[9]);
+            }
+
+            if (_k != d[10])
+            {
+                return _k.CompareTo(d[10]);
+            }
+
+            if (_l != d[11])
+            {
+                return _l.CompareTo(d[11]);
+            }
+
+            if (_m != d[12])
+            {
+                return _m.CompareTo(d[12]);
+            }
+
+            if (_n != d[13])
+            {
+                return _n.CompareTo(d[13]);
+            }
+
+            if (_o != d[14])
+            {
+                return _o.CompareTo(d[14]);
+            }
+
+            if (_p != d[15])
+            {
+                return _p.CompareTo(d[15]);
+            }
 
             return 0;
         }
@@ -551,7 +655,7 @@ namespace NUlid
             {
                 return 1;
             }
-            if (!(obj is Ulid))
+            if (obj is not Ulid)
             {
                 throw new ArgumentException("Object must be Ulid", nameof(obj));
             }
@@ -570,8 +674,13 @@ namespace NUlid
             var b = y.ToByteArray();
 
             for (var i = 0; i < 16; i++)
+            {
                 if (a[i] != b[i])
+                {
                     return false;
+                }
+            }
+
             return true;
         }
 
@@ -594,7 +703,10 @@ namespace NUlid
                 var d = ToByteArray();
                 var hash = (int)2166136261;
                 for (var i = 0; i < 16; i++)
+                {
                     hash = (hash * 16777619) ^ d[i];
+                }
+
                 return hash;
             }
         }
@@ -608,7 +720,9 @@ namespace NUlid
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
+            {
                 throw new ArgumentNullException(nameof(info));
+            }
 
             info.AddValue("d", ToString(), typeof(string));
         }
@@ -620,12 +734,12 @@ namespace NUlid
         /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="info"/> argument is null.</exception>
         /// <exception cref="SerializationException">The <see cref="Ulid"/> could not be deserialized correctly.</exception>
-#pragma warning disable CA1801 // Parameter context of methor .ctor is never used
         private Ulid(SerializationInfo info, StreamingContext context)
-#pragma warning restore CA1801 // Parameter context of methor .ctor is never used
         {
             if (info == null)
+            {
                 throw new ArgumentNullException(nameof(info));
+            }
 
             var d = Parse((string)info.GetValue("d", typeof(string))).ToByteArray();
 
@@ -654,10 +768,7 @@ namespace NUlid
         /// Returns <see langword="true"/> when the <see cref="Ulid"/> on the left of the operator is less than the
         /// <see cref="Ulid"/> on the right of the operator, <see langword="false"/> otherwise.
         /// </returns>
-        public static bool operator <(Ulid left, Ulid right)
-        {
-            return left.CompareTo(right) < 0;
-        }
+        public static bool operator <(Ulid left, Ulid right) => left.CompareTo(right) < 0;
 
         /// <summary>
         /// Compares two <see cref="Ulid"/>s and returns <see langword="true"/>  when the <see cref="Ulid"/> on the
@@ -670,10 +781,7 @@ namespace NUlid
         /// Returns <see langword="true"/> when the <see cref="Ulid"/> on the left of the operator is less than,
         /// or equal to, the <see cref="Ulid"/> on the right of the operator, <see langword="false"/> otherwise.
         /// </returns>
-        public static bool operator <=(Ulid left, Ulid right)
-        {
-            return left.CompareTo(right) <= 0;
-        }
+        public static bool operator <=(Ulid left, Ulid right) => left.CompareTo(right) <= 0;
 
         /// <summary>
         /// Compares two <see cref="Ulid"/>s and returns <see langword="true"/>  when the <see cref="Ulid"/> on the
@@ -686,10 +794,7 @@ namespace NUlid
         /// Returns <see langword="true"/> when the <see cref="Ulid"/> on the left of the operator is greater than the
         /// <see cref="Ulid"/> on the right of the operator, <see langword="false"/> otherwise.
         /// </returns>
-        public static bool operator >(Ulid left, Ulid right)
-        {
-            return left.CompareTo(right) > 0;
-        }
+        public static bool operator >(Ulid left, Ulid right) => left.CompareTo(right) > 0;
 
         /// <summary>
         /// Compares two <see cref="Ulid"/>s and returns <see langword="true"/>  when the <see cref="Ulid"/> on the
@@ -701,10 +806,7 @@ namespace NUlid
         /// Returns <see langword="true"/> when the <see cref="Ulid"/> on the left of the operator is greater than,
         /// or equal to, the <see cref="Ulid"/> on the right of the operator, <see langword="false"/> otherwise.
         /// </returns>
-        public static bool operator >=(Ulid left, Ulid right)
-        {
-            return left.CompareTo(right) >= 0;
-        }
+        public static bool operator >=(Ulid left, Ulid right) => left.CompareTo(right) >= 0;
 
         //public static Ulid FromString(string ulid) => new Ulid(ulid);
         //public static implicit operator Ulid(string ulid) => FromString(ulid);

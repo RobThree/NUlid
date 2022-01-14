@@ -14,7 +14,7 @@ namespace NUlid.Tests
     public class UlidTests
     {
         // test-constants
-        private static readonly DateTime UNIXEPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime UNIXEPOCH = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private static readonly DateTimeOffset KNOWNTIMESTAMP_DTO = DateTimeOffset.FromUnixTimeMilliseconds(1469918176385);
 
         private const string KNOWNTIMESTAMP_STRING = "01ARYZ6S41";
@@ -90,16 +90,6 @@ namespace NUlid.Tests
         {
             var ulid = Ulid.NewUlid();
             var target = Ulid.Parse(ulid.ToString());
-
-            Assert.IsTrue(target.Random.SequenceEqual(ulid.Random));
-            Assert.AreEqual(ulid.Time, target.Time);
-        }
-
-        [TestMethod]
-        public void Ulid_Parse_WithSpan_ParsesCorrectly()
-        {
-            var ulid = Ulid.NewUlid();
-            var target = Ulid.Parse(ulid.ToString().AsSpan());
 
             Assert.IsTrue(target.Random.SequenceEqual(ulid.Random));
             Assert.AreEqual(ulid.Time, target.Time);
@@ -274,29 +264,6 @@ namespace NUlid.Tests
         }
 
         [TestMethod]
-        public void Ulid_TryParse_WithSpan_WorksCorrectly()
-        {
-            Assert.IsFalse(Ulid.TryParse("X".AsSpan(), out var r1));
-            Assert.AreEqual(Ulid.Empty, r1);
-
-            Assert.IsFalse(Ulid.TryParse(string.Empty.AsSpan(), out var r2));
-            Assert.AreEqual(Ulid.Empty, r2);
-
-            Assert.IsFalse(Ulid.TryParse(Span<char>.Empty, out var r3));
-            Assert.AreEqual(Ulid.Empty, r3);
-
-            Assert.IsTrue(Ulid.TryParse(Ulid.MinValue.ToString().AsSpan(), out var r4));
-            Assert.IsTrue(Ulid.MinValue == r4);
-
-            Assert.IsTrue(Ulid.TryParse(Ulid.MaxValue.ToString().AsSpan(), out var r5));
-            Assert.IsTrue(Ulid.MaxValue == r5);
-
-            var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-            Assert.IsTrue(Ulid.TryParse((KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING).AsSpan(), out var r6));
-            Assert.AreEqual(r6, target);
-        }
-
-        [TestMethod]
         public void Ulid_Parse_WorksCorrectly()
         {
             Assert.AreEqual(Ulid.MinValue, Ulid.Parse(Ulid.MinValue.ToString()));
@@ -305,17 +272,6 @@ namespace NUlid.Tests
             var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
             Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), target);
             Assert.AreEqual(new Ulid(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), target);
-        }
-
-        [TestMethod]
-        public void Ulid_Parse_WithSpan_WorksCorrectly()
-        {
-            Assert.AreEqual(Ulid.MinValue, Ulid.Parse(Ulid.MinValue.ToString().AsSpan()));
-            Assert.AreEqual(Ulid.MaxValue, Ulid.Parse(Ulid.MaxValue.ToString().AsSpan()));
-
-            var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-            Assert.AreEqual(Ulid.Parse((KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING).AsSpan()), target);
-            Assert.AreEqual(new Ulid((KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING).AsSpan()), target);
         }
 
         [TestMethod]
@@ -334,22 +290,13 @@ namespace NUlid.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Ulid_Parse_ThrowsArgumentNullException_OnNull() => Ulid.Parse(null);
 
-
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Ulid_Parse_ThrowsArgumentNullException_OnEmptyString() => Ulid.Parse(string.Empty);
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Ulid_Parse_WithSpan_ThrowsArgumentNullException_OnEmptyString() => Ulid.Parse(Span<char>.Empty);
-
-        [TestMethod]
         [ExpectedException(typeof(FormatException))]
         public void Ulid_Parse_ThrowsFormatException_OnInvalidLengthString() => Ulid.Parse("TEST");
-
-        [TestMethod]
-        [ExpectedException(typeof(FormatException))]
-        public void Ulid_Parse_WithSpan_ThrowsFormatException_OnInvalidLengthString() => Ulid.Parse("TEST".AsSpan());
 
         [TestMethod]
         public void Ulid_Parse_Handles_IiLl_TreatedAs_One()  //https://www.crockford.com/base32.html
@@ -461,14 +408,12 @@ namespace NUlid.Tests
             var target = Ulid.NewUlid();
 
             var formatter = new BinaryFormatter();
-            using (var stream = new MemoryStream())
-            {
-                formatter.Serialize(stream, target);
-                stream.Position = 0;
-                var result = formatter.Deserialize(stream);
+            using var stream = new MemoryStream();
+            formatter.Serialize(stream, target);
+            stream.Position = 0;
+            var result = formatter.Deserialize(stream);
 
-                Assert.AreEqual(target, result);
-            }
+            Assert.AreEqual(target, result);
         }
 
         [TestMethod]
@@ -477,14 +422,12 @@ namespace NUlid.Tests
             var target = Ulid.NewUlid();
 
             var serializer = new DataContractSerializer(target.GetType());
-            using (var stream = new MemoryStream())
-            {
-                serializer.WriteObject(stream, target);
-                stream.Position = 0;
-                var result = serializer.ReadObject(stream);
+            using var stream = new MemoryStream();
+            serializer.WriteObject(stream, target);
+            stream.Position = 0;
+            var result = serializer.ReadObject(stream);
 
-                Assert.AreEqual(target, result);
-            }
+            Assert.AreEqual(target, result);
         }
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
 
@@ -535,19 +478,26 @@ namespace NUlid.Tests
             Assert.AreEqual("01BX5ZZKBMDEADBEEFDEADBEEF", result.ToString()); // We should have a new "random" value and timestamp should have increased by one
         }
 
+        [TestMethod]
+        public void MicrosecondRng_Sequence_Testvectors()
+        {
+            var ts = new DateTimeOffset(2020, 2, 22, 0, 0, 0, TimeSpan.Zero);
+            var target = Ulid.NewUlid(ts);
+            var rng = new MicrosecondUlidRng(new FakeUlidRng());
+
+            var microsecond = TimeSpan.FromTicks(TimeSpan.TicksPerMillisecond / 1000);
+
+            Assert.AreEqual("01E1N33600000DBEEFDEADBEEF", Ulid.NewUlid(target.Time.Add(microsecond * 0), rng).ToString());
+            Assert.AreEqual("01E1N3360000MDBEEFDEADBEEF", Ulid.NewUlid(target.Time.Add(microsecond * 1), rng).ToString());
+            Assert.AreEqual("01E1N33600018DBEEFDEADBEEF", Ulid.NewUlid(target.Time.Add(microsecond * 2), rng).ToString());
+            Assert.AreEqual("01E1N3360001WDBEEFDEADBEEF", Ulid.NewUlid(target.Time.Add(microsecond * 3), rng).ToString());
+        }
 
         [TestMethod]
         public void Parse_Allows_Hyphens()
         {
             Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ"), Ulid.Parse("01BX5ZZKBK-ACTA-V9WE-VGEM-MVRZ"));
             Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ"), Ulid.Parse("01BX5ZZKBK-ACTAV9WEVGEMMVRZ"));
-        }
-
-        [TestMethod]
-        public void Parse_WithSpan_Allows_Hyphens()
-        {
-            Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ".AsSpan()), Ulid.Parse("01BX5ZZKBK-ACTA-V9WE-VGEM-MVRZ".AsSpan()));
-            Assert.AreEqual(Ulid.Parse("01BX5ZZKBKACTAV9WEVGEMMVRZ".AsSpan()), Ulid.Parse("01BX5ZZKBK-ACTAV9WEVGEMMVRZ".AsSpan()));
         }
 
         [TestMethod]

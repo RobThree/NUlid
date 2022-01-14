@@ -8,7 +8,7 @@ namespace NUlid.Rng
     public class SimpleUlidRng : BaseUlidRng
     {
         // We only need one, single, instance of an RNG so we keep it around.
-        private static readonly Random _rng = new Random();
+        private static readonly Random _rng = new();
 
         /// <summary>
         /// Creates and returns random bytes.

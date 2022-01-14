@@ -9,7 +9,7 @@ namespace NUlid.Rng
     public class CSUlidRng : BaseUlidRng
     {
         // We only need one, single, instance of an RNG so we keep it around.
-        private static readonly RNGCryptoServiceProvider _rng = new RNGCryptoServiceProvider();
+        private static readonly RNGCryptoServiceProvider _rng = new();
 
         /// <summary>
         /// Creates and returns cryptographically secure random bytes.

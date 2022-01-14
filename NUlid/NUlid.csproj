@@ -7,7 +7,7 @@
     <PackageId>NUlid</PackageId>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <Product>NUlid</Product>
-    <Copyright>(C) 2016 - 2020 Devcorner.nl</Copyright>
+    <Copyright>(C) 2016 - 2022 Devcorner.nl</Copyright>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -16,9 +16,11 @@
     <PackageReleaseNotes>Monotonic UlidRng no longer allows specifying the mask; we default to masking out the MSB of the random part which gives us at least 2^79 bits before running into a sequenceoverflow. Also fixed a bug in the MonotonicUlidRng that caused an InvalidOperationException("Clock moved backwards; this is not supported.")</PackageReleaseNotes>
     <IncludeSource>true</IncludeSource>
     <Description>A .Net ULID implementation</Description>
-    <Version>1.6</Version>
+    <Version>1.7</Version>
     <LangVersion>latest</LangVersion>
     <PackageIcon>logo.png</PackageIcon>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>bin\Release\nulid.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -30,16 +32,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

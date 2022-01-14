@@ -13,7 +13,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
     <PackageTags>Universally Unique Lexicographically Sortable Identifier, ULID, UUID, GUID</PackageTags>
-    <PackageReleaseNotes>Monotonic UlidRng no longer allows specifying the mask; we default to masking out the MSB of the random part which gives us at least 2^79 bits before running into a sequenceoverflow. Also fixed a bug in the MonotonicUlidRng that caused an InvalidOperationException("Clock moved backwards; this is not supported.")</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed bug in Monotonic UlidRng that could cause duplicate values when under high concurrency (see https://github.com/RobThree/NUlid/pull/17). Added MicrosecondUlidRng.</PackageReleaseNotes>
     <IncludeSource>true</IncludeSource>
     <Description>A .Net ULID implementation</Description>
     <Version>1.7</Version>

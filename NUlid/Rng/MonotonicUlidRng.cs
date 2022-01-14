@@ -89,7 +89,9 @@ namespace NUlid.Rng
 
                     _lastgen = timestamp;   // Store last timestamp
                 }
-                return _lastvalue;
+                var buffer = new byte[RANDLEN];
+                _lastvalue.CopyTo(buffer, 0);
+                return buffer;
             }
         }
     }

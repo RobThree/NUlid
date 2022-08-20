@@ -325,7 +325,10 @@ namespace NUlid
                 }
             }
 
-            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(stripped.Substring(0, 10))), FromBase32(stripped.Substring(10, 26)));
+            var timeString = stripped.Substring(0, 10);
+            var randString = stripped.Substring(10, 16);
+
+            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(timeString)), FromBase32(randString));
         }
 #elif NETSTANDARD2_1
         /// <summary>

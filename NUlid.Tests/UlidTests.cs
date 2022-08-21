@@ -485,12 +485,12 @@ namespace NUlid.Tests
             var target = Ulid.NewUlid(ts);
             var rng = new MicrosecondUlidRng(new FakeUlidRng());
 
-            var microsecond = TimeSpan.FromTicks(TimeSpan.TicksPerMillisecond / 1000);
+            var microsecond = TimeSpan.TicksPerMillisecond / 1000;
 
-            Assert.AreEqual("01E1N33600000DBEEFDEADBEEF", Ulid.NewUlid(target.Time.Add(microsecond * 0), rng).ToString());
-            Assert.AreEqual("01E1N3360000MDBEEFDEADBEEF", Ulid.NewUlid(target.Time.Add(microsecond * 1), rng).ToString());
-            Assert.AreEqual("01E1N33600018DBEEFDEADBEEF", Ulid.NewUlid(target.Time.Add(microsecond * 2), rng).ToString());
-            Assert.AreEqual("01E1N3360001WDBEEFDEADBEEF", Ulid.NewUlid(target.Time.Add(microsecond * 3), rng).ToString());
+            Assert.AreEqual("01E1N33600000DBEEFDEADBEEF", Ulid.NewUlid(target.Time.AddTicks(microsecond * 0), rng).ToString());
+            Assert.AreEqual("01E1N3360000MDBEEFDEADBEEF", Ulid.NewUlid(target.Time.AddTicks(microsecond * 1), rng).ToString());
+            Assert.AreEqual("01E1N33600018DBEEFDEADBEEF", Ulid.NewUlid(target.Time.AddTicks(microsecond * 2), rng).ToString());
+            Assert.AreEqual("01E1N3360001WDBEEFDEADBEEF", Ulid.NewUlid(target.Time.AddTicks(microsecond * 3), rng).ToString());
         }
 
         [TestMethod]

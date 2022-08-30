@@ -7,7 +7,7 @@
     <PackageId>NUlid</PackageId>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <Product>NUlid</Product>
-    <Copyright>(C) 2016 - 2022 Devcorner.nl</Copyright>
+    <Copyright>(C) 2016 - 2023 Devcorner.nl</Copyright>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -16,7 +16,7 @@
     <PackageReleaseNotes>Fixed bug in Monotonic UlidRng that could cause duplicate values when under high concurrency (see https://github.com/RobThree/NUlid/pull/17). Added MicrosecondUlidRng.</PackageReleaseNotes>
     <IncludeSource>true</IncludeSource>
     <Description>A .Net ULID implementation</Description>
-    <Version>1.7</Version>
+    <Version>1.7.1</Version>
     <LangVersion>latest</LangVersion>
     <PackageIcon>logo.png</PackageIcon>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

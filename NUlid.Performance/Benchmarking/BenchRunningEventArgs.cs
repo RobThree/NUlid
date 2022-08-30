@@ -1,7 +1,6 @@
-﻿namespace NUlid.Performance.Benchmarking
+﻿namespace NUlid.Performance.Benchmarking;
+
+public class BenchRunningEventArgs : BenchEventArgs
 {
-    public class BenchRunningEventArgs : BenchEventArgs
-    {
-        public int Iterations { get; set; }
-    }
+    public int Iterations { get; set; }
 }

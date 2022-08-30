@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace NUlid.Performance.Benchmarking
+namespace NUlid.Performance.Benchmarking;
+
+public class BenchEventArgs : EventArgs
 {
-    public class BenchEventArgs : EventArgs
-    {
-        public string Title { get; set; }
-    }
+    public string Title { get; set; }
 }

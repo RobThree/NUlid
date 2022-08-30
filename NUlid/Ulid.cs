@@ -589,12 +589,9 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
             return _j.CompareTo(d[9]);
         }
 
-        if (_k != d[10])
-        {
-            return _k.CompareTo(d[10]);
-        }
-
-        return _l != d[11]
+        return _k != d[10]
+            ? _k.CompareTo(d[10])
+            : _l != d[11]
             ? _l.CompareTo(d[11])
             : _m != d[12]
             ? _m.CompareTo(d[12])

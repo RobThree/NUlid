@@ -116,4 +116,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release with documentation' ">
     <OutputPath>bin\Release with documentation\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'ReleaseWithDocumentation' ">
+    <OutputPath>bin\ReleaseWithDocumentation\</OutputPath>
+  </PropertyGroup>
 </Project>

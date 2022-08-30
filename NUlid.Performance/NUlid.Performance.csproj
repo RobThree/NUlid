@@ -3,7 +3,11 @@
 		<OutputType>Exe</OutputType>
 		<TargetFrameworks>net6.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
+		<Configurations>Debug;Release;ReleaseWithDocumentation</Configurations>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
+	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\NUlid\NUlid.csproj" />
 	</ItemGroup>

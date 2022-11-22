@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net6.0</TargetFrameworks>
 		<Authors>RobIII</Authors>
 		<Company>RobIII</Company>
 		<PackageId>NUlid</PackageId>
@@ -21,7 +21,7 @@
 		<PackageIcon>logo.png</PackageIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<DocumentationFile>bin\Release\nulid.xml</DocumentationFile>
-		<Configurations>Debug;Release;ReleaseWithDocumentation</Configurations>
+		<Configurations>Debug;Release</Configurations>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<AnalysisLevel>latest</AnalysisLevel>
 	</PropertyGroup>
@@ -30,15 +30,7 @@
 		<DefineConstants>TRACE;RELEASE</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDocumentation|AnyCPU'">
-		<DefineConstants>TRACE;RELEASE</DefineConstants>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
-		<DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='ReleaseWithDocumentation|net45|AnyCPU'">
 		<DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
 	</PropertyGroup>
 

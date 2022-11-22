@@ -155,13 +155,13 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     public Ulid(string ulid)
         => this = Parse(ulid);
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the <see cref="Ulid"/> structure by using the value represented by the
     /// specified string.
     /// </summary>
     /// <param name="ulid">A <see cref="ReadOnlySpan{T}" /> that contains a <see cref="Ulid"/>.</param>
-    public Ulid(ReadOnlySpan<char> ulid) 
+    public Ulid(ReadOnlySpan<char> ulid)
         => this = Parse(ulid);
 #endif
 
@@ -267,7 +267,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
         }
         throw new InvalidOperationException("Invalid length");
     }
-#elif NETSTANDARD2_1
+#elif NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
     private static byte[] FromBase32(ReadOnlySpan<char> v)
     {
         // Hand-optimized unrolled loops ahead
@@ -287,7 +287,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
                     {
                     /* 0 */ (byte)((C2B32[v[0]] << 3) | (C2B32[v[1]] >> 2)),                            /* 1 */ (byte)((C2B32[v[1]] << 6) | (C2B32[v[2]] << 1) | (C2B32[v[3]] >> 4)),
                     /* 2 */ (byte)((C2B32[v[3]] << 4) | (C2B32[v[4]] >> 1)),                            /* 3 */ (byte)((C2B32[v[4]] << 7) | (C2B32[v[5]] << 2) | (C2B32[v[6]] >> 3)),
-                    /* 4 */ (byte)((C2B32[v[6]] << 5) | C2B32[v[7]]),                                   /* 5 */ (byte)((C2B32[v[8]] << 3) | C2B32[v[9]] >> 2),
+                    /* 4 */ (byte)((C2B32[v[6]] << 5) | C2B32[v[7]]),                                   /* 5 */ (byte)((C2B32[v[8]] << 3) | (C2B32[v[9]] >> 2)),
                     /* 6 */ (byte)((C2B32[v[9]] << 6) | (C2B32[v[10]] << 1) | (C2B32[v[11]] >> 4)),     /* 7 */ (byte)((C2B32[v[11]] << 4) | (C2B32[v[12]] >> 1)),
                     /* 8 */ (byte)((C2B32[v[12]] << 7) | (C2B32[v[13]] << 2) | (C2B32[v[14]] >> 3)),    /* 9 */ (byte)((C2B32[v[14]] << 5) | C2B32[v[15]]),
                     };
@@ -306,14 +306,14 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// <returns>A <see cref="Ulid"/> equivalent to the value contained in s.</returns>
     /// <exception cref="ArgumentNullException">s is null or empty.</exception>
     /// <exception cref="FormatException">s is not in the correct format.</exception>
-    public static Ulid Parse(string s)
+    public static Ulid Parse(string? s)
     {
         if (string.IsNullOrEmpty(s))
         {
             throw new ArgumentNullException(nameof(s));
         }
 
-        var stripped = s.Replace(HYPHEN_STRING, string.Empty);
+        var stripped = s!.Replace(HYPHEN_STRING, string.Empty);
         if (stripped.Length != 26)
         {
             throw new FormatException("Invalid Base32 string");
@@ -329,7 +329,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
 
         return new Ulid(ByteArrayToDateTimeOffset(FromBase32(stripped.Substring(0, 10))), FromBase32(stripped.Substring(10, 16)));
     }
-#elif NETSTANDARD2_1
+#elif NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
     /// <summary>
     /// Converts the string representation of a <see cref="Ulid"/> equivalent.
     /// </summary>
@@ -337,15 +337,8 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// <returns>A <see cref="Ulid"/> equivalent to the value contained in <paramref name="s"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="s"/> is null or empty.</exception>
     /// <exception cref="FormatException"><paramref name="s"/> is not in the correct format.</exception>
-    public static Ulid Parse(string s)
-    {
-        if (string.IsNullOrEmpty(s))
-        {
-            throw new ArgumentNullException(nameof(s));
-        }
-
-        return Parse(s.AsSpan());
-    }
+    public static Ulid Parse(string? s)
+        => string.IsNullOrEmpty(s) ? throw new ArgumentNullException(nameof(s)) : Parse(s.AsSpan());
 
 
     /// <summary>
@@ -381,12 +374,9 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
                 }
             }
 
-            if (position != 26)
-            {
-                throw new FormatException("Invalid Base32 string");
-            }
-
-            return new Ulid(ByteArrayToDateTimeOffset(FromBase32(buffer[..10])), FromBase32(buffer[10..26]));
+            return position != 26
+                ? throw new FormatException("Invalid Base32 string")
+                : new Ulid(ByteArrayToDateTimeOffset(FromBase32(buffer[..10])), FromBase32(buffer[10..26]));
         }
 
         if (span.Length != 26)
@@ -421,7 +411,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// supplied in result will be overwritten.
     /// </param>
     /// <returns>true if s was converted successfully; otherwise, false.</returns>
-    public static bool TryParse(string s, out Ulid result)
+    public static bool TryParse(string? s, out Ulid result)
     {
         try
         {
@@ -435,7 +425,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
         }
     }
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
     /// <summary>
     /// Converts the string representation of a <see cref="Ulid"/> to an instance of a <see cref="Ulid"/>. A return
     /// value indicates whether the conversion succeeded.
@@ -502,7 +492,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// <returns>
     /// true if obj is a <see cref="Ulid"/> that has the same value as this instance; otherwise, false.
     /// </returns>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
         =>
         // Check that obj is a ulid first
         obj != null && obj is Ulid ulid && Equals(ulid);
@@ -539,57 +529,27 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     {
         var d = other.ToByteArray();
 
-        if (_a != d[0])
-        {
-            return _a.CompareTo(d[0]);
-        }
-
-        if (_b != d[1])
-        {
-            return _b.CompareTo(d[1]);
-        }
-
-        if (_c != d[2])
-        {
-            return _c.CompareTo(d[2]);
-        }
-
-        if (_d != d[3])
-        {
-            return _d.CompareTo(d[3]);
-        }
-
-        if (_e != d[4])
-        {
-            return _e.CompareTo(d[4]);
-        }
-
-        if (_f != d[5])
-        {
-            return _f.CompareTo(d[5]);
-        }
-
-        if (_g != d[6])
-        {
-            return _g.CompareTo(d[6]);
-        }
-
-        if (_h != d[7])
-        {
-            return _h.CompareTo(d[7]);
-        }
-
-        if (_i != d[8])
-        {
-            return _i.CompareTo(d[8]);
-        }
-
-        if (_j != d[9])
-        {
-            return _j.CompareTo(d[9]);
-        }
-
-        return _k != d[10]
+        return _a != d[0]
+            ? _a.CompareTo(d[0])
+            : _b != d[1]
+            ? _b.CompareTo(d[1])
+            : _c != d[2]
+            ? _c.CompareTo(d[2])
+            : _d != d[3]
+            ? _d.CompareTo(d[3])
+            : _e != d[4]
+            ? _e.CompareTo(d[4])
+            : _f != d[5]
+            ? _f.CompareTo(d[5])
+            : _g != d[6]
+            ? _g.CompareTo(d[6])
+            : _h != d[7]
+            ? _h.CompareTo(d[7])
+            : _i != d[8]
+            ? _i.CompareTo(d[8])
+            : _j != d[9]
+            ? _j.CompareTo(d[9])
+            : _k != d[10]
             ? _k.CompareTo(d[10])
             : _l != d[11]
             ? _l.CompareTo(d[11])
@@ -625,7 +585,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     ///         </item>
     ///     </list>
     /// </returns>
-    public int CompareTo(object obj)
+    public int CompareTo(object? obj)
         => obj == null ? 1 : obj is not Ulid ? throw new ArgumentException("Object must be Ulid", nameof(obj)) : CompareTo((Ulid)obj);
 
     /// <summary>
@@ -708,7 +668,8 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
             throw new ArgumentNullException(nameof(info));
         }
 
-        var d = Parse((string)info.GetValue("d", typeof(string))).ToByteArray();
+        var x = (string?)info.GetValue("d", typeof(string));
+        var d = Parse(x).ToByteArray();
 
         _a = d[0]; _b = d[1]; _c = d[2]; _d = d[3]; _e = d[4]; _f = d[5]; _g = d[6]; _h = d[7];
         _i = d[8]; _j = d[9]; _k = d[10]; _l = d[11]; _m = d[12]; _n = d[13]; _o = d[14]; _p = d[15];
@@ -722,7 +683,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// <param name="formatProvider">Will be igored.</param>
     /// <returns>The <see cref="Ulid"/> in string-representation.</returns>
     /// <remarks>Both the format and formatProvider are ignored since there is only 1 valid representation of a <see cref="Ulid"/>.</remarks>
-    public string ToString(string format, IFormatProvider formatProvider)
+    public string ToString(string? format, IFormatProvider? formatProvider)
         => ToString();
 
     /// <summary>

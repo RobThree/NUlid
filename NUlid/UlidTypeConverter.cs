@@ -20,7 +20,7 @@ public sealed class UlidTypeConverter : TypeConverter
     /// sourceType; otherwise, false.
     /// </returns>
     /// <exception cref="ArgumentNullException">The sourceType parameter is null.</exception>
-    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
         => sourceType == null
             ? throw new ArgumentNullException(nameof(sourceType))
             : sourceType == typeof(byte[])
@@ -36,7 +36,7 @@ public sealed class UlidTypeConverter : TypeConverter
     /// true if destinationType is of type <see cref="InstanceDescriptor"/>, <see cref="string"/>, or 
     /// <see cref="T:byte[]"/>; otherwise, false.
     /// </returns>
-    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+    public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
         => destinationType == typeof(byte[])
             || destinationType == typeof(string)
             || base.CanConvertTo(context, destinationType);
@@ -49,11 +49,13 @@ public sealed class UlidTypeConverter : TypeConverter
     /// <param name="value">The <see cref="object"/> to convert.</param>
     /// <returns>An <see cref="object"/> that represents the converted value.</returns>
     /// <exception cref="NotSupportedException">The conversion cannot be performed.</exception>
-    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) => value is byte[] asByteArray
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
+        => value is byte[] asByteArray
             ? new Ulid(asByteArray)
             : value is string asString
             ? Ulid.TryParse(asString, out var ulid) ? ulid : throw new NotSupportedException($"Invalid Ulid representation: \"{asString}\"")
             : base.ConvertFrom(context, culture, value);
+
 
     /// <summary>
     /// Converts a given value object to the specified type, using the specified context and culture information.
@@ -65,7 +67,8 @@ public sealed class UlidTypeConverter : TypeConverter
     /// <returns>An <see cref="object"/> that represents the converted value.</returns>
     /// <exception cref="ArgumentNullException">The destinationType parameter is <see langword="null"/>.</exception>
     /// <exception cref="NotSupportedException">The conversion cannot be performed.</exception>
-    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) => destinationType == typeof(byte[])
-            ? ((Ulid)value).ToByteArray()
-            : destinationType == typeof(string) ? ((Ulid)value).ToString() : base.ConvertTo(context, culture, value, destinationType);
+    public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
+        => destinationType == typeof(byte[])
+            ? ((Ulid?)value)?.ToByteArray()
+            : destinationType == typeof(string) ? ((Ulid?)value).ToString() : base.ConvertTo(context, culture, value, destinationType);
 }

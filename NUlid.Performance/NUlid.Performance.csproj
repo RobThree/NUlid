@@ -3,7 +3,7 @@
 		<OutputType>Exe</OutputType>
 		<TargetFrameworks>net7.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
-		<Configurations>Debug;Release;ReleaseWithDocumentation</Configurations>
+		<Configurations>Debug;Release</Configurations>
 	</PropertyGroup>
 	<ItemGroup>
 	  <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />

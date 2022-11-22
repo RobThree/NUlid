@@ -1,56 +1,51 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Authors>RobIII</Authors>
-    <Company>RobIII</Company>
-    <PackageId>NUlid</PackageId>
-    <NoPackageAnalysis>true</NoPackageAnalysis>
-    <Product>NUlid</Product>
-    <Copyright>(C) 2016 - 2023 Devcorner.nl</Copyright>
-    <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
-    <PackageTags>Universally Unique Lexicographically Sortable Identifier, ULID, UUID, GUID</PackageTags>
-    <PackageReleaseNotes>Fixed bug in Monotonic UlidRng that could cause duplicate values when under high concurrency (see https://github.com/RobThree/NUlid/pull/17). Added MicrosecondUlidRng.</PackageReleaseNotes>
-    <IncludeSource>true</IncludeSource>
-    <Description>A .Net ULID implementation</Description>
-    <Version>1.7.1</Version>
-    <LangVersion>latest</LangVersion>
-    <PackageIcon>logo.png</PackageIcon>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <DocumentationFile>bin\Release\nulid.xml</DocumentationFile>
-    <Configurations>Debug;Release;ReleaseWithDocumentation</Configurations>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<Authors>RobIII</Authors>
+		<Company>RobIII</Company>
+		<PackageId>NUlid</PackageId>
+		<NoPackageAnalysis>true</NoPackageAnalysis>
+		<Product>NUlid</Product>
+		<Copyright>(C) 2016 - 2022 Devcorner.nl</Copyright>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
+		<PackageTags>Universally Unique Lexicographically Sortable Identifier, ULID, UUID, GUID</PackageTags>
+		<PackageReleaseNotes>Fixed bug in Monotonic UlidRng that could cause duplicate values when under high concurrency (see https://github.com/RobThree/NUlid/pull/17). Added MicrosecondUlidRng.</PackageReleaseNotes>
+		<IncludeSource>true</IncludeSource>
+		<Description>A .Net ULID implementation</Description>
+		<Version>1.7.1</Version>
+		<LangVersion>latest</LangVersion>
+		<PackageIcon>logo.png</PackageIcon>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<DocumentationFile>bin\Release\nulid.xml</DocumentationFile>
+		<Configurations>Debug;Release;ReleaseWithDocumentation</Configurations>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants>TRACE;RELEASE</DefineConstants>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDocumentation|AnyCPU'">
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDocumentation|AnyCPU'">
+		<DefineConstants>TRACE;RELEASE</DefineConstants>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
-    <DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
+		<DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='ReleaseWithDocumentation|net45|AnyCPU'">
-    <DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='ReleaseWithDocumentation|net45|AnyCPU'">
+		<DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\logo.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 </Project>

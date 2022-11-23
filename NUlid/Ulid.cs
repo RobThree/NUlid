@@ -18,8 +18,12 @@ namespace NUlid;
 [DebuggerDisplay("{ToString(),nq}")]
 public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializable, IFormattable
 {
-    internal const string HYPHEN_STRING = "-";
-    internal const char HYPHEN_CHAR = '-';
+    private const char HYPHEN_CHAR = '-';
+    private static readonly string HYPHEN_STRING = HYPHEN_CHAR.ToString();
+
+    private const string INVALIDBASE32STRINGMESSAGE = "Invalid Base32 string";
+    private const string INVALIDLENGTHMESSAGE = "Invalid length";
+
     // Base32 "alphabet"
     private const string BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
     // Char to index lookup array for massive speedup since we can find a char's index in O(1). We use 255 as 'sentinel' value for invalid indexes.
@@ -237,9 +241,9 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
                     /* 14 */ BASE32[((value[8] & 3) << 3) | ((value[9] & 224) >> 5)],   /* 15 */ BASE32[value[9] & 31],
                     }
                 ),
-            _ => throw new InvalidOperationException("Invalid length"),
+            _ => throw new InvalidOperationException(INVALIDLENGTHMESSAGE),
         };
-#if NETSTANDARD2_0
+
     private static byte[] FromBase32(string v)
     {
         // Hand-optimized unrolled loops ahead
@@ -265,9 +269,10 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
                     };
             }
         }
-        throw new InvalidOperationException("Invalid length");
+        throw new InvalidOperationException(INVALIDLENGTHMESSAGE);
     }
-#elif NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
     private static byte[] FromBase32(ReadOnlySpan<char> v)
     {
         // Hand-optimized unrolled loops ahead
@@ -293,43 +298,12 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
                     };
             }
         }
-        throw new InvalidOperationException("Invalid length");
+        throw new InvalidOperationException(INVALIDLENGTHMESSAGE);
     }
 #endif
     #endregion
 
-#if NETSTANDARD2_0
-    /// <summary>
-    /// Converts the string representation of a <see cref="Ulid"/> equivalent.
-    /// </summary>
-    /// <param name="s">A string containing a <see cref="Ulid"/> to convert.</param>
-    /// <returns>A <see cref="Ulid"/> equivalent to the value contained in s.</returns>
-    /// <exception cref="ArgumentNullException">s is null or empty.</exception>
-    /// <exception cref="FormatException">s is not in the correct format.</exception>
-    public static Ulid Parse(string? s)
-    {
-        if (string.IsNullOrEmpty(s))
-        {
-            throw new ArgumentNullException(nameof(s));
-        }
-
-        var stripped = s!.Replace(HYPHEN_STRING, string.Empty);
-        if (stripped.Length != 26)
-        {
-            throw new FormatException("Invalid Base32 string");
-        }
-        // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
-        for (var i = 0; i < 26; i++)
-        {
-            if (stripped[i] >= C2B32LEN || C2B32[stripped[i]] > 31)
-            {
-                throw new FormatException("Invalid Base32 string");
-            }
-        }
-
-        return new Ulid(ByteArrayToDateTimeOffset(FromBase32(stripped.Substring(0, 10))), FromBase32(stripped.Substring(10, 16)));
-    }
-#elif NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
     /// <summary>
     /// Converts the string representation of a <see cref="Ulid"/> equivalent.
     /// </summary>
@@ -367,7 +341,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
                 {
                     if (span[i] >= C2B32LEN || C2B32[span[i]] > 31)
                     {
-                        throw new FormatException("Invalid Base32 string");
+                        throw new FormatException(INVALIDBASE32STRINGMESSAGE);
                     }
 
                     buffer[position++] = span[i];
@@ -375,13 +349,13 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
             }
 
             return position != 26
-                ? throw new FormatException("Invalid Base32 string")
+                ? throw new FormatException(INVALIDBASE32STRINGMESSAGE)
                 : new Ulid(ByteArrayToDateTimeOffset(FromBase32(buffer[..10])), FromBase32(buffer[10..26]));
         }
 
         if (span.Length != 26)
         {
-            throw new FormatException("Invalid Base32 string");
+            throw new FormatException(INVALIDBASE32STRINGMESSAGE);
         }
 
         // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
@@ -389,13 +363,43 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
         {
             if (span[i] >= C2B32LEN || C2B32[span[i]] > 31)
             {
-                throw new FormatException("Invalid Base32 string");
+                throw new FormatException(INVALIDBASE32STRINGMESSAGE);
             }
         }
 
         return new Ulid(ByteArrayToDateTimeOffset(FromBase32(span[..10])), FromBase32(span[10..26]));
     }
+#else
+    /// <summary>
+    /// Converts the string representation of a <see cref="Ulid"/> equivalent.
+    /// </summary>
+    /// <param name="s">A string containing a <see cref="Ulid"/> to convert.</param>
+    /// <returns>A <see cref="Ulid"/> equivalent to the value contained in s.</returns>
+    /// <exception cref="ArgumentNullException">s is null or empty.</exception>
+    /// <exception cref="FormatException">s is not in the correct format.</exception>
+    public static Ulid Parse(string? s)
+    {
+        if (string.IsNullOrEmpty(s))
+        {
+            throw new ArgumentNullException(nameof(s));
+        }
 
+        var stripped = s!.Replace(HYPHEN_STRING, string.Empty);
+        if (stripped.Length != 26)
+        {
+            throw new FormatException(INVALIDBASE32STRINGMESSAGE);
+        }
+        // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
+        for (var i = 0; i < 26; i++)
+        {
+            if (stripped[i] >= C2B32LEN || C2B32[stripped[i]] > 31)
+            {
+                throw new FormatException(INVALIDBASE32STRINGMESSAGE);
+            }
+        }
+
+        return new Ulid(ByteArrayToDateTimeOffset(FromBase32(stripped.Substring(0, 10))), FromBase32(stripped.Substring(10, 16)));
+    }
 #endif
 
     /// <summary>

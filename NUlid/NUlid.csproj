@@ -16,7 +16,7 @@
 		<PackageReleaseNotes>Fixed bug in Monotonic UlidRng that could cause duplicate values when under high concurrency (see https://github.com/RobThree/NUlid/pull/17). Added MicrosecondUlidRng.</PackageReleaseNotes>
 		<IncludeSource>true</IncludeSource>
 		<Description>A .Net ULID implementation</Description>
-		<Version>1.7.1</Version>
+		<Version>1.7.0</Version>
 		<LangVersion>latest</LangVersion>
 		<PackageIcon>logo.png</PackageIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>

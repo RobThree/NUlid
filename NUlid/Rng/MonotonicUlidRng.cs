@@ -68,6 +68,36 @@ public class MonotonicUlidRng : BaseUlidRng
     /// </exception>
     public override byte[] GetRandomBytes(DateTimeOffset dateTime)
     {
+        var buffer = new byte[RANDLEN];
+        Core(buffer, dateTime);
+        return buffer;
+    }
+
+    /// <summary>
+    /// Fills the <paramref name="buffer"/> with random bytes based on internal <see cref="IUlidRng"/>.
+    /// </summary>
+    /// <param name="buffer">The buffer to fill with random bytes.</param>
+    /// <param name="dateTime">
+    /// DateTime for which the random bytes need to be generated; this value is used to determine wether a sequence
+    /// needs to be incremented (same timestamp with millisecond resolution) or reset to a new random value.
+    /// </param>
+    /// <exception cref="ArgumentException">The buffer is too small.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the specified <paramref name="dateTime"/> is before the last time this method was called.
+    /// </exception>
+    public override void GetRandomBytes(Span<byte> buffer, DateTimeOffset dateTime)
+    {
+        if (buffer.Length < RANDLEN)
+        {
+            Throw(buffer.Length);
+            static void Throw(int len) => throw new ArgumentException($"The given buffer must be at least {RANDLEN} bytes long, actual: {len}");
+        }
+
+        Core(buffer, dateTime);
+    }
+
+    private void Core(Span<byte> buffer, DateTimeOffset dateTime)
+    {
         lock (_genlock)
         {
             // Get unix time for given datetime
@@ -91,9 +121,7 @@ public class MonotonicUlidRng : BaseUlidRng
 
                 _lastgen = timestamp;   // Store last timestamp
             }
-            var buffer = new byte[RANDLEN];
-            _lastvalue.CopyTo(buffer, 0);
-            return buffer;
+            _lastvalue.AsSpan().CopyTo(buffer);
         }
     }
 }

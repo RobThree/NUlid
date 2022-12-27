@@ -34,6 +34,10 @@
 		<DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
 	</PropertyGroup>
 
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="System.Memory" Version="4.5.5" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<None Include="..\logo.png">
 			<Pack>True</Pack>

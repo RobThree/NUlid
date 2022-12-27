@@ -10,7 +10,7 @@ public abstract class BaseUlidRng : IUlidRng
     /// <summary>
     /// Default number of random bytes generated
     /// </summary>
-    protected const int RANDLEN = 10;
+    protected internal const int RANDLEN = 10;
 
     /// <summary>
     /// Creates and returns random bytes.
@@ -18,6 +18,9 @@ public abstract class BaseUlidRng : IUlidRng
     /// <param name="dateTime">DateTime for which the random bytes need to be generated; can be ignored but provides context.</param>
     /// <returns>Random bytes.</returns>
     public abstract byte[] GetRandomBytes(DateTimeOffset dateTime);
+
+    /// <inheritdoc/>
+    public abstract void GetRandomBytes(Span<byte> buffer, DateTimeOffset dateTime);
 
     /// <summary>
     /// Returns the default <see cref="IUlidRng"/> used when no <see cref="IUlidRng"/> is specified.

@@ -28,4 +28,27 @@ public class CSUlidRng : BaseUlidRng
         return buffer;
     }
 #endif
+
+    /// <summary>
+    /// Fills the <paramref name="buffer"/> with returns cryptographically secure random bytes.
+    /// </summary>
+    /// <param name="buffer">The buffer to fill with cryptographically secure random bytes.</param>
+    /// <param name="dateTime">>DateTime for which the random bytes need to be generated; is ignored.</param>
+    /// <exception cref="ArgumentException">The buffer is too small.</exception>
+    public override void GetRandomBytes(Span<byte> buffer, DateTimeOffset dateTime)
+    {
+#if NET6_0_OR_GREATER
+        if (buffer.Length < RANDLEN)
+        {
+            Throw(buffer.Length);
+            static void Throw(int len) => throw new ArgumentException($"The given buffer must be at least {RANDLEN} bytes long, actual: {len}");
+        }
+
+        RandomNumberGenerator.Fill(buffer);
+#else
+        var tmp = new byte[RANDLEN];
+        _rng.GetBytes(tmp);
+        tmp.AsSpan().CopyTo(buffer);
+#endif
+    }
 }

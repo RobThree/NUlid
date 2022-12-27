@@ -49,6 +49,37 @@ public class MicrosecondUlidRng : IUlidRng
     public byte[] GetRandomBytes(DateTimeOffset dateTime)
     {
         var buffer = _rng.GetRandomBytes(dateTime);
+        Core(buffer, dateTime);
+        return buffer;
+    }
+
+    /// <summary>
+    /// Fills <paramref name="buffer"/> with random bytes based on internal <see cref="IUlidRng"/> and the microseconds of 
+    /// the given <paramref name="dateTime"/>.
+    /// </summary>
+    /// <param name="buffer">The buffer to fill with random bytes.</param>
+    /// <param name="dateTime">
+    /// DateTime for which the random bytes need to be generated; this value is used to determine wether a sequence
+    /// needs to be incremented (same timestamp with millisecond resolution) or reset to a new random value.
+    /// </param>
+    /// <exception cref="ArgumentException">The buffer is too small.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the specified <paramref name="dateTime"/> is before the last time this method was called.
+    /// </exception>
+    public void GetRandomBytes(Span<byte> buffer, DateTimeOffset dateTime)
+    {
+        if (buffer.Length < BaseUlidRng.RANDLEN)
+        {
+            Throw(buffer.Length);
+            static void Throw(int len) => throw new ArgumentException($"The given buffer must be at least {BaseUlidRng.RANDLEN} bytes long, actual: {len}");
+        }
+
+        _rng.GetRandomBytes(buffer, dateTime);
+        Core(buffer, dateTime);
+    }
+
+    private void Core(Span<byte> buffer, DateTimeOffset dateTime)
+    {
         // Extract microseconds from timestamp (14 bits max), align microseconds-MSB (14 bits) to ushort MSB (16 bits) by shifting left 2
         // bits. Then mask out undesired bits
         var usecpart = (ushort)(((dateTime.Ticks % 10000) << 2) & _mask);
@@ -57,6 +88,5 @@ public class MicrosecondUlidRng : IUlidRng
         // of random data with the microsecondpart
         buffer[0] = (byte)((buffer[0] & _negmaskmsb) | (usecpart >> 8));
         buffer[1] = (byte)((buffer[0] & _negmasklsb) | (usecpart & 0xFF));
-        return buffer;
     }
 }

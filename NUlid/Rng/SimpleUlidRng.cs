@@ -25,6 +25,29 @@ public class SimpleUlidRng : BaseUlidRng
     }
 
     /// <summary>
+    /// Fills the <paramref name="buffer"/> with random bytes.
+    /// </summary>
+    /// <param name="buffer">The buffer to fill with random bytes.</param>
+    /// <param name="dateTime">DateTime for which the random bytes need to be generated; is ignored.</param>
+    /// <exception cref="ArgumentException">The buffer is too small.</exception>
+    public override void GetRandomBytes(Span<byte> buffer, DateTimeOffset dateTime)
+    {
+        if (buffer.Length < RANDLEN)
+        {
+            Throw(buffer.Length);
+            static void Throw(int len) => throw new ArgumentException($"The given buffer must be at least {RANDLEN} bytes long, actual: {len}");
+        }
+
+#if NET6_0_OR_GREATER
+        Random.Shared.NextBytes(buffer);
+#else
+        var tmp = new byte[RANDLEN];
+        ThreadLocalRandom.Instance.NextBytes(tmp);
+        tmp.AsSpan().CopyTo(buffer);
+#endif
+    }
+
+    /// <summary>
     /// Convenience class for dealing with randomness.
     /// </summary>
     /// <remarks>https://codeblog.jonskeet.uk/2009/11/04/revisiting-randomness/</remarks>

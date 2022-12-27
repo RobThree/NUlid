@@ -323,7 +323,7 @@ public class UlidTests
     public void Ulid_Parse_ThrowsFormatException_OnInvalidString2() => Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', '{')); // Test char after last index in C2B32 array
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
+    [ExpectedException(typeof(ArgumentException))]
     public void Ulid_Constructor_ThrowsArgumentException_OnNullByteArray() => new Ulid((byte[])null);
 
     [TestMethod]
@@ -338,6 +338,7 @@ public class UlidTests
     [ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void Ulid_NewUlid_ThrowsArgumentOutOfRangeException_OnTimestamp() => Ulid.NewUlid(Ulid.MinValue.Time.AddMilliseconds(-1));
 
+#if NETFRAMEWORK
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void Ulid_NewUlid_ThrowsInvalidOperationException_OnRNGReturningInsufficientBytes()
@@ -345,6 +346,7 @@ public class UlidTests
         var rng = new FakeUlidRng(new byte[] { 1, 2, 3 });
         Ulid.NewUlid(rng);
     }
+#endif
 
     [TestMethod]
     public void Ulid_TypeConverter_CanGetUsableConverter()

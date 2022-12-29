@@ -639,35 +639,39 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// </returns>
     public int CompareTo(Ulid other)
     {
-        var d = other.ToByteArray();
-
-        return _a != d[0]
-            ? _a.CompareTo(d[0])
-            : _b != d[1]
-            ? _b.CompareTo(d[1])
-            : _c != d[2]
-            ? _c.CompareTo(d[2])
-            : _d != d[3]
-            ? _d.CompareTo(d[3])
-            : _e != d[4]
-            ? _e.CompareTo(d[4])
-            : _f != d[5]
-            ? _f.CompareTo(d[5])
-            : _g != d[6]
-            ? _g.CompareTo(d[6])
-            : _h != d[7]
-            ? _h.CompareTo(d[7])
-            : _i != d[8]
-            ? _i.CompareTo(d[8])
-            : _j != d[9]
-            ? _j.CompareTo(d[9])
-            : _k != d[10]
-            ? _k.CompareTo(d[10])
-            : _l != d[11]
-            ? _l.CompareTo(d[11])
-            : _m != d[12]
-            ? _m.CompareTo(d[12])
-            : _n != d[13] ? _n.CompareTo(d[13]) : _o != d[14] ? _o.CompareTo(d[14]) : _p != d[15] ? _p.CompareTo(d[15]) : 0;
+        return _a != other._a
+          ? _a.CompareTo(other._a)
+          : _b != other._b
+          ? _b.CompareTo(other._b)
+          : _c != other._c
+          ? _c.CompareTo(other._c)
+          : _d != other._d
+          ? _d.CompareTo(other._d)
+          : _e != other._e
+          ? _e.CompareTo(other._e)
+          : _f != other._f
+          ? _f.CompareTo(other._f)
+          : _g != other._g
+          ? _g.CompareTo(other._g)
+          : _h != other._h
+          ? _h.CompareTo(other._h)
+          : _i != other._i
+          ? _i.CompareTo(other._i)
+          : _j != other._j
+          ? _j.CompareTo(other._j)
+          : _k != other._k
+          ? _k.CompareTo(other._k)
+          : _l != other._l
+          ? _l.CompareTo(other._l)
+          : _m != other._m
+          ? _m.CompareTo(other._m)
+          : _n != other._n
+          ? _n.CompareTo(other._n)
+          : _o != other._o
+          ? _o.CompareTo(other._o)
+          : _p != other._p
+          ? _p.CompareTo(other._p)
+          : 0;
     }
 
     /// <summary>

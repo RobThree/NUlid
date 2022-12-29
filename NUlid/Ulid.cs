@@ -567,7 +567,11 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// </summary>
     /// <returns>A 16-element byte array.</returns>
     public byte[] ToByteArray()
-        => new byte[] { _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p };
+    {
+        var bytes = new byte[16];
+        Unsafe.WriteUnaligned(ref bytes[0], this);
+        return bytes;
+    }
 
     /// <summary>
     /// Returns a <see cref="Guid"/> that represents the value of this instance.

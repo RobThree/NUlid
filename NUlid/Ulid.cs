@@ -718,18 +718,11 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
 
         return va.Equals(vb);
 #else
-        var a = x.ToByteArray();
-        var b = y.ToByteArray();
+        ref var rA = ref Unsafe.As<Ulid, long>(ref x);
+        ref var rB = ref Unsafe.As<Ulid, long>(ref y);
 
-        for (var i = 0; i < 16; i++)
-        {
-            if (a[i] != b[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
+        // Compare each element
+        return rA == rB && Unsafe.Add(ref rA, 1) == Unsafe.Add(ref rB, 1);
 #endif
     }
 

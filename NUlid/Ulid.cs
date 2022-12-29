@@ -69,7 +69,26 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// Gets the "time part" of the <see cref="Ulid"/>.
     /// </summary>
     public DateTimeOffset Time
-        => ByteArrayToDateTimeOffset(new[] { _a, _b, _c, _d, _e, _f });
+    {
+        get
+        {
+            if (BitConverter.IsLittleEndian)
+            {
+                // |A|B|C|D|E|F|G|H|... -> |F|E|D|C|B|A|0|0|
+
+                // Lower |A|B|C|D| -> |D|C|B|A|
+                // Upper |E|F| -> |F|E|
+                // Time  |F|E| + |0|0|D|C|B|A|
+                var lower = Unsafe.As<byte, uint>(ref Unsafe.AsRef(this._a));
+                var upper = Unsafe.As<byte, ushort>(ref Unsafe.AsRef(this._e));
+                var time = (long)BinaryPrimitives.ReverseEndianness(upper) + (((long)BinaryPrimitives.ReverseEndianness(lower)) << 16);
+
+                return DateTimeOffset.FromUnixTimeMilliseconds(time);
+            }
+
+            return ByteArrayToDateTimeOffset(new[] { _a, _b, _c, _d, _e, _f });
+        }
+    }
 
     /// <summary>
     /// Gets the "random part" of the <see cref="Ulid"/>.
@@ -567,7 +586,11 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// </summary>
     /// <returns>A 16-element byte array.</returns>
     public byte[] ToByteArray()
-        => new byte[] { _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p };
+    {
+        var bytes = new byte[16];
+        Unsafe.WriteUnaligned(ref bytes[0], this);
+        return bytes;
+    }
 
     /// <summary>
     /// Returns a <see cref="Guid"/> that represents the value of this instance.
@@ -635,35 +658,39 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// </returns>
     public int CompareTo(Ulid other)
     {
-        var d = other.ToByteArray();
-
-        return _a != d[0]
-            ? _a.CompareTo(d[0])
-            : _b != d[1]
-            ? _b.CompareTo(d[1])
-            : _c != d[2]
-            ? _c.CompareTo(d[2])
-            : _d != d[3]
-            ? _d.CompareTo(d[3])
-            : _e != d[4]
-            ? _e.CompareTo(d[4])
-            : _f != d[5]
-            ? _f.CompareTo(d[5])
-            : _g != d[6]
-            ? _g.CompareTo(d[6])
-            : _h != d[7]
-            ? _h.CompareTo(d[7])
-            : _i != d[8]
-            ? _i.CompareTo(d[8])
-            : _j != d[9]
-            ? _j.CompareTo(d[9])
-            : _k != d[10]
-            ? _k.CompareTo(d[10])
-            : _l != d[11]
-            ? _l.CompareTo(d[11])
-            : _m != d[12]
-            ? _m.CompareTo(d[12])
-            : _n != d[13] ? _n.CompareTo(d[13]) : _o != d[14] ? _o.CompareTo(d[14]) : _p != d[15] ? _p.CompareTo(d[15]) : 0;
+        return _a != other._a
+          ? _a.CompareTo(other._a)
+          : _b != other._b
+          ? _b.CompareTo(other._b)
+          : _c != other._c
+          ? _c.CompareTo(other._c)
+          : _d != other._d
+          ? _d.CompareTo(other._d)
+          : _e != other._e
+          ? _e.CompareTo(other._e)
+          : _f != other._f
+          ? _f.CompareTo(other._f)
+          : _g != other._g
+          ? _g.CompareTo(other._g)
+          : _h != other._h
+          ? _h.CompareTo(other._h)
+          : _i != other._i
+          ? _i.CompareTo(other._i)
+          : _j != other._j
+          ? _j.CompareTo(other._j)
+          : _k != other._k
+          ? _k.CompareTo(other._k)
+          : _l != other._l
+          ? _l.CompareTo(other._l)
+          : _m != other._m
+          ? _m.CompareTo(other._m)
+          : _n != other._n
+          ? _n.CompareTo(other._n)
+          : _o != other._o
+          ? _o.CompareTo(other._o)
+          : _p != other._p
+          ? _p.CompareTo(other._p)
+          : 0;
     }
 
     /// <summary>
@@ -710,18 +737,11 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
 
         return va.Equals(vb);
 #else
-        var a = x.ToByteArray();
-        var b = y.ToByteArray();
+        ref var rA = ref Unsafe.As<Ulid, long>(ref x);
+        ref var rB = ref Unsafe.As<Ulid, long>(ref y);
 
-        for (var i = 0; i < 16; i++)
-        {
-            if (a[i] != b[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
+        // Compare each element
+        return rA == rB && Unsafe.Add(ref rA, 1) == Unsafe.Add(ref rB, 1);
 #endif
     }
 

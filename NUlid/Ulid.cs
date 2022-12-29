@@ -69,7 +69,26 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// Gets the "time part" of the <see cref="Ulid"/>.
     /// </summary>
     public DateTimeOffset Time
-        => ByteArrayToDateTimeOffset(new[] { _a, _b, _c, _d, _e, _f });
+    {
+        get
+        {
+            if (BitConverter.IsLittleEndian)
+            {
+                // |A|B|C|D|E|F|G|H|... -> |F|E|D|C|B|A|0|0|
+
+                // Lower |A|B|C|D| -> |D|C|B|A|
+                // Upper |E|F| -> |F|E|
+                // Time  |F|E| + |0|0|D|C|B|A|
+                var lower = Unsafe.As<byte, uint>(ref Unsafe.AsRef(this._a));
+                var upper = Unsafe.As<byte, ushort>(ref Unsafe.AsRef(this._e));
+                var time = (long)BinaryPrimitives.ReverseEndianness(upper) + (((long)BinaryPrimitives.ReverseEndianness(lower)) << 16);
+
+                return DateTimeOffset.FromUnixTimeMilliseconds(time);
+            }
+
+            return ByteArrayToDateTimeOffset(new[] { _a, _b, _c, _d, _e, _f });
+        }
+    }
 
     /// <summary>
     /// Gets the "random part" of the <see cref="Ulid"/>.

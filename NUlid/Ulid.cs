@@ -1,11 +1,11 @@
-﻿using NUlid.Rng;
-using System;
+﻿using System;
+using System.Buffers.Binary;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using System.Buffers.Binary;
+using NUlid.Rng;
 
 #if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
@@ -53,12 +53,12 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// <summary>
     /// Represents the smallest possible value of <see cref="Ulid"/>. This field is read-only.
     /// </summary>
-    public static readonly Ulid MinValue = new(EPOCH, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+    public static readonly Ulid MinValue = MinAt(EPOCH);
 
     /// <summary>
     /// Represents the largest possible value of <see cref="Ulid"/>. This field is read-only.
     /// </summary>
-    public static readonly Ulid MaxValue = new(DateTimeOffset.MaxValue, new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 });
+    public static readonly Ulid MaxValue = MaxAt(DateTimeOffset.MaxValue);
 
     /// <summary>
     /// A read-only instance of the <see cref="Ulid"/> structure whose value is all zeros.
@@ -103,6 +103,22 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// <returns>Returns a new <see cref="Ulid"/>.</returns>
     public static Ulid NewUlid(IUlidRng rng)
         => NewUlid(DateTimeOffset.UtcNow, rng);
+
+    /// <summary>
+    /// Creates and returns a new <see cref="Ulid"/> that is the minimum possible value for the specified time.
+    /// </summary>
+    /// <param name="time">The <see cref="DateTimeOffset"/> to use for the time-part of the <see cref="Ulid"/>.</param>
+    /// <returns>Returns a new <see cref="Ulid"/>.</returns>
+    public static Ulid MinAt(DateTimeOffset time)
+        => new(time, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+
+    /// <summary>
+    /// Creates and returns a new <see cref="Ulid"/> that is the maximum possible value for the specified time.
+    /// </summary>
+    /// <param name="time">The <see cref="DateTimeOffset"/> to use for the time-part of the <see cref="Ulid"/>.</param>
+    /// <returns>Returns a new <see cref="Ulid"/>.</returns>
+    public static Ulid MaxAt(DateTimeOffset time)
+        => new(time, new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 });
 
     /// <summary>
     /// Creates and returns a new <see cref="Ulid"/> based on the specified time and using the specified RNG.
@@ -243,7 +259,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
 #endif
     }
 
-#region Helper functions
+    #region Helper functions
     private static DateTimeOffset FromUnixTimeMilliseconds(long milliseconds)
     {
         var ticks = (milliseconds * TimeSpan.TicksPerMillisecond) + (UNIXEPOCHMILLISECONDS * 10000);
@@ -306,23 +322,23 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
         // Time part
         if (value.Length == 6 && buffer.Length > 10)
         {
-            buffer[0] = BASE32[(value[0] & 224) >> 5];                             buffer[1] = BASE32[value[0] & 31];
-            buffer[2] = BASE32[(value[1] & 248) >> 3];                             buffer[3] = BASE32[((value[1] & 7) << 2) | ((value[2] & 192) >> 6)];
-            buffer[4] = BASE32[(value[2] & 62) >> 1];                              buffer[5] = BASE32[((value[2] & 1) << 4) | ((value[3] & 240) >> 4)];
-            buffer[6] = BASE32[((value[3] & 15) << 1) | ((value[4] & 128) >> 7)];  buffer[7] = BASE32[(value[4] & 124) >> 2];
-            buffer[8] = BASE32[((value[4] & 3) << 3) | ((value[5] & 224) >> 5)];   buffer[9] = BASE32[value[5] & 31];
+            buffer[0] = BASE32[(value[0] & 224) >> 5]; buffer[1] = BASE32[value[0] & 31];
+            buffer[2] = BASE32[(value[1] & 248) >> 3]; buffer[3] = BASE32[((value[1] & 7) << 2) | ((value[2] & 192) >> 6)];
+            buffer[4] = BASE32[(value[2] & 62) >> 1]; buffer[5] = BASE32[((value[2] & 1) << 4) | ((value[3] & 240) >> 4)];
+            buffer[6] = BASE32[((value[3] & 15) << 1) | ((value[4] & 128) >> 7)]; buffer[7] = BASE32[(value[4] & 124) >> 2];
+            buffer[8] = BASE32[((value[4] & 3) << 3) | ((value[5] & 224) >> 5)]; buffer[9] = BASE32[value[5] & 31];
         }
         // Random part
         else if (value.Length == 10 && buffer.Length >= 16)
         {
-            buffer[0]  = BASE32[(value[0] & 248) >> 3];                            buffer[1]  = BASE32[((value[0] & 7) << 2) | ((value[1] & 192) >> 6)];
-            buffer[2]  = BASE32[(value[1] & 62) >> 1];                             buffer[3]  = BASE32[((value[1] & 1) << 4) | ((value[2] & 240) >> 4)];
-            buffer[4]  = BASE32[((value[2] & 15) << 1) | ((value[3] & 128) >> 7)]; buffer[5]  = BASE32[(value[3] & 124) >> 2];
-            buffer[6]  = BASE32[((value[3] & 3) << 3) | ((value[4] & 224) >> 5)];  buffer[7]  = BASE32[value[4] & 31];
-            buffer[8]  = BASE32[(value[5] & 248) >> 3];                            buffer[9]  = BASE32[((value[5] & 7) << 2) | ((value[6] & 192) >> 6)];
-            buffer[10] = BASE32[(value[6] & 62) >> 1];                             buffer[11] = BASE32[((value[6] & 1) << 4) | ((value[7] & 240) >> 4)];
+            buffer[0] = BASE32[(value[0] & 248) >> 3]; buffer[1] = BASE32[((value[0] & 7) << 2) | ((value[1] & 192) >> 6)];
+            buffer[2] = BASE32[(value[1] & 62) >> 1]; buffer[3] = BASE32[((value[1] & 1) << 4) | ((value[2] & 240) >> 4)];
+            buffer[4] = BASE32[((value[2] & 15) << 1) | ((value[3] & 128) >> 7)]; buffer[5] = BASE32[(value[3] & 124) >> 2];
+            buffer[6] = BASE32[((value[3] & 3) << 3) | ((value[4] & 224) >> 5)]; buffer[7] = BASE32[value[4] & 31];
+            buffer[8] = BASE32[(value[5] & 248) >> 3]; buffer[9] = BASE32[((value[5] & 7) << 2) | ((value[6] & 192) >> 6)];
+            buffer[10] = BASE32[(value[6] & 62) >> 1]; buffer[11] = BASE32[((value[6] & 1) << 4) | ((value[7] & 240) >> 4)];
             buffer[12] = BASE32[((value[7] & 15) << 1) | ((value[8] & 128) >> 7)]; buffer[13] = BASE32[(value[8] & 124) >> 2];
-            buffer[14] = BASE32[((value[8] & 3) << 3) | ((value[9] & 224) >> 5)];  buffer[15] = BASE32[value[9] & 31];
+            buffer[14] = BASE32[((value[8] & 3) << 3) | ((value[9] & 224) >> 5)]; buffer[15] = BASE32[value[9] & 31];
         }
     }
 
@@ -383,7 +399,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
         throw new InvalidOperationException(INVALIDLENGTHMESSAGE);
     }
 #endif
-#endregion
+    #endregion
 
 #if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
     /// <summary>

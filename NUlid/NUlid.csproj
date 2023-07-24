@@ -1,47 +1,45 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-		<Authors>RobIII</Authors>
-		<Company>RobIII</Company>
-		<PackageId>NUlid</PackageId>
-		<NoPackageAnalysis>true</NoPackageAnalysis>
-		<Product>NUlid</Product>
-		<Copyright>(C) 2016 - 2022 Devcorner.nl</Copyright>
-		<Nullable>enable</Nullable>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
-		<PackageTags>Universally Unique Lexicographically Sortable Identifier, ULID, UUID, GUID</PackageTags>
-		<PackageReleaseNotes>Fixed bug in Monotonic UlidRng that could cause duplicate values when under high concurrency (see https://github.com/RobThree/NUlid/pull/17). Added MicrosecondUlidRng.</PackageReleaseNotes>
-		<IncludeSource>true</IncludeSource>
-		<Description>A .Net ULID implementation</Description>
-		<Version>1.7.0</Version>
-		<LangVersion>latest</LangVersion>
-		<PackageIcon>logo.png</PackageIcon>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<DocumentationFile>bin\Release\nulid.xml</DocumentationFile>
-		<Configurations>Debug;Release</Configurations>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<AnalysisLevel>latest</AnalysisLevel>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+        <Authors>RobIII, Muntadhar Haydar</Authors>
+        <Company>RobIII, Morabaa Software Solutions, LTD.</Company>
+        <PackageId>NUlid</PackageId>
+        <NoPackageAnalysis>true</NoPackageAnalysis>
+        <Product>NUlid</Product>
+        <Copyright>(C) 2016 - 2023 Devcorner.nl, Morabaa Software Solutions, LTD.</Copyright>
+        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/MorabaaSoftwareSolutions/NUlid</PackageProjectUrl>
+        <PackageTags>Universally Unique Lexicographically Sortable Identifier, ULID, UUID, GUID</PackageTags>
+        <IncludeSource>true</IncludeSource>
+        <Description>A .Net ULID implementation</Description>
+        <Version>1.8.0</Version>
+        <LangVersion>preview</LangVersion>
+        <PackageIcon>logo.png</PackageIcon>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <DocumentationFile>bin\Release\nulid.xml</DocumentationFile>
+        <Configurations>Debug;Release</Configurations>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>latest</AnalysisLevel>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;RELEASE</DefineConstants>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DefineConstants>TRACE;RELEASE</DefineConstants>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
-		<DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
+        <DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
+    </PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-		<PackageReference Include="System.Memory" Version="4.5.5" />
-	</ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <PackageReference Include="System.Memory" Version="4.5.5" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<None Include="..\logo.png">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-	</ItemGroup>
+    <ItemGroup>
+        <None Include="..\logo.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
 </Project>

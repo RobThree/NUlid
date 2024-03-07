@@ -1,22 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<Authors>RobIII</Authors>
-		<Company>RobIII</Company>
+		<Company>Devcorner.nl</Company>
 		<PackageId>NUlid</PackageId>
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 		<Product>NUlid</Product>
-		<Copyright>(C) 2016 - 2022 Devcorner.nl</Copyright>
+		<Copyright>(C) 2016 - 2024 Devcorner.nl</Copyright>
 		<Nullable>enable</Nullable>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
-		<PackageTags>Universally Unique Lexicographically Sortable Identifier, ULID, UUID, GUID</PackageTags>
-		<PackageReleaseNotes>Fixed bug in Monotonic UlidRng that could cause duplicate values when under high concurrency (see https://github.com/RobThree/NUlid/pull/17). Added MicrosecondUlidRng.</PackageReleaseNotes>
-		<IncludeSource>true</IncludeSource>
+		<PackageTags>Universally Unique Lexicographically Sortable Identifier;ULID;UUID;GUID</PackageTags>
 		<Description>A .Net ULID implementation</Description>
-		<Version>1.7.0</Version>
 		<LangVersion>latest</LangVersion>
 		<PackageIcon>logo.png</PackageIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -24,6 +20,9 @@
 		<Configurations>Debug;Release</Configurations>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<AnalysisLevel>latest</AnalysisLevel>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/RobThree/NUlid</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -38,6 +37,10 @@
 		<None Include="..\logo.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\README.md">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
 </Project>

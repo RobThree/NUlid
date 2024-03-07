@@ -1,7 +1,6 @@
 ﻿using NUlid.Rng;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NUlid.Tests;
 
@@ -11,16 +10,14 @@ namespace NUlid.Tests;
 /// <remarks>
 /// This can be used for unittests since it the returned 'random bytes' are known beforehand.
 /// </remarks>
-public class FakeUlidRng : IUlidRng
+public class FakeUlidRng(byte[] desiredResult) : IUlidRng
 {
     //Values specifically chosen to make the result spell DEADBEEFDEADBEEF
-    public static readonly IReadOnlyList<byte> DEFAULTRESULT = new byte[] { 107, 148, 213, 185, 207, 107, 148, 213, 185, 207 };
-    private readonly byte[] _desiredresult;
+    public static readonly IReadOnlyList<byte> DEFAULTRESULT = [107, 148, 213, 185, 207, 107, 148, 213, 185, 207];
+    private readonly byte[] _desiredresult = desiredResult;
 
     public FakeUlidRng()
-        : this(DEFAULTRESULT.ToArray()) { }
-
-    public FakeUlidRng(byte[] desiredResult) => _desiredresult = desiredResult;
+        : this([.. DEFAULTRESULT]) { }
 
     public byte[] GetRandomBytes(DateTimeOffset dateTime) => _desiredresult;
 }

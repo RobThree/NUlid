@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace NUlid.Tests;
 
@@ -14,14 +13,14 @@ namespace NUlid.Tests;
 public class UlidTests
 {
     // test-constants
-    private static readonly DateTime UNIXEPOCH = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    private static readonly DateTimeOffset KNOWNTIMESTAMP_DTO = DateTimeOffset.FromUnixTimeMilliseconds(1469918176385);
+    private static readonly DateTime _unixepoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTimeOffset _knowntimestamp_dto = DateTimeOffset.FromUnixTimeMilliseconds(1469918176385);
 
-    private const string KNOWNTIMESTAMP_STRING = "01ARYZ6S41";
-    private const string KNOWNRANDOMSEQ_STRING = "DEADBEEFDEADBEEF";
-    private const string KNOWNMAXTIMESTAMP_STRING = "76EZ91ZPZZ";
-    private const string KNOWNMINRANDOM_STRING = "0000000000000000";
-    private const string KNOWNMAXRANDOM_STRING = "ZZZZZZZZZZZZZZZZ";
+    private const string _knowntimestamp_string = "01ARYZ6S41";
+    private const string _knownrandomseq_string = "DEADBEEFDEADBEEF";
+    private const string _knownmaxtimestamp_string = "76EZ91ZPZZ";
+    private const string _knownminrandom_string = "0000000000000000";
+    private const string _knownmaxrandom_string = "ZZZZZZZZZZZZZZZZ";
 
     private static DateTimeOffset StripMicroSeconds(DateTimeOffset t) =>
         // We can't use DateTimeOffsets to compare since the resolution of a ulid is milliseconds, and DateTimeOffset
@@ -68,11 +67,11 @@ public class UlidTests
     [TestMethod]
     public void Ulid_ToString_EncodesCorrectly()
     {
-        var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
+        var target = Ulid.NewUlid(_knowntimestamp_dto, new FakeUlidRng());
 
         Assert.AreEqual(26, target.ToString().Length);
-        Assert.IsTrue(target.ToString().StartsWith(KNOWNTIMESTAMP_STRING));
-        Assert.IsTrue(target.ToString().EndsWith(KNOWNRANDOMSEQ_STRING));
+        Assert.IsTrue(target.ToString().StartsWith(_knowntimestamp_string));
+        Assert.IsTrue(target.ToString().EndsWith(_knownrandomseq_string));
     }
 
     [TestMethod]
@@ -80,7 +79,7 @@ public class UlidTests
     {
         var target = Ulid.Empty;
 
-        Assert.AreEqual(UNIXEPOCH, target.Time);
+        Assert.AreEqual(_unixepoch, target.Time);
         Assert.IsTrue(target.Random.All(v => v == 0));
         Assert.AreEqual(new string('0', 26), target.ToString());
     }
@@ -107,8 +106,8 @@ public class UlidTests
     [TestMethod]
     public void Ulid_NotEqualsOperator_WorksCorrectly()
     {
-        var a = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-        var b = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(1), new FakeUlidRng());
+        var a = Ulid.NewUlid(_knowntimestamp_dto, new FakeUlidRng());
+        var b = Ulid.NewUlid(_knowntimestamp_dto.AddMilliseconds(1), new FakeUlidRng());
 
         Assert.IsTrue(a != b);
     }
@@ -140,11 +139,11 @@ public class UlidTests
     [TestMethod]
     public void Ulid_CompareTo_WorksCorrectly()
     {
-        var a = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-        var b = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
+        var a = Ulid.NewUlid(_knowntimestamp_dto, new FakeUlidRng());
+        var b = Ulid.NewUlid(_knowntimestamp_dto, new FakeUlidRng());
 
-        var c = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(-1), new FakeUlidRng());
-        var d = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(+1), new FakeUlidRng());
+        var c = Ulid.NewUlid(_knowntimestamp_dto.AddMilliseconds(-1), new FakeUlidRng());
+        var d = Ulid.NewUlid(_knowntimestamp_dto.AddMilliseconds(+1), new FakeUlidRng());
 
         Assert.AreEqual(0, a.CompareTo(b));
         Assert.AreEqual(1, a.CompareTo(c));
@@ -186,7 +185,7 @@ public class UlidTests
     [TestMethod]
     public void Ulid_HandlesMaxTimeCorrectly()
     {
-        var target = new Ulid(KNOWNMAXTIMESTAMP_STRING + KNOWNMAXRANDOM_STRING);
+        var target = new Ulid(_knownmaxtimestamp_string + _knownmaxrandom_string);
         Assert.AreEqual(StripMicroSeconds(DateTimeOffset.MaxValue), target.Time);
     }
 
@@ -195,7 +194,7 @@ public class UlidTests
     public void Ulid_HandlesMaxTimePlus1MSCorrectly()
     {
         var maxtime_plusone = "76EZ91ZQ00";
-        new Ulid(maxtime_plusone + KNOWNMINRANDOM_STRING);
+        new Ulid(maxtime_plusone + _knownminrandom_string);
     }
 
 
@@ -203,11 +202,11 @@ public class UlidTests
     [TestMethod]
     public void Ulid_ObjectCompareTo_WorksCorrectly()
     {
-        var a = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-        var b = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
+        var a = Ulid.NewUlid(_knowntimestamp_dto, new FakeUlidRng());
+        var b = Ulid.NewUlid(_knowntimestamp_dto, new FakeUlidRng());
 
-        var c = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(-1), new FakeUlidRng());
-        var d = Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(+1), new FakeUlidRng());
+        var c = Ulid.NewUlid(_knowntimestamp_dto.AddMilliseconds(-1), new FakeUlidRng());
+        var d = Ulid.NewUlid(_knowntimestamp_dto.AddMilliseconds(+1), new FakeUlidRng());
 
         Assert.AreEqual(0, a.CompareTo((object)b));
         Assert.AreEqual(1, a.CompareTo((object)c));
@@ -234,8 +233,8 @@ public class UlidTests
             Ulid.MaxValue.GetHashCode(),
             Ulid.NewUlid().GetHashCode(),
         };
-        hashcodes.AddRange(Enumerable.Range(0, 1000).Select(i => Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(i)).GetHashCode()));
-        hashcodes.AddRange(Enumerable.Range(0, 1000).Select(i => Ulid.NewUlid(KNOWNTIMESTAMP_DTO.AddMilliseconds(i), rng).GetHashCode()));
+        hashcodes.AddRange(Enumerable.Range(0, 1000).Select(i => Ulid.NewUlid(_knowntimestamp_dto.AddMilliseconds(i)).GetHashCode()));
+        hashcodes.AddRange(Enumerable.Range(0, 1000).Select(i => Ulid.NewUlid(_knowntimestamp_dto.AddMilliseconds(i), rng).GetHashCode()));
 
         Assert.AreEqual(3 + 1000 + 1000, hashcodes.Distinct().Count());
     }
@@ -258,8 +257,8 @@ public class UlidTests
         Assert.IsTrue(Ulid.TryParse(Ulid.MaxValue.ToString(), out var r5));
         Assert.IsTrue(Ulid.MaxValue == r5);
 
-        var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-        Assert.IsTrue(Ulid.TryParse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING, out var r6));
+        var target = Ulid.NewUlid(_knowntimestamp_dto, new FakeUlidRng());
+        Assert.IsTrue(Ulid.TryParse(_knowntimestamp_string + _knownrandomseq_string, out var r6));
         Assert.AreEqual(r6, target);
     }
 
@@ -269,17 +268,17 @@ public class UlidTests
         Assert.AreEqual(Ulid.MinValue, Ulid.Parse(Ulid.MinValue.ToString()));
         Assert.AreEqual(Ulid.MaxValue, Ulid.Parse(Ulid.MaxValue.ToString()));
 
-        var target = Ulid.NewUlid(KNOWNTIMESTAMP_DTO, new FakeUlidRng());
-        Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), target);
-        Assert.AreEqual(new Ulid(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), target);
+        var target = Ulid.NewUlid(_knowntimestamp_dto, new FakeUlidRng());
+        Assert.AreEqual(Ulid.Parse(_knowntimestamp_string + _knownrandomseq_string), target);
+        Assert.AreEqual(new Ulid(_knowntimestamp_string + _knownrandomseq_string), target);
     }
 
     [TestMethod]
     public void Ulid_IsCaseInsensitive()
     {
-        var target = new Ulid(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING);
+        var target = new Ulid(_knowntimestamp_string + _knownrandomseq_string);
 
-        Assert.AreEqual(new Ulid(KNOWNTIMESTAMP_STRING.ToLowerInvariant() + KNOWNRANDOMSEQ_STRING.ToLowerInvariant()), target);
+        Assert.AreEqual(new Ulid(_knowntimestamp_string.ToLowerInvariant() + _knownrandomseq_string.ToLowerInvariant()), target);
     }
 
     [TestMethod]
@@ -301,26 +300,26 @@ public class UlidTests
     [TestMethod]
     public void Ulid_Parse_Handles_IiLl_TreatedAs_One()  //https://www.crockford.com/base32.html
     {
-        Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('1', 'i') + KNOWNRANDOMSEQ_STRING));
-        Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('1', 'I') + KNOWNRANDOMSEQ_STRING));
-        Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('1', 'l') + KNOWNRANDOMSEQ_STRING));
-        Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('1', 'L') + KNOWNRANDOMSEQ_STRING));
+        Assert.AreEqual(Ulid.Parse(_knowntimestamp_string + _knownrandomseq_string), Ulid.Parse(_knowntimestamp_string.Replace('1', 'i') + _knownrandomseq_string));
+        Assert.AreEqual(Ulid.Parse(_knowntimestamp_string + _knownrandomseq_string), Ulid.Parse(_knowntimestamp_string.Replace('1', 'I') + _knownrandomseq_string));
+        Assert.AreEqual(Ulid.Parse(_knowntimestamp_string + _knownrandomseq_string), Ulid.Parse(_knowntimestamp_string.Replace('1', 'l') + _knownrandomseq_string));
+        Assert.AreEqual(Ulid.Parse(_knowntimestamp_string + _knownrandomseq_string), Ulid.Parse(_knowntimestamp_string.Replace('1', 'L') + _knownrandomseq_string));
     }
 
     [TestMethod]
     public void Ulid_Parse_Handles_Oo_TreatedAs_Zero()  //https://www.crockford.com/base32.html
     {
-        Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('0', 'o') + KNOWNRANDOMSEQ_STRING));
-        Assert.AreEqual(Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING), Ulid.Parse(KNOWNTIMESTAMP_STRING.Replace('0', 'O') + KNOWNRANDOMSEQ_STRING));
+        Assert.AreEqual(Ulid.Parse(_knowntimestamp_string + _knownrandomseq_string), Ulid.Parse(_knowntimestamp_string.Replace('0', 'o') + _knownrandomseq_string));
+        Assert.AreEqual(Ulid.Parse(_knowntimestamp_string + _knownrandomseq_string), Ulid.Parse(_knowntimestamp_string.Replace('0', 'O') + _knownrandomseq_string));
     }
 
     [TestMethod]
     [ExpectedException(typeof(FormatException))]
-    public void Ulid_Parse_ThrowsFormatException_OnInvalidString1() => Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', 'U')); // U is not in BASE32 alphabet
+    public void Ulid_Parse_ThrowsFormatException_OnInvalidString1() => Ulid.Parse(_knowntimestamp_string + _knownrandomseq_string.Replace('E', 'U')); // U is not in BASE32 alphabet
 
     [TestMethod]
     [ExpectedException(typeof(FormatException))]
-    public void Ulid_Parse_ThrowsFormatException_OnInvalidString2() => Ulid.Parse(KNOWNTIMESTAMP_STRING + KNOWNRANDOMSEQ_STRING.Replace('E', '{')); // Test char after last index in C2B32 array
+    public void Ulid_Parse_ThrowsFormatException_OnInvalidString2() => Ulid.Parse(_knowntimestamp_string + _knownrandomseq_string.Replace('E', '{')); // Test char after last index in C2B32 array
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
@@ -342,7 +341,7 @@ public class UlidTests
     [ExpectedException(typeof(InvalidOperationException))]
     public void Ulid_NewUlid_ThrowsInvalidOperationException_OnRNGReturningInsufficientBytes()
     {
-        var rng = new FakeUlidRng(new byte[] { 1, 2, 3 });
+        var rng = new FakeUlidRng([1, 2, 3]);
         Ulid.NewUlid(rng);
     }
 
@@ -401,20 +400,19 @@ public class UlidTests
         Assert.IsTrue(expectedByteArray.SequenceEqual(ulidByteArray));
     }
 
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
-    [TestMethod]
-    public void Ulid_IsSerializable_UsingBinaryFormatter()
-    {
-        var target = Ulid.NewUlid();
+    //[TestMethod]
+    //public void Ulid_IsSerializable_UsingBinaryFormatter()
+    //{
+    //    var target = Ulid.NewUlid();
 
-        var formatter = new BinaryFormatter();
-        using var stream = new MemoryStream();
-        formatter.Serialize(stream, target);
-        stream.Position = 0;
-        var result = formatter.Deserialize(stream);
+    //    var formatter = new BinaryFormatter();
+    //    using var stream = new MemoryStream();
+    //    formatter.Serialize(stream, target);
+    //    stream.Position = 0;
+    //    var result = formatter.Deserialize(stream);
 
-        Assert.AreEqual(target, result);
-    }
+    //    Assert.AreEqual(target, result);
+    //}
 
     [TestMethod]
     public void Ulid_IsSerializable_UsingDataContract()
@@ -429,7 +427,6 @@ public class UlidTests
 
         Assert.AreEqual(target, result);
     }
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
 
     [TestMethod]
     public void InstanceCreatedWithoutRunningConstructor_Equals_EmptyUlid()

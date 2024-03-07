@@ -1,4 +1,7 @@
 # ![Logo](https://raw.githubusercontent.com/RobThree/NUlid/master/logo.png) NUlid
+
+![Build Status](https://img.shields.io/github/actions/workflow/status/RobThree/NUlid/test.yml?branch=master&style=flat-square) [![Nuget version](https://img.shields.io/nuget/v/NUlid.svg?style=flat-square)](https://www.nuget.org/packages/NUlid/)
+
 A .Net [ULID](https://github.com/ulid/spec/blob/master/README.md) implementation
 
 ## Universally Unique Lexicographically Sortable Identifier

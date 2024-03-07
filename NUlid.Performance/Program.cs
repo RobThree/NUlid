@@ -24,6 +24,7 @@ public class Program
         return b;
     }
 
+#pragma warning disable CA1822 // Mark members as static
     [Benchmark(Description = "Guid.NewGuid()")]
     public Guid Guid_NewGuid() => Guid.NewGuid();
     [Benchmark(Description = "Ulid.NewUlid(SimpleUlidRng)")]
@@ -54,4 +55,5 @@ public class Program
     public Guid Ulid_ToGuid() => Ulid.NewUlid().ToGuid();
     [Benchmark(Description = "new Ulid(Guid)")]
     public Ulid New_Ulid_Guid() => new(Guid.NewGuid());
+#pragma warning restore CA1822 // Mark members as static
 }

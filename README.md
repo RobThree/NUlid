@@ -23,7 +23,7 @@ A ULID however:
 ```
 PM> Install-Package NUlid
 ```
-Or simply use the [Nuget](https://www.nuget.org/) package manager GUI in Visual Studio.
+Or simply use the [Nuget](https://www.nuget.org/packages/NUlid) package manager GUI in Visual Studio.
 
 ### Usage
 
@@ -142,31 +142,31 @@ Based on / inspired by [alizain/ulid](https://github.com/alizain/ulid).
 
 ## Performance
 
-Below measurements are based on an Intel(R) Core(TM) i9-10900X CPU @ 4.29Ghz:
+Below measurements are based on an Intel(R) Core(TM) i9-10900X CPU @ 3.70Ghz:
 
 ```
-BenchmarkDotNet=v0.13.2, OS=Windows 11 (10.0.22621.819)
+BenchmarkDotNet=v0.13.2, OS=Windows 11 (10.0.22621.963)
 Intel Core i9-10900X CPU 3.70GHz, 1 CPU, 20 logical and 10 physical cores
-.NET SDK=7.0.100
-  [Host]     : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
-  DefaultJob : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
+.NET SDK=7.0.101
+  [Host]     : .NET 7.0.1 (7.0.122.56804), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.1 (7.0.122.56804), X64 RyuJIT AVX2
 
 
 |                               Method |      Mean |    Error |   StdDev |   Gen0 | Allocated |
 |------------------------------------- |----------:|---------:|---------:|-------:|----------:|
-|                       Guid.NewGuid() |  60.35 ns | 1.139 ns | 1.399 ns |      - |         - |
-|          Ulid.NewUlid(SimpleUlidRng) |  63.34 ns | 0.332 ns | 0.277 ns | 0.0103 |     104 B |
-|              Ulid.NewUlid(CSUlidRng) | 133.86 ns | 2.649 ns | 3.153 ns | 0.0103 |     104 B |
-| Ulid.NewUlid(SimpleMonotonicUlidRng) |  79.50 ns | 1.034 ns | 0.967 ns | 0.0103 |     104 B |
-|     Ulid.NewUlid(CSMonotonicUlidRng) |  78.78 ns | 1.360 ns | 1.272 ns | 0.0103 |     104 B |
-|                   Guid.Parse(string) | 199.13 ns | 0.506 ns | 0.449 ns | 0.0095 |      96 B |
-|                   Ulid.Parse(string) | 307.26 ns | 0.833 ns | 0.696 ns | 0.0625 |     632 B |
-|                      Guid.ToString() | 175.19 ns | 0.996 ns | 0.932 ns | 0.0095 |      96 B |
-|                      Ulid.ToString() | 217.47 ns | 2.649 ns | 2.477 ns | 0.0460 |     464 B |
-|                   'new Guid(byte[])' |  11.37 ns | 0.038 ns | 0.033 ns | 0.0040 |      40 B |
-|                   'new Ulid(byte[])' |  16.45 ns | 0.060 ns | 0.056 ns | 0.0040 |      40 B |
-|                   Guid.ToByteArray() |  66.70 ns | 0.355 ns | 0.315 ns | 0.0039 |      40 B |
-|                   Ulid.ToByteArray() | 144.38 ns | 0.579 ns | 0.513 ns | 0.0143 |     144 B |
-|                        Ulid.ToGuid() | 146.24 ns | 1.198 ns | 1.062 ns | 0.0143 |     144 B |
-|                     'new Ulid(Guid)' |  74.66 ns | 0.463 ns | 0.433 ns | 0.0039 |      40 B |
+|                       Guid.NewGuid() |  58.14 ns | 0.334 ns | 0.296 ns |      - |         - |
+|          Ulid.NewUlid(SimpleUlidRng) |  50.32 ns | 0.193 ns | 0.171 ns |      - |         - |
+|              Ulid.NewUlid(CSUlidRng) | 117.07 ns | 0.862 ns | 0.720 ns |      - |         - |
+| Ulid.NewUlid(SimpleMonotonicUlidRng) |  65.02 ns | 0.124 ns | 0.110 ns |      - |         - |
+|     Ulid.NewUlid(CSMonotonicUlidRng) |  65.58 ns | 0.119 ns | 0.099 ns |      - |         - |
+|                   Guid.Parse(string) | 193.62 ns | 0.813 ns | 0.721 ns | 0.0095 |      96 B |
+|                   Ulid.Parse(string) | 226.54 ns | 0.299 ns | 0.250 ns | 0.0181 |     184 B |
+|                      Guid.ToString() | 168.76 ns | 0.597 ns | 0.558 ns | 0.0095 |      96 B |
+|                      Ulid.ToString() | 144.66 ns | 0.504 ns | 0.447 ns | 0.0079 |      80 B |
+|                   'new Guid(byte[])' |  10.96 ns | 0.031 ns | 0.024 ns | 0.0040 |      40 B |
+|                   'new Ulid(byte[])' |  12.55 ns | 0.024 ns | 0.021 ns | 0.0040 |      40 B |
+|                   Guid.ToByteArray() |  65.32 ns | 0.183 ns | 0.152 ns | 0.0039 |      40 B |
+|                   Ulid.ToByteArray() | 127.23 ns | 0.337 ns | 0.298 ns | 0.0038 |      40 B |
+|                        Ulid.ToGuid() | 117.48 ns | 0.434 ns | 0.406 ns |      - |         - |
+|                     'new Ulid(Guid)' |  64.26 ns | 0.574 ns | 0.537 ns |      - |         - |
 ```

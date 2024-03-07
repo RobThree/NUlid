@@ -1,6 +1,5 @@
 ﻿using NUlid.Rng;
 using System;
-using System.Collections.Generic;
 
 namespace NUlid.Tests;
 
@@ -13,11 +12,13 @@ namespace NUlid.Tests;
 public class FakeUlidRng(byte[] desiredResult) : IUlidRng
 {
     //Values specifically chosen to make the result spell DEADBEEFDEADBEEF
-    public static readonly IReadOnlyList<byte> DEFAULTRESULT = [107, 148, 213, 185, 207, 107, 148, 213, 185, 207];
+    public static readonly byte[] DEFAULTRESULT = [107, 148, 213, 185, 207, 107, 148, 213, 185, 207];
     private readonly byte[] _desiredresult = desiredResult;
 
     public FakeUlidRng()
-        : this([.. DEFAULTRESULT]) { }
+        : this([.. DEFAULTRESULT]) { }     // make a copy
 
     public byte[] GetRandomBytes(DateTimeOffset dateTime) => _desiredresult;
+
+    public void GetRandomBytes(Span<byte> buffer, DateTimeOffset dateTime) => _desiredresult.AsSpan().CopyTo(buffer);
 }

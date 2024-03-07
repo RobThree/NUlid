@@ -139,10 +139,6 @@ Where:
 
 Based on / inspired by [alizain/ulid](https://github.com/alizain/ulid).
 
-## Test Suite
-
-[![Build status](https://ci.appveyor.com/api/projects/status/y4vvtyfi9qwvjclm?svg=true)](https://ci.appveyor.com/project/RobIII/nulid)
-
 ## Performance
 
 Below measurements are based on an Intel(R) Core(TM) i9-10900X CPU @ 3.70Ghz:

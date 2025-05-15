@@ -26,4 +26,4 @@ jobs:
       run: dotnet restore
 
     - name: Run tests
-      run: dotnet test --no-restore NUlid.Tests
+      run: dotnet test --no-restore

@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 #if NET6_0_OR_GREATER
+using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 #endif
 
@@ -33,7 +35,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     // Char to index lookup array for massive speedup since we can find a char's index in O(1). We use 255 as 'sentinel' value for invalid indexes.
 #if NET6_0_OR_GREATER
     // This uses a Roslyn optimization to refer to the static data segment of the assembly and does not incur any allocation.
-    private static ReadOnlySpan<byte> _c2b32 => new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 1, 18, 19, 1, 20, 21, 0, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 1, 18, 19, 1, 20, 21, 0, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31 };
+    private static ReadOnlySpan<byte> _c2b32 => [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 1, 18, 19, 1, 20, 21, 0, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 1, 18, 19, 1, 20, 21, 0, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31];
 #else
     private static readonly byte[] _c2b32 = [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 1, 18, 19, 1, 20, 21, 0, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 16, 17, 1, 18, 19, 1, 20, 21, 0, 22, 23, 24, 25, 26, 255, 27, 28, 29, 30, 31];
 #endif
@@ -155,7 +157,7 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
         }
 
 #if NET6_0_OR_GREATER
-        ref byte src = ref MemoryMarshal.GetReference(bytes);
+        ref var src = ref MemoryMarshal.GetReference(bytes);
         Unsafe.As<Ulid, Vector128<byte>>(ref this) = Unsafe.ReadUnaligned<Vector128<byte>>(ref src);
 #else
         _a = bytes[0];
@@ -224,13 +226,13 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
         }
 
 #if NET6_0_OR_GREATER
-        long millis = ToUnixTimeMilliseconds(timePart);
+        var millis = ToUnixTimeMilliseconds(timePart);
         millis = BinaryPrimitives.ReverseEndianness(millis);
         millis >>= 16;      // drop byte 6 & 7
         Unsafe.As<Ulid, long>(ref this) = millis;
 
-        ref byte src = ref MemoryMarshal.GetReference(randomPart);
-        ref byte thisRef = ref Unsafe.As<Ulid, byte>(ref this);
+        ref var src = ref MemoryMarshal.GetReference(randomPart);
+        ref var thisRef = ref Unsafe.As<Ulid, byte>(ref this);
         thisRef = ref Unsafe.Add(ref thisRef, 6);
         Unsafe.CopyBlockUnaligned(ref thisRef, ref src, 10);
 #else
@@ -361,24 +363,24 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
             switch (v.Length)
             {
                 case 10:    // Time part
-                    return new byte[]
-                    {
-                    /* 0 */ (byte)((C2B32[v[0]] << 5) | C2B32[v[1]]),                                   /* 1 */ (byte)((C2B32[v[2]] << 3) | (C2B32[v[3]] >> 2)),
-                    /* 2 */ (byte)((C2B32[v[3]] << 6) | (C2B32[v[4]] << 1) | (C2B32[v[5]] >> 4)),       /* 3 */ (byte)((C2B32[v[5]] << 4) | (C2B32[v[6]] >> 1)),
-                    /* 4 */ (byte)((C2B32[v[6]] << 7) | (C2B32[v[7]] << 2) | (C2B32[v[8]] >> 3)),       /* 5 */ (byte)((C2B32[v[8]] << 5) | C2B32[v[9]]),
-                    };
+                    return
+                    [
+                    /* 0 */ (byte)((_c2b32[v[0]] << 5) | _c2b32[v[1]]),                                   /* 1 */ (byte)((_c2b32[v[2]] << 3) | (_c2b32[v[3]] >> 2)),
+                    /* 2 */ (byte)((_c2b32[v[3]] << 6) | (_c2b32[v[4]] << 1) | (_c2b32[v[5]] >> 4)),       /* 3 */ (byte)((_c2b32[v[5]] << 4) | (_c2b32[v[6]] >> 1)),
+                    /* 4 */ (byte)((_c2b32[v[6]] << 7) | (_c2b32[v[7]] << 2) | (_c2b32[v[8]] >> 3)),       /* 5 */ (byte)((_c2b32[v[8]] << 5) | _c2b32[v[9]]),
+                    ];
                 case 16:    // Random part
-                    return new byte[]
-                    {
-                    /* 0 */ (byte)((C2B32[v[0]] << 3) | (C2B32[v[1]] >> 2)),                            /* 1 */ (byte)((C2B32[v[1]] << 6) | (C2B32[v[2]] << 1) | (C2B32[v[3]] >> 4)),
-                    /* 2 */ (byte)((C2B32[v[3]] << 4) | (C2B32[v[4]] >> 1)),                            /* 3 */ (byte)((C2B32[v[4]] << 7) | (C2B32[v[5]] << 2) | (C2B32[v[6]] >> 3)),
-                    /* 4 */ (byte)((C2B32[v[6]] << 5) | C2B32[v[7]]),                                   /* 5 */ (byte)((C2B32[v[8]] << 3) | (C2B32[v[9]] >> 2)),
-                    /* 6 */ (byte)((C2B32[v[9]] << 6) | (C2B32[v[10]] << 1) | (C2B32[v[11]] >> 4)),     /* 7 */ (byte)((C2B32[v[11]] << 4) | (C2B32[v[12]] >> 1)),
-                    /* 8 */ (byte)((C2B32[v[12]] << 7) | (C2B32[v[13]] << 2) | (C2B32[v[14]] >> 3)),    /* 9 */ (byte)((C2B32[v[14]] << 5) | C2B32[v[15]]),
-                    };
+                    return
+                    [
+                    /* 0 */ (byte)((_c2b32[v[0]] << 3) | (_c2b32[v[1]] >> 2)),                            /* 1 */ (byte)((_c2b32[v[1]] << 6) | (_c2b32[v[2]] << 1) | (_c2b32[v[3]] >> 4)),
+                    /* 2 */ (byte)((_c2b32[v[3]] << 4) | (_c2b32[v[4]] >> 1)),                            /* 3 */ (byte)((_c2b32[v[4]] << 7) | (_c2b32[v[5]] << 2) | (_c2b32[v[6]] >> 3)),
+                    /* 4 */ (byte)((_c2b32[v[6]] << 5) | _c2b32[v[7]]),                                   /* 5 */ (byte)((_c2b32[v[8]] << 3) | (_c2b32[v[9]] >> 2)),
+                    /* 6 */ (byte)((_c2b32[v[9]] << 6) | (_c2b32[v[10]] << 1) | (_c2b32[v[11]] >> 4)),     /* 7 */ (byte)((_c2b32[v[11]] << 4) | (_c2b32[v[12]] >> 1)),
+                    /* 8 */ (byte)((_c2b32[v[12]] << 7) | (_c2b32[v[13]] << 2) | (_c2b32[v[14]] >> 3)),    /* 9 */ (byte)((_c2b32[v[14]] << 5) | _c2b32[v[15]]),
+                    ];
             }
         }
-        throw new InvalidOperationException(INVALIDLENGTHMESSAGE);
+        throw new InvalidOperationException(_invalidlengthmessage);
     }
 #endif
     #endregion
@@ -418,11 +420,11 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
             for (var i = 0; i < span.Length; i++)
             {
                 int value = span[i];
-                if (value != HYPHEN_CHAR)
+                if (value != _hyphen_char)
                 {
-                    if ((uint)value >= (uint)C2B32.Length || C2B32[value] > 31)
+                    if ((uint)value >= (uint)_c2b32.Length || _c2b32[value] > 31)
                     {
-                        throw new FormatException(INVALIDBASE32STRINGMESSAGE);
+                        throw new FormatException(_invalidbase32stringmessage);
                     }
 
                     buffer[position++] = (char)value;
@@ -430,22 +432,22 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
             }
 
             return position != 26
-                ? throw new FormatException(INVALIDBASE32STRINGMESSAGE)
+                ? throw new FormatException(_invalidbase32stringmessage)
                 : new Ulid(ByteArrayToDateTimeOffset(FromBase32(buffer[..10])), FromBase32(buffer[10..26]));
         }
 
         if (span.Length != 26)
         {
-            throw new FormatException(INVALIDBASE32STRINGMESSAGE);
+            throw new FormatException(_invalidbase32stringmessage);
         }
 
         // Check if all chars are allowed by doing a lookup for each and seeing if we have an index < 32 for it
         for (var i = 0; i < span.Length; i++)
         {
             int val = span[i];
-            if ((uint)val >= (uint)C2B32.Length || C2B32[val] > 31)
+            if ((uint)val >= (uint)_c2b32.Length || _c2b32[val] > 31)
             {
-                throw new FormatException(INVALIDBASE32STRINGMESSAGE);
+                throw new FormatException(_invalidbase32stringmessage);
             }
         }
 
@@ -546,10 +548,10 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// <returns>The <see cref="Ulid"/> in string-representation.</returns>
     public override readonly string ToString() =>
 #if NET6_0_OR_GREATER
-        return string.Create(26, this, static (buffer, state) =>
+        string.Create(26, this, static (buffer, state) =>
         {
-            ref byte thisRef = ref Unsafe.As<Ulid, byte>(ref state);
-            ReadOnlySpan<byte> span = MemoryMarshal.CreateReadOnlySpan(ref thisRef, 16);
+            ref var thisRef = ref Unsafe.As<Ulid, byte>(ref state);
+            var span = MemoryMarshal.CreateReadOnlySpan(ref thisRef, 16);
 
             ToBase32(span[..6], buffer);
             ToBase32(span[6..], buffer[10..]);
@@ -573,8 +575,9 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     public readonly Guid ToGuid()
     {
 #if NET6_0_OR_GREATER
-        ref byte thisRef = ref Unsafe.As<Ulid, byte>(ref this);
-        ReadOnlySpan<byte> span = MemoryMarshal.CreateReadOnlySpan(ref thisRef, 16);
+        var ulid = this;
+        ref var thisRef = ref Unsafe.As<Ulid, byte>(ref ulid);
+        var span = MemoryMarshal.CreateReadOnlySpan(ref thisRef, 16);
         return new Guid(span);
 #else
         return new(ToByteArray());
@@ -702,8 +705,8 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     public static bool operator ==(Ulid x, Ulid y)
     {
 #if NET6_0_OR_GREATER
-        Vector128<byte> va = Unsafe.As<Ulid, Vector128<byte>>(ref x);
-        Vector128<byte> vb = Unsafe.As<Ulid, Vector128<byte>>(ref y);
+        var va = Unsafe.As<Ulid, Vector128<byte>>(ref x);
+        var vb = Unsafe.As<Ulid, Vector128<byte>>(ref y);
 
         return va.Equals(vb);
 #else
@@ -740,8 +743,9 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
         unchecked // Overflow is fine, just wrap
         {
 #if NET6_0_OR_GREATER
-            ref byte thisRef = ref Unsafe.As<Ulid, byte>(ref this);
-            ReadOnlySpan<byte> span = MemoryMarshal.CreateReadOnlySpan(ref thisRef, 16);
+            var ulid = this;
+            ref var thisRef = ref Unsafe.As<Ulid, byte>(ref ulid);
+            var span = MemoryMarshal.CreateReadOnlySpan(ref thisRef, 16);
             HashCode hash = new();
             hash.AddBytes(span);
             return hash.ToHashCode();

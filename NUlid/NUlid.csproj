@@ -1,50 +1,50 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-		<Authors>RobIII</Authors>
-		<Company>Devcorner.nl</Company>
-		<PackageId>NUlid</PackageId>
-		<NoPackageAnalysis>true</NoPackageAnalysis>
-		<Product>NUlid</Product>
-		<Copyright>(C) 2016 - 2025 Devcorner.nl</Copyright>
-		<Nullable>enable</Nullable>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
-		<PackageTags>Universally Unique Lexicographically Sortable Identifier;ULID;UUID;GUID</PackageTags>
-		<Description>A .Net ULID implementation</Description>
-		<LangVersion>latest</LangVersion>
-		<PackageIcon>logo.png</PackageIcon>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<DocumentationFile>bin\Release\nulid.xml</DocumentationFile>
-		<Configurations>Debug;Release</Configurations>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<AnalysisLevel>latest</AnalysisLevel>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryUrl>https://github.com/RobThree/NUlid</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+        <Authors>RobIII</Authors>
+        <Company>Devcorner.nl</Company>
+        <PackageId>NUlid</PackageId>
+        <NoPackageAnalysis>true</NoPackageAnalysis>
+        <Product>NUlid</Product>
+        <Copyright>(C) 2016 - 2025 Devcorner.nl</Copyright>
+        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
+        <PackageTags>Universally Unique Lexicographically Sortable Identifier;ULID;UUID;GUID</PackageTags>
+        <Description>A .Net ULID implementation</Description>
+        <LangVersion>latest</LangVersion>
+        <PackageIcon>logo.png</PackageIcon>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <DocumentationFile>bin\Release\nulid.xml</DocumentationFile>
+        <Configurations>Debug;Release</Configurations>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>latest</AnalysisLevel>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/RobThree/NUlid</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>TRACE;RELEASE</DefineConstants>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DefineConstants>TRACE;RELEASE</DefineConstants>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
-		<DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
+        <DocumentationFile>bin\release\NUlid.xml</DocumentationFile>
+    </PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-		<PackageReference Include="System.Memory" Version="4.6.3" />
-	</ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <PackageReference Include="System.Memory" Version="4.6.3" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<None Include="..\logo.png">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-		<None Include="..\README.md">
-		  <Pack>True</Pack>
-		  <PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
+    <ItemGroup>
+        <None Include="..\logo.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+        <None Include="..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
 </Project>

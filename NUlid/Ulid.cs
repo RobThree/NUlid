@@ -1,12 +1,13 @@
-﻿using NUlid.Rng;
-using System;
+﻿using System;
+using System.Buffers.Binary;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using NUlid.Rng;
+
 
 #if NET6_0_OR_GREATER
-using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 #endif
@@ -53,12 +54,12 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// <summary>
     /// Represents the smallest possible value of <see cref="Ulid"/>. This field is read-only.
     /// </summary>
-    public static readonly Ulid MinValue = new(_epoch, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    public static readonly Ulid MinValue = MinAt(_epoch);
 
     /// <summary>
     /// Represents the largest possible value of <see cref="Ulid"/>. This field is read-only.
     /// </summary>
-    public static readonly Ulid MaxValue = new(DateTimeOffset.MaxValue, [255, 255, 255, 255, 255, 255, 255, 255, 255, 255]);
+    public static readonly Ulid MaxValue = MaxAt(DateTimeOffset.MaxValue);
 
     /// <summary>
     /// A read-only instance of the <see cref="Ulid"/> structure whose value is all zeros.
@@ -103,6 +104,22 @@ public struct Ulid : IEquatable<Ulid>, IComparable<Ulid>, IComparable, ISerializ
     /// <returns>Returns a new <see cref="Ulid"/>.</returns>
     public static Ulid NewUlid(IUlidRng rng)
         => NewUlid(DateTimeOffset.UtcNow, rng);
+
+    /// <summary>
+    /// Creates and returns a new <see cref="Ulid"/> that is the minimum possible value for the specified time.
+    /// </summary>
+    /// <param name="time">The <see cref="DateTimeOffset"/> to use for the time-part of the <see cref="Ulid"/>.</param>
+    /// <returns>Returns a new <see cref="Ulid"/>.</returns>
+    public static Ulid MinAt(DateTimeOffset time)
+        => new(time, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+
+    /// <summary>
+    /// Creates and returns a new <see cref="Ulid"/> that is the maximum possible value for the specified time.
+    /// </summary>
+    /// <param name="time">The <see cref="DateTimeOffset"/> to use for the time-part of the <see cref="Ulid"/>.</param>
+    /// <returns>Returns a new <see cref="Ulid"/>.</returns>
+    public static Ulid MaxAt(DateTimeOffset time)
+        => new(time, new byte[] { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 });
 
     /// <summary>
     /// Creates and returns a new <see cref="Ulid"/> based on the specified time and using the specified RNG.

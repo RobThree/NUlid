@@ -21,18 +21,24 @@ namespace NUlid.Rng;
 ///         being generated close to an overflow and 70 the lowest.
 ///     </para>
 /// </remarks>
-public class MonotonicUlidRng : BaseUlidRng
+/// <remarks>
+/// Initializes a new instance of the <see cref="MonotonicUlidRng"/> class.
+/// </remarks>
+/// <param name="rng">The <see cref="IUlidRng"/> to get the random numbers from.</param>
+/// <param name="lastValue">The last value to 'continue from'; use <see langword="null"/> for defaults.</param>
+/// <exception cref="ArgumentNullException">Thrown when <paramref name="rng"/> is null.</exception>
+public class MonotonicUlidRng(IUlidRng rng, Ulid? lastValue = null) : BaseUlidRng
 {
     // Internal RNG to base initial values for the current millisecond on
-    private readonly IUlidRng _rng;
+    private readonly IUlidRng _rng = rng ?? throw new ArgumentNullException(nameof(rng));
 
     // Object to lock() on while generating
     private readonly object _genlock = new();
 
     // Contains the timestamp of when the GetRandomBytes method was last called
-    private long _lastgen;
+    private long _lastgen = Ulid.ToUnixTimeMilliseconds(lastValue == null ? Ulid._epoch : lastValue.Value.Time);
     // Contains the last generated value
-    private byte[] _lastvalue;
+    private byte[] _lastvalue = lastValue == null ? new byte[RANDLEN] : lastValue.Value.Random;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MonotonicUlidRng"/> class with a default
@@ -40,20 +46,6 @@ public class MonotonicUlidRng : BaseUlidRng
     /// </summary>
     public MonotonicUlidRng()
         : this(DEFAULTRNG) { }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MonotonicUlidRng"/> class.
-    /// </summary>
-    /// <param name="rng">The <see cref="IUlidRng"/> to get the random numbers from.</param>
-    /// <param name="lastValue">The last value to 'continue from'; use <see langword="null"/> for defaults.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="rng"/> is null.</exception>
-    public MonotonicUlidRng(IUlidRng rng, Ulid? lastValue = null)
-    {
-        _rng = rng ?? throw new ArgumentNullException(nameof(rng));
-
-        _lastvalue = lastValue == null ? new byte[RANDLEN] : lastValue.Value.Random;
-        _lastgen = Ulid.ToUnixTimeMilliseconds(lastValue == null ? Ulid.EPOCH : lastValue.Value.Time);
-    }
 
     /// <summary>
     /// Creates and returns random bytes based on internal <see cref="IUlidRng"/>.

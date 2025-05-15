@@ -2,26 +2,27 @@
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-        <Authors>RobIII, Muntadhar Haydar</Authors>
-        <Company>RobIII, Morabaa Software Solutions, LTD.</Company>
+        <Authors>RobIII</Authors>
+        <Company>Devcorner.nl</Company>
         <PackageId>NUlid</PackageId>
         <NoPackageAnalysis>true</NoPackageAnalysis>
         <Product>NUlid</Product>
-        <Copyright>(C) 2016 - 2023 Devcorner.nl, Morabaa Software Solutions, LTD.</Copyright>
+        <Copyright>(C) 2016 - 2025 Devcorner.nl</Copyright>
         <Nullable>enable</Nullable>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/MorabaaSoftwareSolutions/NUlid</PackageProjectUrl>
-        <PackageTags>Universally Unique Lexicographically Sortable Identifier, ULID, UUID, GUID</PackageTags>
-        <IncludeSource>true</IncludeSource>
+        <PackageProjectUrl>https://github.com/RobThree/NUlid</PackageProjectUrl>
+        <PackageTags>Universally Unique Lexicographically Sortable Identifier;ULID;UUID;GUID</PackageTags>
         <Description>A .Net ULID implementation</Description>
-        <Version>1.8.0</Version>
-        <LangVersion>preview</LangVersion>
+        <LangVersion>latest</LangVersion>
         <PackageIcon>logo.png</PackageIcon>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <DocumentationFile>bin\Release\nulid.xml</DocumentationFile>
         <Configurations>Debug;Release</Configurations>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <AnalysisLevel>latest</AnalysisLevel>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/RobThree/NUlid</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -33,13 +34,17 @@
     </PropertyGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-        <PackageReference Include="System.Memory" Version="4.5.5" />
+        <PackageReference Include="System.Memory" Version="4.6.3" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="..\logo.png">
             <Pack>True</Pack>
             <PackagePath></PackagePath>
+        </None>
+        <None Include="..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
         </None>
     </ItemGroup>
 </Project>

@@ -1,4 +1,7 @@
 # ![Logo](https://raw.githubusercontent.com/RobThree/NUlid/master/logo.png) NUlid
+
+![Build Status](https://img.shields.io/github/actions/workflow/status/RobThree/NUlid/test.yml?branch=master&style=flat-square) [![Nuget version](https://img.shields.io/nuget/v/NUlid.svg?style=flat-square)](https://www.nuget.org/packages/NUlid/)
+
 A .Net [ULID](https://github.com/ulid/spec/blob/master/README.md) implementation
 
 ## Universally Unique Lexicographically Sortable Identifier
@@ -135,10 +138,6 @@ Where:
 ## Prior Art
 
 Based on / inspired by [alizain/ulid](https://github.com/alizain/ulid).
-
-## Test Suite
-
-[![Build status](https://ci.appveyor.com/api/projects/status/y4vvtyfi9qwvjclm?svg=true)](https://ci.appveyor.com/project/RobIII/nulid)
 
 ## Performance
 

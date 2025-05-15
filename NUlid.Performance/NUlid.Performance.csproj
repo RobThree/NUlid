@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFrameworks>net8.0</TargetFrameworks>
+		<TargetFrameworks>net9.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Configurations>Debug;Release</Configurations>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
+	  <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\NUlid\NUlid.csproj" />

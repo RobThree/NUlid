@@ -144,28 +144,28 @@ Based on / inspired by [alizain/ulid](https://github.com/alizain/ulid).
 Below measurements are based on an Intel(R) Core(TM) i9-10900X CPU @ 3.70Ghz:
 
 ```
-BenchmarkDotNet=v0.13.2, OS=Windows 11 (10.0.22621.963)
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.4061)
 Intel Core i9-10900X CPU 3.70GHz, 1 CPU, 20 logical and 10 physical cores
-.NET SDK=7.0.101
-  [Host]     : .NET 7.0.1 (7.0.122.56804), X64 RyuJIT AVX2
-  DefaultJob : .NET 7.0.1 (7.0.122.56804), X64 RyuJIT AVX2
+.NET SDK 9.0.204
+  [Host]     : .NET 9.0.5 (9.0.525.21509), X64 RyuJIT AVX-512F+CD+BW+DQ+VL
+  DefaultJob : .NET 9.0.5 (9.0.525.21509), X64 RyuJIT AVX-512F+CD+BW+DQ+VL
 
 
-|                               Method |      Mean |    Error |   StdDev |   Gen0 | Allocated |
-|------------------------------------- |----------:|---------:|---------:|-------:|----------:|
-|                       Guid.NewGuid() |  58.14 ns | 0.334 ns | 0.296 ns |      - |         - |
-|          Ulid.NewUlid(SimpleUlidRng) |  50.32 ns | 0.193 ns | 0.171 ns |      - |         - |
-|              Ulid.NewUlid(CSUlidRng) | 117.07 ns | 0.862 ns | 0.720 ns |      - |         - |
-| Ulid.NewUlid(SimpleMonotonicUlidRng) |  65.02 ns | 0.124 ns | 0.110 ns |      - |         - |
-|     Ulid.NewUlid(CSMonotonicUlidRng) |  65.58 ns | 0.119 ns | 0.099 ns |      - |         - |
-|                   Guid.Parse(string) | 193.62 ns | 0.813 ns | 0.721 ns | 0.0095 |      96 B |
-|                   Ulid.Parse(string) | 226.54 ns | 0.299 ns | 0.250 ns | 0.0181 |     184 B |
-|                      Guid.ToString() | 168.76 ns | 0.597 ns | 0.558 ns | 0.0095 |      96 B |
-|                      Ulid.ToString() | 144.66 ns | 0.504 ns | 0.447 ns | 0.0079 |      80 B |
-|                   'new Guid(byte[])' |  10.96 ns | 0.031 ns | 0.024 ns | 0.0040 |      40 B |
-|                   'new Ulid(byte[])' |  12.55 ns | 0.024 ns | 0.021 ns | 0.0040 |      40 B |
-|                   Guid.ToByteArray() |  65.32 ns | 0.183 ns | 0.152 ns | 0.0039 |      40 B |
-|                   Ulid.ToByteArray() | 127.23 ns | 0.337 ns | 0.298 ns | 0.0038 |      40 B |
-|                        Ulid.ToGuid() | 117.48 ns | 0.434 ns | 0.406 ns |      - |         - |
-|                     'new Ulid(Guid)' |  64.26 ns | 0.574 ns | 0.537 ns |      - |         - |
+| Method                               | Mean       | Error     | StdDev    | Gen0   | Allocated |
+|------------------------------------- |-----------:|----------:|----------:|-------:|----------:|
+| Guid.NewGuid()                       |  61.045 ns | 0.4488 ns | 0.3978 ns |      - |         - |
+| Ulid.NewUlid(SimpleUlidRng)          |  35.331 ns | 0.2170 ns | 0.1694 ns |      - |         - |
+| Ulid.NewUlid(CSUlidRng)              | 104.516 ns | 0.5099 ns | 0.4258 ns |      - |         - |
+| Ulid.NewUlid(SimpleMonotonicUlidRng) |  51.985 ns | 0.3772 ns | 0.3344 ns |      - |         - |
+| Ulid.NewUlid(CSMonotonicUlidRng)     |  52.000 ns | 0.1184 ns | 0.1050 ns |      - |         - |
+| Guid.Parse(string)                   | 100.885 ns | 1.2808 ns | 1.1354 ns | 0.0095 |      96 B |
+| Ulid.Parse(string)                   | 199.476 ns | 3.2495 ns | 3.0396 ns | 0.0181 |     184 B |
+| Guid.ToString()                      |  76.089 ns | 0.8230 ns | 0.6426 ns | 0.0095 |      96 B |
+| Ulid.ToString()                      | 131.441 ns | 0.5919 ns | 0.4943 ns | 0.0079 |      80 B |
+| 'new Guid(byte[])'                   |   9.341 ns | 0.1644 ns | 0.1538 ns | 0.0040 |      40 B |
+| 'new Ulid(byte[])'                   |  11.045 ns | 0.1987 ns | 0.1951 ns | 0.0040 |      40 B |
+| Guid.ToByteArray()                   |  65.470 ns | 0.1393 ns | 0.1163 ns | 0.0039 |      40 B |
+| Ulid.ToByteArray()                   | 111.239 ns | 0.9540 ns | 0.7966 ns | 0.0038 |      40 B |
+| Ulid.ToGuid()                        | 106.292 ns | 0.2446 ns | 0.2043 ns |      - |         - |
+| 'new Ulid(Guid)'                     |  65.200 ns | 0.2050 ns | 0.1712 ns |      - |         - |
 ```
